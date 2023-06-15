@@ -20,17 +20,18 @@ export default class QuantaScene {
       0.1,
       1000
     );
+    this.camera.position.z = 5;
     this.renderer = new THREE.WebGLRenderer();
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.domElement.appendChild(this.renderer.domElement);
   }
 
-  private addObject(item: QuantaObject) {
+  public addObject(item: QuantaObject) {
     this.scene.add(item.getMesh());
     this.objects.push(item);
   }
 
-  private animate() {
+  public animate() {
     requestAnimationFrame(() => this.animate());
     const state = {
         time: 0,
