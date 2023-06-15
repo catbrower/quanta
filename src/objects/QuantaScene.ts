@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import QuantaObject from './QuantaObject';
+import Scope from '../types/Scope';
 
 export default class QuantaScene {
   private scene: THREE.Scene;
@@ -8,9 +9,10 @@ export default class QuantaScene {
   private domElement: HTMLElement;
   private objects: Array<QuantaObject>;
   private startTime: number;
+  private scope: Scope;
 
   constructor(domElement: HTMLElement) {
-    this.startTime = 0;
+    this.startTime = new Date().getTime() / 1000;
     this.objects = new Array<QuantaObject>();
     this.domElement = domElement;
     this.scene = new THREE.Scene();
@@ -24,6 +26,9 @@ export default class QuantaScene {
     this.renderer = new THREE.WebGLRenderer();
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.domElement.appendChild(this.renderer.domElement);
+
+    this.scope = new Scope();
+    this.scope.setVariable("seed", Math.random());
   }
 
   public addObject(item: QuantaObject) {
@@ -33,13 +38,11 @@ export default class QuantaScene {
 
   public animate() {
     requestAnimationFrame(() => this.animate());
-    const state = {
-        time: 0,
-        seed: 0
-    }
+    let timeNow = new Date().getTime() / 1000;
+    this.scope.setVariable("time", timeNow - this.startTime);
 
     this.objects.forEach((item: QuantaObject) => {
-        item.update(state);
+        item.update(this.scope);
     })
 
     this.renderer.render(this.scene, this.camera);
