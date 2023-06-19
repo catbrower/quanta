@@ -29,28 +29,22 @@ class App extends React.Component {
         {
           name: 'test cube',
           id: 'sdfsdf',
+          type: "points",
+          texture: "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/sprites/spark1.png",
           properties: {},
           geometry: {
-            type: 'box',
+            type: 'sphere',
             args: ['1']
           },
-          color: 'pow(sin(1.7*time), 2.0), pow(sin(0.7*time), 2.0), pow(sin(1.3*time), 2.0), 1',
-          rotation: 'time, time, time',
-          translate: 'sin(time), cos(time), 0.0',
-          scale: 'sin(time) + 1.0, sin(time) + 1.0, sin(time) + 1.0'
+          color: 'pow(sin(1.7*time + position.y), 2.0), pow(sin(0.7*time + position.x), 2.0), pow(sin(1.3*time + position.z), 2.0), 0.01',
+          rotation: '0.0, time / 2.0, 0.0',
+          // scale: 'sin(time / 2.0) + 1.0, sin(time / 2.0) + 1.0, sin(time / 2.0) + 1.0',
+          scale: "2.0, 2.0, 2.0",
+          pointSize: "pow(sin(time + position.x + position.y), 2.0) * 20.0 + 20.0"
         }
       ],
       fields: []
     }
-
-    // let obj = new QuantaObject(new THREE.BoxGeometry(1), new THREE.MeshBasicMaterial({ color: 0x00ff00 }));
-    // let obj = new QuantaObject(new THREE.BoxGeometry(1));
-    // obj.setFunction("rotation", new Function<THREE.Vector3>(
-    //   (scope: Scope) => {return new THREE.Vector3(0, scope.getVariable("time"), Math.sin(scope.getVariable("time")))}
-    // ));
-    // obj.setFunction("color", new Function<THREE.Vector3>(
-    //   (scope: Scope) => {return new THREE.Vector3(Math.sin(scope.getVariable("time")), 0, 1)}
-    // ));
 
     this.universe = new Universe(universeParams);
   }

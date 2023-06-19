@@ -39,7 +39,7 @@ export default class Universe {
       1000
     );
     this.camera.position.z = 5;
-    this.renderer = new THREE.WebGLRenderer();
+    this.renderer = new THREE.WebGLRenderer({antialias: true});
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.domElement.appendChild(this.renderer.domElement);
   }

@@ -1,4 +1,4 @@
-import { BoxGeometry, BufferGeometry, ShaderMaterial, TetrahedronGeometry } from "three";
+import { AdditiveBlending, BoxGeometry, BufferGeometry, DodecahedronGeometry, Mesh, Points, ShaderMaterial, SphereGeometry, TetrahedronGeometry, TextureLoader } from "three";
 import QuantaObject from "./objects/QuantaObject";
 import Scope from "./types/Scope";
 
@@ -58,17 +58,20 @@ function getScaleMatricies(scale: string[]): string {
 
 export function buildFramentShader(uniformsStr: string, objectSpec: any): string {
     let colorVector = "1, 1, 1, 1";
+    const hasTexture = objectSpec.hasOwnProperty("texture");
+
     if(objectSpec.hasOwnProperty("color")) {
         colorVector = objectSpec.color;
     }
     
     return `
-        ${uniformsStr}
         varying vec3 vUv;
-
+        ${uniformsStr}
+        
         void main() {
-            // gl_FragColor = vec4(mix(colorA, colorB, vUv.z), 1.0);
+            vec3 position = vUv;
             gl_FragColor = vec4(${colorVector});
+            ${hasTexture ? "gl_FragColor = gl_FragColor * texture2D( pointTexture, gl_PointCoord );" : ""}
         }
     `
 }
@@ -119,6 +122,11 @@ export function buildVertexShader(uniformsStr: string, objectSpec: any): string 
             ${scaleMatrix}
             ${hasTransformation ? `vPosition = ${vPosition.join("*")};` : ""}
             vUv = position;
+            
+            ${
+                objectSpec.hasOwnProperty("pointSize") ?
+                    `gl_PointSize = ${objectSpec.pointSize};` : ""
+            }
             gl_Position = ${glPosition};
         }
     `
@@ -130,6 +138,9 @@ export function buildObject(objectSpec: any, scope: Scope): QuantaObject {
 
     // Combine all vars in scope and make them available in the shaders
     let uniforms = Object.assign(scope.getAllVariables(), objectSpec.properties || {});
+    if(objectSpec.hasOwnProperty("texture")) {
+        uniforms.pointTexture = {value: new TextureLoader().load(objectSpec.texture), type: "sampler2D"}
+    }
 
     // TODO: force lowercase
     // TODO: actually handle geometry args
@@ -137,13 +148,23 @@ export function buildObject(objectSpec: any, scope: Scope): QuantaObject {
         case "box":
             geometry = new BoxGeometry(1);
             break;
+        case "tetrahedron":
+            geometry = new TetrahedronGeometry(1);
+            break;
+        case "dodecahedron":
+            geometry = new DodecahedronGeometry(1);
+            break;
+        case "sphere":
+            geometry = new SphereGeometry(1, 200, 200);
+            break;
         default:
             throw new Error(`Unsupported geometry ${objectSpec.geometry.type}`)
     }
 
 
-    let uniformsStr = Object.entries(uniforms).map((item) => {
-        return `uniform float ${item[0]};`
+    let uniformsStr = Object.entries(uniforms).map((item: any) => {
+        console.log(item);
+        return `uniform ${item[1].type} ${item[0]};`
     }).join("\n");
     let vertexShader = buildVertexShader(uniformsStr, objectSpec);
     let fragmentShader = buildFramentShader(uniformsStr, objectSpec);
@@ -151,10 +172,27 @@ export function buildObject(objectSpec: any, scope: Scope): QuantaObject {
     let material = new ShaderMaterial({
         uniforms: uniforms,
         vertexShader: vertexShader,
-        fragmentShader: fragmentShader
+        fragmentShader: fragmentShader,
+        blending: AdditiveBlending,
+        depthTest: false,
+        transparent: true
     });
 
-    let result = new QuantaObject(geometry, material);
+    // Create mesh
+    let mesh;
+    let objType;
+    switch(objectSpec.type) {
+        case "mesh":
+            mesh = new Mesh(geometry, material);
+            objType = Mesh;
+            break;
+        case "points":
+            mesh = new Points(geometry, material);
+            objType = Points;
+            break;
+    }
+
+    let result = new QuantaObject(mesh, geometry, material);
 
     return result;
 }

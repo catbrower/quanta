@@ -5,31 +5,22 @@ import Scope from '../types/Scope';
 import Field4 from '../fields/Field4';
 
 export default class QuantaObject {
-    private mesh: THREE.Mesh;
+    private mesh: any;
     private geometry: THREE.BufferGeometry;
     private material: THREE.ShaderMaterial;
 
-    private functions: FunctionDictionary;
-    
-    // Mutable properties
-    private color: Field4;
-
-    constructor(geometry: THREE.BufferGeometry, material: THREE.ShaderMaterial) {
+    constructor(mesh: any, geometry: THREE.BufferGeometry, material: THREE.ShaderMaterial) {
         this.geometry = geometry;
         this.material = material;
-        this.mesh = new THREE.Mesh(geometry, material);
-        this.functions = {}
-
-        // Mutable properties
-        this.color = new Field4("");
+        this.mesh = mesh;
     }
 
     public setColor(color: Field4) {
-        this.color = color;
+        // this.color = color;
     }
 
     public setFunction(property: string, func: Function<any>) {
-        this.functions[property] = func;
+        // this.functions[property] = func;
     }
 
     public update(scope: Scope): void {
@@ -52,7 +43,7 @@ export default class QuantaObject {
         // };
     }
 
-    public getMesh(): THREE.Mesh {
+    public getMesh(): any {
         return this.mesh;
     }
 

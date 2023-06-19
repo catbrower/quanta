@@ -6,7 +6,7 @@ export default class Scope {
     }
 
     public setVariable(key: string, value: number) {
-        this.variables[key] = {type: "f", value: value}
+        this.variables[key] = {type: "float", value: value}
     }
 
     public getVariable(key: string) {
