@@ -27,19 +27,19 @@ class App extends React.Component {
           type: "points",
           texture: "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/sprites/circle.png",
           properties: {
-            "f": {type: "float", value: 20.0},
-            "a": {type: "float", value: 0.1},
+            "f": {type: "float", value: 10.0},
+            "a": {type: "float", value: 0.2},
             "s": {type: "float", value: 2.5},
             "t": {type: "float", value: 0.5}
           },
           geometry: {
             type: 'fibSphere',
-            args: {"scale": 2.5, "numPoints": Math.pow(2, 13)}
+            args: {"scale": 1.1, "numPoints": Math.pow(Math.E, 9)}
           },
-          rotation: "time / 15.0, time / 15.0, time / 15.0",
-          color: 'pow(sin(0.5*time + position.y), 2.0), pow(sin(0.7*time + position.x), 2.0), pow(sin(0.3*time + position.z), 2.0), 0.05',
-          // scale: "s + sin(time*t + position.x * f) * a, s + sin(time*t + position.y * f) * a, s+ sin(time*t + position.z * f) * a",
-          pointSize: "40.0"
+          rotation: "time / 25.0, time / 25.0, time / 25.0",
+          color: 'pow(sin(0.5*time + position.y), 2.0), pow(sin(0.7*time + position.x), 2.0), pow(sin(0.3*time + position.z), 2.0), 0.02',
+          scale: "s + sin(1.1*time*t + position.x * f) * a, s + sin(1.2*time*t + position.y * f) * a, s+ sin(time*t + position.z * f) * a",
+          pointSize: "60.0"
         }
       ],
       fields: []
