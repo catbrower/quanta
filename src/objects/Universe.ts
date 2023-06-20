@@ -52,12 +52,13 @@ export default class Universe {
   // Executes once, starts animation loop
   // exists for calling any functions that need to be before the loop starts
   public begin() {
+    this.startTime = new Date().getTime()
     this.animationLoop();
   }
 
   private updateScope() {
-    let timeNow = new Date().getTime() / 1000;
-    this.scope.setVariable("time", timeNow - this.startTime);
+    let timeNow = new Date().getTime();
+    this.scope.setVariable("time", (timeNow - this.startTime) / 1000.0 * Math.PI);
   }
 
   private animationLoop() {

@@ -146,16 +146,20 @@ export function buildObject(objectSpec: any, scope: Scope): QuantaObject {
     // TODO: actually handle geometry args
     switch(objectSpec.geometry.type) {
         case "box":
-            geometry = new BoxGeometry(1);
+            geometry = new BoxGeometry(objectSpec.geometry.args.scale);
             break;
         case "tetrahedron":
-            geometry = new TetrahedronGeometry(1);
+            geometry = new TetrahedronGeometry(objectSpec.geometry.args.scale);
             break;
         case "dodecahedron":
-            geometry = new DodecahedronGeometry(1);
+            geometry = new DodecahedronGeometry(objectSpec.geometry.args.scale);
             break;
         case "sphere":
-            geometry = new SphereGeometry(1, 200, 200);
+            geometry = new SphereGeometry(
+                objectSpec.geometry.args.scale,
+                objectSpec.geometry.args.widthSegments,
+                objectSpec.geometry.args.heightSegments
+            );
             break;
         default:
             throw new Error(`Unsupported geometry ${objectSpec.geometry.type}`)
@@ -163,7 +167,6 @@ export function buildObject(objectSpec: any, scope: Scope): QuantaObject {
 
 
     let uniformsStr = Object.entries(uniforms).map((item: any) => {
-        console.log(item);
         return `uniform ${item[1].type} ${item[0]};`
     }).join("\n");
     let vertexShader = buildVertexShader(uniformsStr, objectSpec);

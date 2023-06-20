@@ -1,11 +1,6 @@
 import React from 'react';
 import './App.css';
-import * as THREE from 'three';
-
-import QuantaObject from './objects/QuantaObject';
 import Universe from './objects/Universe';
-import Function from './types/Function';
-import Scope from './types/Scope';
 import Field from './fields/Field';
 
 class App extends React.Component {
@@ -31,16 +26,20 @@ class App extends React.Component {
           id: 'sdfsdf',
           type: "points",
           texture: "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/sprites/spark1.png",
-          properties: {},
+          properties: {
+            "f": {type: "float", value: 20.0},
+            "a": {type: "float", value: 10.0}
+          },
           geometry: {
             type: 'sphere',
-            args: ['1']
+            args: {"scale": 1, "widthSegments": 200, "heightSegments": 200}
           },
-          color: 'pow(sin(1.7*time + position.y), 2.0), pow(sin(0.7*time + position.x), 2.0), pow(sin(1.3*time + position.z), 2.0), 0.01',
-          rotation: '0.0, time / 2.0, 0.0',
+          color: 'pow(sin(0.5*time + position.y), 2.0), pow(sin(0.7*time + position.x), 2.0), pow(sin(0.3*time + position.z), 2.0), 1',
+          // rotation: 'time / 2.0 + position.z, time / 2.0, time / 2.0',
           // scale: 'sin(time / 2.0) + 1.0, sin(time / 2.0) + 1.0, sin(time / 2.0) + 1.0',
-          scale: "2.0, 2.0, 2.0",
-          pointSize: "pow(sin(time + position.x + position.y), 2.0) * 20.0 + 20.0"
+          scale: "2.5 + sin(time + position.x * f) / a, 2.5 + sin(time + position.y * f) / a, 2.5 + sin(time + position.y * f) / a",
+          // pointSize: "pow(sin(time + position.x + position.y), 2.0) * 20.0 + 20.0"
+          pointSize: "2.0"
         }
       ],
       fields: []
