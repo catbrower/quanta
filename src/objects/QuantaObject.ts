@@ -1,6 +1,5 @@
 import * as THREE from 'three';
 import Function from '../types/Function';
-import { FunctionDictionary } from '../types/FunctionDictionary';
 import Scope from '../types/Scope';
 import Field4 from '../fields/Field4';
 
@@ -8,11 +7,20 @@ export default class QuantaObject {
     private mesh: any;
     private geometry: THREE.BufferGeometry;
     private material: THREE.ShaderMaterial;
+    private eventVariables: any;
+
+    private mouseOver: boolean;
 
     constructor(mesh: any, geometry: THREE.BufferGeometry, material: THREE.ShaderMaterial) {
         this.geometry = geometry;
         this.material = material;
         this.mesh = mesh;
+        this.mouseOver = false;
+        this.eventVariables = {};
+    }
+
+    public setEventVariables(eventVariables: any) {
+        this.eventVariables = eventVariables;
     }
 
     public setColor(color: Field4) {
@@ -23,7 +31,15 @@ export default class QuantaObject {
         // this.functions[property] = func;
     }
 
-    public update(scope: Scope): void {
+    public update(scope: Scope, raycaster: THREE.Raycaster): void {
+        const intersects = raycaster.intersectObject(this.mesh);
+        if(intersects.length > 0) {
+            // console.log("intersects");
+        //     this.mouseOver = true;
+        //     // this.geometry.scale(2, 2, 2);
+        // } else {
+        //     this.mouseOver = false;
+        }
         // this.material.uniforms.time.value = scope.getVariable("time");
         // for(const [key, value] of Object.entries(this.functions)) {
         //     let delta = value.evaluate(scope);

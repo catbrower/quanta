@@ -84,10 +84,17 @@ export function buildVertexShader(uniformsStr: string, objectSpec: any): string 
     let scaleMatrix = "";
     let glPosition = "projectionMatrix * modelViewMatrix * vec4(position, 1.0)"
 
+    // Transforms
     const hasRotation = objectSpec.hasOwnProperty("rotation");
     const hasTranslation = objectSpec.hasOwnProperty("translate");
     const hasScale = objectSpec.hasOwnProperty("scale");
     const hasTransformation = hasRotation || hasTranslation || hasScale;
+
+    // Events
+    let hasMouseOver = false;
+    if(objectSpec.hasOwnProperty("events")) {
+        hasMouseOver = objectSpec.events.hasOwnProperty("mouseOver");
+    }
 
     if (hasTransformation) {
         glPosition = `projectionMatrix * modelViewMatrix * vPosition * vec4(position, 1.0)`;
@@ -121,6 +128,11 @@ export function buildVertexShader(uniformsStr: string, objectSpec: any): string 
         ${uniformsStr}
 
         void main() {
+            ${hasMouseOver ? `
+                if(mouseOver){
+                    ${objectSpec.events.mouseOver}
+                }
+            ` : ""}
             x = vUv.x;
             y = vUv.y;
             z = vUv.z;
@@ -143,8 +155,16 @@ export function buildObject(objectSpec: any, scope: Scope): QuantaObject {
     let geometry: BufferGeometry;
     // console.log(objectSpec);
 
+    // Events
+    let eventVars: any = {}
+    if(objectSpec.hasOwnProperty("events")) {
+        if(objectSpec.events.hasOwnProperty("mouseOver")) {
+            eventVars.mouseOver = {type: "bool", value: "false"}
+        }
+    }
+
     // Combine all vars in scope and make them available in the shaders
-    let uniforms = Object.assign(scope.getAllVariables(), objectSpec.properties || {});
+    let uniforms = Object.assign(scope.getAllVariables(), objectSpec.properties || {}, eventVars);
     if(objectSpec.hasOwnProperty("texture")) {
         uniforms.pointTexture = {value: new TextureLoader().load(objectSpec.texture), type: "sampler2D"}
     }
@@ -208,6 +228,7 @@ export function buildObject(objectSpec: any, scope: Scope): QuantaObject {
     }
 
     let result = new QuantaObject(mesh, geometry, material);
+    result.setEventVariables(eventVars);
 
     return result;
 }
