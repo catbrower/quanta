@@ -22,24 +22,24 @@ class App extends React.Component {
       ],
       objects: [
         {
-          name: 'test cube',
+          name: 'test object',
           id: 'sdfsdf',
           type: "points",
-          texture: "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/sprites/spark1.png",
+          texture: "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/sprites/circle.png",
           properties: {
             "f": {type: "float", value: 20.0},
-            "a": {type: "float", value: 10.0}
+            "a": {type: "float", value: 0.1},
+            "s": {type: "float", value: 2.5},
+            "t": {type: "float", value: 0.5}
           },
           geometry: {
-            type: 'sphere',
-            args: {"scale": 1, "widthSegments": 200, "heightSegments": 200}
+            type: 'fibSphere',
+            args: {"scale": 1, "numPoints": 20000}
           },
+          rotation: "time / 15.0, time / 15.0, time / 15.0",
           color: 'pow(sin(0.5*time + position.y), 2.0), pow(sin(0.7*time + position.x), 2.0), pow(sin(0.3*time + position.z), 2.0), 1',
-          // rotation: 'time / 2.0 + position.z, time / 2.0, time / 2.0',
-          // scale: 'sin(time / 2.0) + 1.0, sin(time / 2.0) + 1.0, sin(time / 2.0) + 1.0',
-          scale: "2.5 + sin(time + position.x * f) / a, 2.5 + sin(time + position.y * f) / a, 2.5 + sin(time + position.y * f) / a",
-          // pointSize: "pow(sin(time + position.x + position.y), 2.0) * 20.0 + 20.0"
-          pointSize: "2.0"
+          scale: "s + sin(time*t + position.x * f) * a, s + sin(time*t + position.y * f) * a, s+ sin(time*t + position.z * f) * a",
+          pointSize: "4.0"
         }
       ],
       fields: []

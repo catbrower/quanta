@@ -1,6 +1,7 @@
 import { AdditiveBlending, BoxGeometry, BufferGeometry, DodecahedronGeometry, Mesh, Points, ShaderMaterial, SphereGeometry, TetrahedronGeometry, TextureLoader } from "three";
 import QuantaObject from "./objects/QuantaObject";
 import Scope from "./types/Scope";
+import { fibonacciSphere } from "./Geometries";
 
 const rotationHeader = ``;
 
@@ -109,6 +110,9 @@ export function buildVertexShader(uniformsStr: string, objectSpec: any): string 
 
     return `
         varying vec3 vUv;
+        varying float x;
+        varying float y;
+        varying float z;
         varying vec4 modelViewPosition;
         ${hasTransformation ? "varying mat4 vPosition;" : ""}
         ${hasRotation ? rotationHeader : ""}
@@ -117,6 +121,9 @@ export function buildVertexShader(uniformsStr: string, objectSpec: any): string 
         ${uniformsStr}
 
         void main() {
+            x = vUv.x;
+            y = vUv.y;
+            z = vUv.z;
             ${rotationMatricies}
             ${translationMatricies}
             ${scaleMatrix}
@@ -160,6 +167,11 @@ export function buildObject(objectSpec: any, scope: Scope): QuantaObject {
                 objectSpec.geometry.args.widthSegments,
                 objectSpec.geometry.args.heightSegments
             );
+            break;
+        case "fibSphere":
+            geometry = fibonacciSphere(
+                objectSpec.geometry.args.scale,
+                objectSpec.geometry.args.numPoints);
             break;
         default:
             throw new Error(`Unsupported geometry ${objectSpec.geometry.type}`)
