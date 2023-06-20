@@ -34,12 +34,12 @@ class App extends React.Component {
           },
           geometry: {
             type: 'fibSphere',
-            args: {"scale": 1, "numPoints": 20000}
+            args: {"scale": 2.5, "numPoints": Math.pow(2, 13)}
           },
           rotation: "time / 15.0, time / 15.0, time / 15.0",
-          color: 'pow(sin(0.5*time + position.y), 2.0), pow(sin(0.7*time + position.x), 2.0), pow(sin(0.3*time + position.z), 2.0), 1',
-          scale: "s + sin(time*t + position.x * f) * a, s + sin(time*t + position.y * f) * a, s+ sin(time*t + position.z * f) * a",
-          pointSize: "4.0"
+          color: 'pow(sin(0.5*time + position.y), 2.0), pow(sin(0.7*time + position.x), 2.0), pow(sin(0.3*time + position.z), 2.0), 0.05',
+          // scale: "s + sin(time*t + position.x * f) * a, s + sin(time*t + position.y * f) * a, s+ sin(time*t + position.z * f) * a",
+          pointSize: "40.0"
         }
       ],
       fields: []
