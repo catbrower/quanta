@@ -34,12 +34,21 @@ class App extends React.Component {
           },
           geometry: {
             type: 'fibSphere',
-            args: {"scale": 1.1, "numPoints": Math.pow(2, 13)}
+            args: {"scale": 2.5, "numPoints": Math.pow(2, 13)}
           },
-          rotation: "time / 25.0, time / 25.0, time / 25.0",
-          color: 'pow(sin(0.5*time + position.y), 2.0), pow(sin(0.7*time + position.x), 2.0), pow(sin(0.3*time + position.z), 2.0), 0.02',
-          scale: "s + sin(1.1*time*t + position.x * f) * a, s + sin(1.2*time*t + position.y * f) * a, s+ sin(time*t + position.z * f) * a",
-          pointSize: "60.0"
+          rotation: {
+            x: "time / 25.0",
+            y: "time / 25.0",
+            z: "time / 25.0"
+          },
+          color: {
+            r: "pow(sin(0.5*time + position.y * 0.5), 2.0)",
+            g: "pow(sin(0.7*time + position.x * 0.5), 2.0)",
+            b: "pow(sin(0.3*time + position.z * 0.5), 2.0)",
+            a: "0.02 * sqrt(pow(mouse_x, 2.0) + pow(mouse_y, 2.0))"
+          },
+          // scale: "s + sin(1.1*time*t + position.x * f) * a, s + sin(1.2*time*t + position.y * f) * a, s+ sin(time*t + position.z * f) * a",
+          pointSize: "100.0"
         }
       ],
       fields: []
@@ -62,22 +71,34 @@ class App extends React.Component {
           properties: {},
           geometry: {
             type: 'box',
-            args: {"scale": 1}
+            args: {"scale": 2.5, numPoints: 100}
           },
-          // translate: "mouse_x, mouse_y, 1.0",
-          rotation: "time / 25.0, time / 25.0, time / 25.0",
-          color: 'pow(sin(0.5*time + position.y), 2.0), pow(sin(0.7*time + position.x), 2.0), pow(sin(0.3*time + position.z), 2.0), 1',
+          translate: "mouse_x, mouse_y, 1.0",
+          rotation: {
+            x: "time / 10.0",
+            y: "time / 10.0",
+            z: "time / 10.0"
+          },
+          color: {
+            // r: 'pow(sin(0.5*time + position.y), 2.0)',
+            // g: 'pow(sin(0.7*time + position.x), 2.0) + mouse_y',
+            // b: 'pow(sin(0.3*time + position.z), 2.0) + mouse_x',
+            r: "1.0",
+            g: "1.0",
+            b: "mouseOver",
+            a: '1.0'
+          },
           // scale: "s + sin(1.1*time*t + position.x * f) * a, s + sin(1.2*time*t + position.y * f) * a, s+ sin(time*t + position.z * f) * a",
           // pointSize: "60.0",
           events: {
-            mouseOver: ``
+            mouseOver: `color_b = 1.0;`
           }
         }
       ],
       fields: []
     }
 
-    this.universe = new Universe(universeParams);
+    this.universe = new Universe(prettyUniverseParams);
   }
 
   componentDidMount(): void {

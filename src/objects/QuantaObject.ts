@@ -4,23 +4,38 @@ import Scope from '../types/Scope';
 import Field4 from '../fields/Field4';
 
 export default class QuantaObject {
-    private mesh: any;
-    private geometry: THREE.BufferGeometry;
-    private material: THREE.ShaderMaterial;
-    private eventVariables: any;
+    private mesh: any | null = null;
+    private geometry: THREE.BufferGeometry | null = null;
+    private material: THREE.ShaderMaterial | null = null;
+    private uniforms: any;
 
-    private mouseOver: boolean;
+    public mouseOver: number;
 
-    constructor(mesh: any, geometry: THREE.BufferGeometry, material: THREE.ShaderMaterial) {
-        this.geometry = geometry;
-        this.material = material;
-        this.mesh = mesh;
-        this.mouseOver = false;
-        this.eventVariables = {};
+    constructor() {
+        this.mouseOver = 0.0;
+        this.uniforms = {};
+
+        return this;
     }
 
-    public setEventVariables(eventVariables: any) {
-        this.eventVariables = eventVariables;
+    public setGeometry(geometry: THREE.BufferGeometry) {
+        this.geometry = geometry;
+        return this;
+    }
+
+    public setMaterial(material: THREE.ShaderMaterial) {
+        this.material = material;
+        return this;
+    }
+
+    public setMesh(mesh: any) {
+        this.mesh = mesh;
+        return this;
+    }
+
+    public setUniforms(uniforms: any) {
+        this.uniforms = uniforms;
+        return this;
     }
 
     public setColor(color: Field4) {
@@ -34,11 +49,13 @@ export default class QuantaObject {
     public update(scope: Scope, raycaster: THREE.Raycaster): void {
         const intersects = raycaster.intersectObject(this.mesh);
         if(intersects.length > 0) {
-            // console.log("intersects");
-        //     this.mouseOver = true;
-        //     // this.geometry.scale(2, 2, 2);
-        // } else {
-        //     this.mouseOver = false;
+            if(this.material && this.material.uniforms.mouseOver) {
+                this.material.uniforms.mouseOver.value = 1;
+            }
+        } else {
+            if(this.material && this.material.uniforms.mouseOver) {
+                this.material.uniforms.mouseOver.value = 0;
+            }
         }
         // this.material.uniforms.time.value = scope.getVariable("time");
         // for(const [key, value] of Object.entries(this.functions)) {

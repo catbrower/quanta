@@ -1,234 +1,348 @@
-import { AdditiveBlending, BoxGeometry, BufferGeometry, DodecahedronGeometry, Mesh, Points, ShaderMaterial, SphereGeometry, TetrahedronGeometry, TextureLoader } from "three";
-import QuantaObject from "./objects/QuantaObject";
-import Scope from "./types/Scope";
+import {
+    AdditiveBlending,
+    BoxGeometry,
+    BufferGeometry,
+    DodecahedronGeometry,
+    Mesh,
+    Points,
+    ShaderMaterial,
+    SphereGeometry,
+    TetrahedronGeometry,
+    TextureLoader } from "three";
+import QuantaObject from './objects/QuantaObject';
 import { fibonacciSphere } from "./Geometries";
 
-const rotationHeader = ``;
+export default class ObjectBuilder {
+    // String constants
+    private static ROTATION_X: string = "rotation_x";
+    private static ROTATION_Y: string = "rotation_y";
+    private static ROTATION_Z: string = "rotation_z";    
+    private static TRANSLATION_X: string = "translation_x";
+    private static TRANSLATION_Y: string = "translation_y";    
+    private static TRANSLATION_Z: string = "translation_z";
+    private static SCALE_X: string = "scale_x";    
+    private static SCALE_Y: string = "scale_y";
+    private static SCALE_Z: string = "scale_z";
+    private static ROTATION_MATRIX_X: string = "rotation_matrix_x";
+    private static ROTATION_MATRIX_Y: string = "rotation_matrix_y";
+    private static ROTATION_MATRIX_Z: string = "rotation_matrix_z";
+    private static TRANSLATION_MATRIX: string = "translation_matrix";
+    private static SCALE_MATRIX: string = "scale_matrix";
 
-const translationHeader = ``;
-
-const scaleHeader = ``;
-
-function getRotationMatricies(rotation: string[]): string {
-    return `
+    private rotationMatricies = `
         // Rotation
-        float cosRotX = cos(${rotation[0]});
-        float sinRotX = sin(${rotation[0]});
-        float cosRotY = cos(${rotation[1]});
-        float sinRotY = sin(${rotation[1]});
-        float cosRotZ = cos(${rotation[2]});
-        float sinRotZ = sin(${rotation[2]});
+        float srx = cos(${ObjectBuilder.ROTATION_X});
+        float crx = sin(${ObjectBuilder.ROTATION_X});
+        float sry = cos(${ObjectBuilder.ROTATION_Y});
+        float cry = sin(${ObjectBuilder.ROTATION_Y});
+        float srz = cos(${ObjectBuilder.ROTATION_Z});
+        float crz = sin(${ObjectBuilder.ROTATION_Z});
 
-        mat4 rXPos = mat4(vec4(1.0, 0.0, 0.0, 0.0), 
-                          vec4(0.0, cosRotX, -sinRotX, 0.0), 
-                          vec4(0.0, sinRotX, cosRotX, 0.0), 
-                          vec4(0.0, 0.0, 0.0, 1.0));
+        mat4 ${ObjectBuilder.ROTATION_MATRIX_X} = mat4(
+            vec4(1.0, 0.0,  0.0, 0.0), 
+            vec4(0.0, crx, -srx, 0.0), 
+            vec4(0.0, srx,  crx, 0.0), 
+            vec4(0.0, 0.0,  0.0, 1.0)
+        );
 
-        mat4 rYPos = mat4(vec4(cosRotY, 0.0, sinRotY, 0.0), 
-                          vec4(0.0, 1.0, 0.0, 0.0), 
-                          vec4(-sinRotY, 0.0, cosRotY, 0.0), 
-                          vec4(0.0, 0.0, 0.0, 1.0));
+        mat4 ${ObjectBuilder.ROTATION_MATRIX_Y} = mat4(
+            vec4( cry, 0.0, sry, 0.0), 
+            vec4( 0.0, 1.0, 0.0, 0.0), 
+            vec4(-sry, 0.0, cry, 0.0), 
+            vec4( 0.0, 0.0, 0.0, 1.0)
+        );
 
-        mat4 rZPos = mat4(vec4(cosRotZ, -sinRotZ, 0.0, 0.0), 
-                          vec4(sinRotZ, cosRotZ, 0.0, 0.0), 
-                          vec4(0.0, 0.0, 1.0, 0.0), 
-                          vec4(0.0, 0.0, 0.0, 1.0));
-
-        vPosition =  rXPos * rZPos * rYPos;
-    `
-}
-
-function getTranslationMatricies(translation: string[]): string {
-    return `
-        mat4 tPos = mat4(vec4(1.0, 0.0, 0.0, 0.0), 
-                         vec4(0.0, 1.0, 0.0, 0.0), 
-                         vec4(0.0, 0.0, 1.0, 0.0), 
-                         vec4(${translation[0]}, ${translation[1]}, ${translation[2]}, 1.0));
+        mat4 ${ObjectBuilder.ROTATION_MATRIX_Z} = mat4(
+            vec4(crz, -srz, 0.0, 0.0), 
+            vec4(srz,  crz, 0.0, 0.0), 
+            vec4(0.0,  0.0, 1.0, 0.0), 
+            vec4(0.0,  0.0, 0.0, 1.0)
+        );
     `;
-}
 
-function getScaleMatricies(scale: string[]): string {
-    return `
+    private translationMatricies = `
+        // Translation
+        mat4 ${ObjectBuilder.TRANSLATION_MATRIX} = mat4(
+            vec4(1.0, 0.0, 0.0, 0.0), 
+            vec4(0.0, 1.0, 0.0, 0.0), 
+            vec4(0.0, 0.0, 1.0, 0.0), 
+            vec4(${ObjectBuilder.TRANSLATION_X}, ${ObjectBuilder.TRANSLATION_Y}, ${ObjectBuilder.TRANSLATION_Z}, 1.0)
+        );
+    `;
+
+    private scaleMatricies = `
         // Scale
-        mat4 sPos = mat4(vec4(${scale[0]}, 0.0, 0.0, 0.0), 
-                         vec4(0.0, ${scale[1]}, 0.0, 0.0), 
-                         vec4(0.0, 0.0, ${scale[2]}, 0.0), 
-                         vec4(0.0, 0.0, 0.0, 1.0));
-    `
-}
+        mat4 sPos = mat4(
+            vec4(${ObjectBuilder.SCALE_X}, 0.0, 0.0, 0.0), 
+            vec4(0.0, ${ObjectBuilder.SCALE_Y}, 0.0, 0.0), 
+            vec4(0.0, 0.0, ${ObjectBuilder.SCALE_Z}, 0.0), 
+            vec4(0.0, 0.0, 0.0, 1.0)
+        );
+    `;
 
-export function buildFramentShader(uniformsStr: string, objectSpec: any): string {
-    let colorVector = "1, 1, 1, 1";
-    const hasTexture = objectSpec.hasOwnProperty("texture");
+    private quantaObject: QuantaObject;
+    private objectSpec: any;
+    private uniforms: any;
+    private scope: any;
 
-    if(objectSpec.hasOwnProperty("color")) {
-        colorVector = objectSpec.color;
-    }
-    
-    return `
+    private commonHeader: string = `
         varying vec3 vUv;
-        ${uniformsStr}
-        
-        void main() {
-            vec3 position = vUv;
-            gl_FragColor = vec4(${colorVector});
-            ${hasTexture ? "gl_FragColor = gl_FragColor * texture2D( pointTexture, gl_PointCoord );" : ""}
+    `;
+
+    // Default Properties
+    private blending = AdditiveBlending;
+    private depthTest = false;
+    private transparent = true;
+    private rotation = {x: "1.0", y: "1.0", z: "1.0"};
+    private color = {r: "1.0", g: "1.0", b: "1.0", a: "1.0"};
+
+    // Required Properties
+    private geometryType: string;
+    private geomertyArgs: any;
+    private meshType: string;
+
+    // Flags
+    private hasEvents: boolean = false;
+    private hasTransformation: boolean = false;
+    private hasRotation: boolean = false;
+    private hasTranslation: boolean = false;
+    private hasScale: boolean = false;
+    private hasColor: boolean = false;
+    private hasTexture: boolean = false;
+    private hasMouseOver: boolean = false;
+
+    constructor(objectSpec: any, scope: any = {}) {
+        this.quantaObject = new QuantaObject();
+        this.objectSpec = objectSpec;
+        this.uniforms = {};
+
+        // Required Properties
+        this.geometryType = objectSpec.geometry.type;
+        this.geomertyArgs = objectSpec.geometry.args;
+        this.meshType = objectSpec.type;
+        this.scope = scope;
+    }
+
+    public build(): QuantaObject {
+        this.determineOptionalProperties();
+        this.buildUniforms();
+
+        let geometry: BufferGeometry = this.buildGeometry();
+        let material: ShaderMaterial = this.buildMaterial();
+        let mesh = this.buildMesh(geometry, material);
+
+        this.quantaObject
+            .setGeometry(geometry)
+            .setMaterial(material)
+            .setMesh(mesh)
+            .setUniforms(this.uniforms);
+
+        return this.quantaObject;
+    }
+
+    private determineOptionalProperties() {
+        // Set flags
+        this.hasRotation = this.objectSpec.hasOwnProperty("rotation");
+        this.hasTranslation = this.objectSpec.hasOwnProperty("translation");
+        this.hasScale = this.objectSpec.hasOwnProperty("scale");
+        this.hasTransformation = this.hasRotation || this.hasTranslation || this.hasScale;
+        this.hasColor = this.objectSpec.hasOwnProperty("color");
+        this.hasTexture = this.objectSpec.hasOwnProperty("texture");
+
+        if(this.objectSpec.hasOwnProperty("events")) {
+            this.hasMouseOver = this.objectSpec.events.hasOwnProperty("mouseOver");
         }
-    `
-}
 
-export function buildVertexShader(uniformsStr: string, objectSpec: any): string {
-    let vPosition: string[] = [];
-    let rotationMatricies = "";
-    let translationMatricies = "";
-    let scaleMatrix = "";
-    let glPosition = "projectionMatrix * modelViewMatrix * vec4(position, 1.0)"
-
-    // Transforms
-    const hasRotation = objectSpec.hasOwnProperty("rotation");
-    const hasTranslation = objectSpec.hasOwnProperty("translate");
-    const hasScale = objectSpec.hasOwnProperty("scale");
-    const hasTransformation = hasRotation || hasTranslation || hasScale;
-
-    // Events
-    let hasMouseOver = false;
-    if(objectSpec.hasOwnProperty("events")) {
-        hasMouseOver = objectSpec.events.hasOwnProperty("mouseOver");
+        // Properties
+        if(this.hasColor) { this.color = this.objectSpec.color }
+        if(this.hasRotation) { this.rotation = this.objectSpec.rotation }
     }
 
-    if (hasTransformation) {
-        glPosition = `projectionMatrix * modelViewMatrix * vPosition * vec4(position, 1.0)`;
+    private buildUniforms(): any {
+        let eventVariables: any = {};
+        if(this.hasMouseOver) {
+            eventVariables.mouseOver = {value: this.quantaObject.mouseOver, type: "float"}
+        }
+
+        let uniforms = Object.assign(
+            this.scope.getAllVariables(),
+            this.objectSpec.properties || {},
+            eventVariables
+        );
+        if(this.objectSpec.hasOwnProperty("texture")) {
+            uniforms.pointTexture = {value: new TextureLoader().load(this.objectSpec.texture), type: "sampler2D"}
+        }
+
+        this.uniforms = uniforms;
     }
 
-    if (hasRotation) {
-        rotationMatricies = getRotationMatricies(objectSpec.rotation.split(','));
-        vPosition = ["rXPos", "rYPos", "rZPos"]
+    private buildTransformationMatricies(): string {
+        if(!this.hasTransformation) {
+            return "";
+        }
+
+        return `
+            ${this.hasRotation ? this.rotationMatricies : ""}
+            ${this.hasTranslation ? this.translationMatricies : ""}
+            ${this.hasScale ? this.scaleMatricies : ""}
+        `
     }
 
-    if (hasTranslation) {
-        translationMatricies = getTranslationMatricies(objectSpec.translate.split(','));
-        vPosition.push("tPos")
-    }
+    private buildFragmentShader(): string {
+        let uniformsStr = Object.entries(this.uniforms).map((item: any) => {
+            return `uniform ${item[1].type} ${item[0]};`
+        }).join("\n");
 
-    if (hasScale) {
-        scaleMatrix = getScaleMatricies(objectSpec.scale.split(','));
-        vPosition.push("sPos")
-    }
-
-    return `
-        varying vec3 vUv;
-        varying float x;
-        varying float y;
-        varying float z;
-        varying vec4 modelViewPosition;
-        ${hasTransformation ? "varying mat4 vPosition;" : ""}
-        ${hasRotation ? rotationHeader : ""}
-        ${hasTranslation ? translationHeader : ""}
-        ${hasScale ? scaleHeader : ""}
-        ${uniformsStr}
-
-        void main() {
-            ${hasMouseOver ? `
-                if(mouseOver){
-                    ${objectSpec.events.mouseOver}
-                }
-            ` : ""}
-            x = vUv.x;
-            y = vUv.y;
-            z = vUv.z;
-            ${rotationMatricies}
-            ${translationMatricies}
-            ${scaleMatrix}
-            ${hasTransformation ? `vPosition = ${vPosition.join("*")};` : ""}
-            vUv = position;
+        let result =  `
+            ${this.commonHeader}
+            ${uniformsStr}
             
-            ${
-                objectSpec.hasOwnProperty("pointSize") ?
-                    `gl_PointSize = ${objectSpec.pointSize};` : ""
+            void main() {
+                vec3 position = vUv;
+                float color_r = ${this.color.r};
+                float color_g = ${this.color.g};
+                float color_b = ${this.color.b};
+                float color_a = ${this.color.a};
+
+                // put events here
+                ${this.hasMouseOver ? `
+                    if(mouseOver == 1.0) {
+                        ${this.objectSpec.events.mouseOver}
+                    }
+                ` : ""}
+
+                gl_FragColor = vec4(color_r, color_g, color_b, color_a);
+                ${this.hasTexture ? "gl_FragColor = gl_FragColor * texture2D(pointTexture, gl_PointCoord);" : ""}
             }
-            gl_Position = ${glPosition};
+        `;
+
+        console.log(result);
+        
+        return result;
+    }
+
+    private buildVertexShader(): string {
+        let uniformsStr = Object.entries(this.uniforms).map((item: any) => {
+            return `uniform ${item[1].type} ${item[0]};`
+        }).join("\n");
+
+        let vPosition: string[] = ["projectionMatrix", "modelViewMatrix"];
+        if(this.hasRotation) {
+            vPosition.push(ObjectBuilder.ROTATION_MATRIX_X, ObjectBuilder.ROTATION_MATRIX_Y, ObjectBuilder.ROTATION_MATRIX_Z);
         }
-    `
-}
 
-export function buildObject(objectSpec: any, scope: Scope): QuantaObject {
-    let geometry: BufferGeometry;
-    // console.log(objectSpec);
+        if(this.hasTranslation) {
+            vPosition.push(ObjectBuilder.TRANSLATION_MATRIX);
+        }
 
-    // Events
-    let eventVars: any = {}
-    if(objectSpec.hasOwnProperty("events")) {
-        if(objectSpec.events.hasOwnProperty("mouseOver")) {
-            eventVars.mouseOver = {type: "bool", value: "false"}
+        if(this.hasScale) {
+            vPosition.push(ObjectBuilder.SCALE_MATRIX);
+        }
+
+        vPosition.push("vec4(position, 1.0)");
+
+        // let rotations = this.hasRotation ? this.objectSpec.rotation.split(",") : null;
+        let translations = this.hasTranslation ? this.objectSpec.translation.split(",") : null;
+        let scales = this.hasScale ? this.objectSpec.scale.split(",") : null;
+
+        let result = `
+            ${this.commonHeader}
+            varying vec4 modelViewPosition;
+            ${this.hasTransformation ? "varying mat4 vPosition;" : ""}
+            ${uniformsStr}
+
+            void main() {
+                vUv = position;
+                
+
+                ${this.hasRotation ? `
+                    float rotation_x = ${this.rotation.x};
+                    float rotation_y = ${this.rotation.y};
+                    float rotation_z = ${this.rotation.z};
+                `: ""}
+
+                ${this.hasTranslation ? `
+                    float translation_x = ${translations[0]};
+                    float translation_y = ${translations[1]};
+                    float translation_z = ${translations[2]};
+                `: ""}
+
+                ${this.hasScale ? `
+                    float scale_x = ${scales[0]};
+                    float scale_y = ${scales[1]};
+                    float scale_z = ${scales[2]};
+                `: ""}
+
+                ${this.buildTransformationMatricies()}
+                // vUv = position;
+                
+                ${
+                    this.objectSpec.hasOwnProperty("pointSize") && this.meshType === "points" ?
+                        `gl_PointSize = ${this.objectSpec.pointSize};` : ""
+                }
+
+                gl_Position = ${vPosition.join(" * ")};
+            }
+        `;
+
+        return result;
+    }
+
+    private buildGeometry(): BufferGeometry {
+        let geometry: BufferGeometry;
+        // TODO: force lowercase
+        // TODO: actually handle geometry args
+        let scale = this.geomertyArgs.scale;
+        switch(this.geometryType) {
+            case "box":
+                geometry = new BoxGeometry(scale, scale, scale);
+                break;
+            case "tetrahedron":
+                geometry = new TetrahedronGeometry(scale);
+                break;
+            case "dodecahedron":
+                geometry = new DodecahedronGeometry(scale);
+                break;
+            case "sphere":
+                geometry = new SphereGeometry(
+                    scale,
+                    this.geomertyArgs.widthSegments,
+                    this.geomertyArgs.heightSegments
+                );
+                break;
+            case "fibSphere":
+                geometry = fibonacciSphere(
+                    scale,
+                    this.geomertyArgs.numPoints);
+                break;
+            default:
+                throw new Error(`Unsupported geometry ${this.geometryType}`)
+        }
+
+        return geometry;
+    }
+
+    private buildMaterial(): THREE.ShaderMaterial {
+        let material: ShaderMaterial = new ShaderMaterial({
+            uniforms: this.uniforms,
+            vertexShader: this.buildVertexShader(),
+            fragmentShader: this.buildFragmentShader(),
+            blending: this.blending,
+            depthTest: this.depthTest,
+            transparent: this.transparent
+        });
+
+        return material;
+    }
+
+    private buildMesh(geometry: BufferGeometry, material: ShaderMaterial) {
+        switch(this.meshType) {
+            case "mesh":
+                return new Mesh(geometry, material);
+            case "points":
+                return new Points(geometry, material);
+            default:
+                throw new Error(`Unknown mesh type: ${this.meshType}`);
         }
     }
-
-    // Combine all vars in scope and make them available in the shaders
-    let uniforms = Object.assign(scope.getAllVariables(), objectSpec.properties || {}, eventVars);
-    if(objectSpec.hasOwnProperty("texture")) {
-        uniforms.pointTexture = {value: new TextureLoader().load(objectSpec.texture), type: "sampler2D"}
-    }
-
-    // TODO: force lowercase
-    // TODO: actually handle geometry args
-    switch(objectSpec.geometry.type) {
-        case "box":
-            geometry = new BoxGeometry(objectSpec.geometry.args.scale);
-            break;
-        case "tetrahedron":
-            geometry = new TetrahedronGeometry(objectSpec.geometry.args.scale);
-            break;
-        case "dodecahedron":
-            geometry = new DodecahedronGeometry(objectSpec.geometry.args.scale);
-            break;
-        case "sphere":
-            geometry = new SphereGeometry(
-                objectSpec.geometry.args.scale,
-                objectSpec.geometry.args.widthSegments,
-                objectSpec.geometry.args.heightSegments
-            );
-            break;
-        case "fibSphere":
-            geometry = fibonacciSphere(
-                objectSpec.geometry.args.scale,
-                objectSpec.geometry.args.numPoints);
-            break;
-        default:
-            throw new Error(`Unsupported geometry ${objectSpec.geometry.type}`)
-    }
-
-
-    let uniformsStr = Object.entries(uniforms).map((item: any) => {
-        return `uniform ${item[1].type} ${item[0]};`
-    }).join("\n");
-    let vertexShader = buildVertexShader(uniformsStr, objectSpec);
-    let fragmentShader = buildFramentShader(uniformsStr, objectSpec);
-
-    let material = new ShaderMaterial({
-        uniforms: uniforms,
-        vertexShader: vertexShader,
-        fragmentShader: fragmentShader,
-        blending: AdditiveBlending,
-        depthTest: false,
-        transparent: true
-    });
-
-    // Create mesh
-    let mesh;
-    let objType;
-    switch(objectSpec.type) {
-        case "mesh":
-            mesh = new Mesh(geometry, material);
-            objType = Mesh;
-            break;
-        case "points":
-            mesh = new Points(geometry, material);
-            objType = Points;
-            break;
-    }
-
-    let result = new QuantaObject(mesh, geometry, material);
-    result.setEventVariables(eventVars);
-
-    return result;
 }

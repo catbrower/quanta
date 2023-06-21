@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import QuantaObject from './QuantaObject';
 import Scope from '../types/Scope';
-import { buildObject } from '../ObjectBuilder';
+import ObjectBuilder from '../ObjectBuilder';
 
 export default class Universe {
   private scene: THREE.Scene;
@@ -30,7 +30,8 @@ export default class Universe {
     this.scene = new THREE.Scene();
     this.objects = new Array<QuantaObject>();
     for(const objectSpec of universeParams.objects) {
-      const obj = buildObject(objectSpec, this.scope);
+      const objectBuilder = new ObjectBuilder(objectSpec, this.scope);
+      const obj = objectBuilder.build();
       this.objects.push(obj);
       this.scene.add(obj.getMesh());
     }
