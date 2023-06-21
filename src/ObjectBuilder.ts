@@ -215,8 +215,6 @@ export default class ObjectBuilder {
                 ${this.hasTexture ? "gl_FragColor = gl_FragColor * texture2D(pointTexture, gl_PointCoord);" : ""}
             }
         `;
-
-        console.log(result);
         
         return result;
     }

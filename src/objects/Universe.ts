@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import QuantaObject from './QuantaObject';
 import Scope from '../types/Scope';
 import ObjectBuilder from '../ObjectBuilder';
+import $ from "jquery";
 
 export default class Universe {
   private scene: THREE.Scene;
@@ -44,12 +45,13 @@ export default class Universe {
       1000
     );
     this.camera.position.z = 5;
-    this.renderer = new THREE.WebGLRenderer({antialias: true});
+    this.renderer = new THREE.WebGLRenderer({
+      canvas: document.getElementById("canvas") as HTMLCanvasElement,
+      antialias: true
+    });
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.raycaster = new THREE.Raycaster();
     this.pointer = new THREE.Vector2();
-
-    this.domElement.appendChild(this.renderer.domElement);
 
     // Events
     document.addEventListener("pointermove", (event) => { this.onPointerMove(event) });

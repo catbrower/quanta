@@ -4,13 +4,13 @@ import Universe from './objects/Universe';
 import Field from './fields/Field';
 
 class App extends React.Component {
-  private universe: Universe;
+  private universe: Universe | null = null;
 
   constructor(props: {}) {
     super(props);
-    
-    let fieldColor = new Field('colorShader');
+  }
 
+  createUniverse() {
     // Note: any obj properties should be specified like a uniform
     const prettyUniverseParams = {
       meta: {
@@ -42,10 +42,10 @@ class App extends React.Component {
             z: "time / 25.0"
           },
           color: {
-            r: "pow(sin(0.5*time + position.y * 0.5), 2.0)",
-            g: "pow(sin(0.7*time + position.x * 0.5), 2.0)",
-            b: "pow(sin(0.3*time + position.z * 0.5), 2.0)",
-            a: "0.02 * sqrt(pow(mouse_x, 2.0) + pow(mouse_y, 2.0))"
+            r: "pow(sin(0.5*time + position.y * 0.5), 2.0) * (1.0 - sqrt(pow(mouse_x, 2.0)))",
+            g: "pow(sin(0.7*time + position.x * 0.5), 2.0) * (1.0 - sqrt(pow(mouse_y, 2.0)))",
+            b: "pow(sin(0.3*time + position.z * 0.5), 2.0) * (1.0 - sqrt(pow(mouse_x, 2.0) + pow(mouse_y, 2.0)))",
+            a: "0.02 * (position.x + 1.75)"
           },
           // scale: "s + sin(1.1*time*t + position.x * f) * a, s + sin(1.2*time*t + position.y * f) * a, s+ sin(time*t + position.z * f) * a",
           pointSize: "100.0"
@@ -66,8 +66,8 @@ class App extends React.Component {
         {
           name: 'test object',
           id: 'sdfsdf',
-          type: "mesh",
-          // texture: "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/sprites/circle.png",
+          type: "points",
+          texture: "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/sprites/circle.png",
           properties: {},
           geometry: {
             type: 'box',
@@ -85,11 +85,11 @@ class App extends React.Component {
             // b: 'pow(sin(0.3*time + position.z), 2.0) + mouse_x',
             r: "1.0",
             g: "1.0",
-            b: "mouseOver",
+            b: "1.0",
             a: '1.0'
           },
           // scale: "s + sin(1.1*time*t + position.x * f) * a, s + sin(1.2*time*t + position.y * f) * a, s+ sin(time*t + position.z * f) * a",
-          // pointSize: "60.0",
+          pointSize: "60.0",
           events: {
             mouseOver: `color_b = 1.0;`
           }
@@ -99,15 +99,16 @@ class App extends React.Component {
     }
 
     this.universe = new Universe(prettyUniverseParams);
+    this.universe.begin();
   }
 
   componentDidMount(): void {
-      this.universe.begin();
+      this.createUniverse();
   }
 
   render() {
     return (
-      <></>
+      <><canvas id="canvas"></canvas></>
     )
   }
   
