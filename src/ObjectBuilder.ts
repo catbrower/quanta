@@ -3,6 +3,7 @@ import {
     BoxGeometry,
     BufferGeometry,
     DodecahedronGeometry,
+    InstancedMesh,
     Mesh,
     Points,
     ShaderMaterial,
@@ -100,6 +101,7 @@ export default class ObjectBuilder {
     private geometryType: string;
     private geomertyArgs: any;
     private meshType: string;
+    private meshArgs: any;
 
     // Flags
     private hasEvents: boolean = false;
@@ -119,7 +121,8 @@ export default class ObjectBuilder {
         // Required Properties
         this.geometryType = objectSpec.geometry.type;
         this.geomertyArgs = objectSpec.geometry.args;
-        this.meshType = objectSpec.type;
+        this.meshType = objectSpec.mesh.type;
+        this.meshArgs = objectSpec.mesh.args;
         this.scope = scope;
     }
 
@@ -339,6 +342,8 @@ export default class ObjectBuilder {
                 return new Mesh(geometry, material);
             case "points":
                 return new Points(geometry, material);
+            case "instance":
+                return new InstancedMesh(geometry, material, this.meshArgs.count);
             default:
                 throw new Error(`Unknown mesh type: ${this.meshType}`);
         }

@@ -49,11 +49,11 @@ export default class QuantaObject {
     public update(scope: Scope, raycaster: THREE.Raycaster): void {
         const intersects = raycaster.intersectObject(this.mesh);
         if(intersects.length > 0) {
-            if(this.material && this.material.uniforms.mouseOver) {
+            if(this.material && this.material.uniforms.hasOwnProperty("mouseOver")) {
                 this.material.uniforms.mouseOver.value = 1;
             }
         } else {
-            if(this.material && this.material.uniforms.mouseOver) {
+            if(this.material && this.material.uniforms.hasOwnProperty("mouseOver")) {
                 this.material.uniforms.mouseOver.value = 0;
             }
         }
