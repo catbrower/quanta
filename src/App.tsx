@@ -24,7 +24,10 @@ class App extends React.Component {
         {
           name: 'test object',
           id: 'sdfsdf',
-          type: "points",
+          mesh: {
+            type: "points",
+            args: {}
+          },
           texture: "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/sprites/circle.png",
           properties: {
             "f": {type: "float", value: 10.0},
@@ -67,41 +70,38 @@ class App extends React.Component {
           name: 'test object',
           id: 'sdfsdf',
           mesh: {
-            type: "mesh",
-            args: {}
+            type: "instance",
+            args: {"count": 10}
           },
           // texture: "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/sprites/circle.png",
-          properties: {},
-          // attributes: {test: },
-          geometry: {
-            type: 'box',
-            args: {"scale": 2.5, numPoints: 10}
+          properties: {
+            f: {value: 0.25, type: "float"},
+            overIncrease: {value: 0.75, type: "float"}
           },
-          // translate: "mouse_x, mouse_y, 1.0",
+          geometry: {
+            type: 'sphere',
+            args: {"scale": 0.5, numPoints: 10}
+          },
           rotation: {
-            x: "time / 10.0",
-            y: "time / 10.0",
-            z: "time / 10.0"
+            x: "time / 2.0",
+            y: "time / 3.0",
+            z: "time / 4.0"
           },
           color: {
-            r: 'pow(sin(0.5*time + position.y), 2.0)',
-            g: 'pow(sin(0.7*time + position.x), 2.0)',
-            b: 'pow(sin(0.3*time + position.z), 2.0)',
-            // r: `1.0`,
-            // g: `1.0`,
-            // b: "1.0",
-            a: '1.0'
+            r: "position.x",
+            g: "0.0",
+            b: "position.y",
+            a: "0.1"
           },
-          // scale: "s + sin(1.1*time*t + position.x * f) * a, s + sin(1.2*time*t + position.y * f) * a, s+ sin(time*t + position.z * f) * a",
-          // pointSize: "60.0",
-          events: {
-            mouseOver: `
-              color_r = color_r + 0.5;
-              color_g = color_g + 0.5;
-              color_b = color_b + 0.5;
+          pointSize: "1.0",
+          // events: {
+          //   mouseOver: `
+          //     color_r = color_r + overIncrease;
+          //     color_g = color_g + overIncrease;
+          //     color_b = color_b + 0.5;
 
-            `
-          }
+          //   `
+          // }
         }
       ],
       fields: []

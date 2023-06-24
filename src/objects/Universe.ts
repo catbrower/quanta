@@ -44,7 +44,7 @@ export default class Universe {
       1,
       1000
     );
-    this.camera.position.z = 5;
+    this.camera.position.z = 10;
     this.renderer = new THREE.WebGLRenderer({
       canvas: document.getElementById("canvas") as HTMLCanvasElement,
       antialias: true

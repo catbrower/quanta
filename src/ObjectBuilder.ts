@@ -5,6 +5,7 @@ import {
     DodecahedronGeometry,
     InstancedMesh,
     Mesh,
+    MeshBasicMaterial,
     Points,
     ShaderMaterial,
     SphereGeometry,
@@ -12,6 +13,7 @@ import {
     TextureLoader } from "three";
 import QuantaObject from './objects/QuantaObject';
 import { fibonacciSphere } from "./Geometries";
+import { box } from './InstanceGeometries';
 
 export default class ObjectBuilder {
     // String constants
@@ -73,7 +75,7 @@ export default class ObjectBuilder {
 
     private scaleMatricies = `
         // Scale
-        mat4 sPos = mat4(
+        mat4 ${ObjectBuilder.SCALE_MATRIX} = mat4(
             vec4(${ObjectBuilder.SCALE_X}, 0.0, 0.0, 0.0), 
             vec4(0.0, ${ObjectBuilder.SCALE_Y}, 0.0, 0.0), 
             vec4(0.0, 0.0, ${ObjectBuilder.SCALE_Z}, 0.0), 
@@ -95,6 +97,8 @@ export default class ObjectBuilder {
     private depthTest = false;
     private transparent = true;
     private rotation = {x: "1.0", y: "1.0", z: "1.0"};
+    private translation = {x: "0.0", y: "0.0", z: "0.0"};
+    private scale = {x: "0.0", y: "0.0", z: "0.0"};
     private color = {r: "1.0", g: "1.0", b: "1.0", a: "1.0"};
 
     // Required Properties
@@ -146,7 +150,7 @@ export default class ObjectBuilder {
     private determineOptionalProperties() {
         // Set flags
         this.hasRotation = this.objectSpec.hasOwnProperty("rotation");
-        this.hasTranslation = this.objectSpec.hasOwnProperty("translation");
+        this.hasTranslation = this.objectSpec.hasOwnProperty("translate");
         this.hasScale = this.objectSpec.hasOwnProperty("scale");
         this.hasTransformation = this.hasRotation || this.hasTranslation || this.hasScale;
         this.hasColor = this.objectSpec.hasOwnProperty("color");
@@ -159,6 +163,8 @@ export default class ObjectBuilder {
         // Properties
         if(this.hasColor) { this.color = this.objectSpec.color }
         if(this.hasRotation) { this.rotation = this.objectSpec.rotation }
+        if(this.hasTranslation) { this.translation = this.objectSpec.translate }
+        if(this.hasScale) { this.scale = this.objectSpec.scale }
     }
 
     private buildUniforms(): any {
@@ -227,7 +233,10 @@ export default class ObjectBuilder {
             return `uniform ${item[1].type} ${item[0]};`
         }).join("\n");
 
-        let vPosition: string[] = ["projectionMatrix", "modelViewMatrix"];
+        // TODO instanceMatrixIsRequired, must use a flag to detect instancing
+        // TODO apparently modelViewMatrix isn't set for instancing, instead use viewMatrix * modelMatrix
+        let vPosition: string[] = ["projectionMatrix", "modelViewMatrix", "instanceMatrix"];
+        // let vPosition: string[] = ["projectionMatrix", "instanceMatrix"];
         if(this.hasRotation) {
             vPosition.push(ObjectBuilder.ROTATION_MATRIX_X, ObjectBuilder.ROTATION_MATRIX_Y, ObjectBuilder.ROTATION_MATRIX_Z);
         }
@@ -242,10 +251,6 @@ export default class ObjectBuilder {
 
         vPosition.push("vec4(position, 1.0)");
 
-        // let rotations = this.hasRotation ? this.objectSpec.rotation.split(",") : null;
-        let translations = this.hasTranslation ? this.objectSpec.translation.split(",") : null;
-        let scales = this.hasScale ? this.objectSpec.scale.split(",") : null;
-
         let result = `
             ${this.commonHeader}
             varying vec4 modelViewPosition;
@@ -255,7 +260,6 @@ export default class ObjectBuilder {
             void main() {
                 vUv = position;
                 
-
                 ${this.hasRotation ? `
                     float rotation_x = ${this.rotation.x};
                     float rotation_y = ${this.rotation.y};
@@ -263,15 +267,15 @@ export default class ObjectBuilder {
                 `: ""}
 
                 ${this.hasTranslation ? `
-                    float translation_x = ${translations[0]};
-                    float translation_y = ${translations[1]};
-                    float translation_z = ${translations[2]};
+                    float translation_x = ${this.translation.x};
+                    float translation_y = ${this.translation.y};
+                    float translation_z = ${this.translation.z};
                 `: ""}
 
                 ${this.hasScale ? `
-                    float scale_x = ${scales[0]};
-                    float scale_y = ${scales[1]};
-                    float scale_z = ${scales[2]};
+                    float scale_x = ${this.scale.x};
+                    float scale_y = ${this.scale.y};
+                    float scale_z = ${this.scale.z};
                 `: ""}
 
                 ${this.buildTransformationMatricies()}
@@ -323,7 +327,7 @@ export default class ObjectBuilder {
         return geometry;
     }
 
-    private buildMaterial(): THREE.ShaderMaterial {
+    private buildMaterial(): any {
         let material: ShaderMaterial = new ShaderMaterial({
             uniforms: this.uniforms,
             vertexShader: this.buildVertexShader(),
@@ -343,7 +347,9 @@ export default class ObjectBuilder {
             case "points":
                 return new Points(geometry, material);
             case "instance":
-                return new InstancedMesh(geometry, material, this.meshArgs.count);
+                let result = new InstancedMesh(geometry, material, 1000);
+                box(result, 10, 10, 10);
+                return result;
             default:
                 throw new Error(`Unknown mesh type: ${this.meshType}`);
         }

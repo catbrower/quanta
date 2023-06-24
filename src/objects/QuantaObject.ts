@@ -48,32 +48,15 @@ export default class QuantaObject {
 
     public update(scope: Scope, raycaster: THREE.Raycaster): void {
         const intersects = raycaster.intersectObject(this.mesh);
-        if(intersects.length > 0) {
-            if(this.material && this.material.uniforms.hasOwnProperty("mouseOver")) {
-                this.material.uniforms.mouseOver.value = 1;
-            }
-        } else {
-            if(this.material && this.material.uniforms.hasOwnProperty("mouseOver")) {
-                this.material.uniforms.mouseOver.value = 0;
-            }
-        }
-        // this.material.uniforms.time.value = scope.getVariable("time");
-        // for(const [key, value] of Object.entries(this.functions)) {
-        //     let delta = value.evaluate(scope);
-            
-        //     // TODO there's got to be a better way!
-        //     switch(key) {
-        //         case "rotation":
-        //             this.mesh.rotation.setFromVector3(delta);
-        //             break;
-        //         case "position":
-        //             this.mesh.position.set(delta.x, delta.y, delta.z);
-        //             break;
-        //         // case "color":
-        //         //     this.material.color.setFromVector3(delta);
-        //         //     break;
+        // if(intersects.length > 0) {
+        //     if(this.material !== null && this.material.hasOwnProperty("uniforms") && this.material.uniforms.hasOwnProperty("mouseOver")) {
+        //         this.material.uniforms.mouseOver.value = 1;
         //     }
-        // };
+        // } else {
+        //     if(this.material !== null && this.material.hasOwnProperty("uniforms") && this.material.uniforms.hasOwnProperty("mouseOver")) {
+        //         this.material.uniforms.mouseOver.value = 0;
+        //     }
+        // }
     }
 
     public getMesh(): any {
