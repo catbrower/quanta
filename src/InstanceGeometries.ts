@@ -18,5 +18,6 @@ export function box(mesh: InstancedMesh, x: number, y: number, z: number): Matri
         }
     }
 
+    // mesh.addAtt
     return matrix;
 }

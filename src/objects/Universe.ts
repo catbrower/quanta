@@ -67,6 +67,8 @@ export default class Universe {
   public begin() {
     this.startTime = new Date().getTime()
     this.animationLoop();
+
+    // console.log(this.objects[0].a)
   }
 
   private updateScope() {

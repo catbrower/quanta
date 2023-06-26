@@ -59,6 +59,10 @@ export default class QuantaObject {
         // }
     }
 
+    public getMaterial(): THREE.ShaderMaterial | null {
+        return this.material;
+    }
+
     public getMesh(): any {
         return this.mesh;
     }

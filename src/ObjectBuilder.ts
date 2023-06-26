@@ -3,6 +3,8 @@ import {
     BoxGeometry,
     BufferGeometry,
     DodecahedronGeometry,
+    InstancedBufferAttribute,
+    InstancedBufferGeometry,
     InstancedMesh,
     Mesh,
     MeshBasicMaterial,
@@ -10,7 +12,8 @@ import {
     ShaderMaterial,
     SphereGeometry,
     TetrahedronGeometry,
-    TextureLoader } from "three";
+    TextureLoader, 
+    Vector3} from "three";
 import QuantaObject from './objects/QuantaObject';
 import { fibonacciSphere } from "./Geometries";
 import { box } from './InstanceGeometries';
@@ -206,6 +209,7 @@ export default class ObjectBuilder {
             ${this.commonHeader}
             ${uniformsStr}
             
+            varying vec3 vInstancePosition;
             void main() {
                 vec3 position = vUv;
                 float color_r = ${this.color.r};
@@ -254,11 +258,14 @@ export default class ObjectBuilder {
         let result = `
             ${this.commonHeader}
             varying vec4 modelViewPosition;
+            varying vec4 instancePosition;
             ${this.hasTransformation ? "varying mat4 vPosition;" : ""}
             ${uniformsStr}
 
+            varying vec3 vInstancePosition;
             void main() {
                 vUv = position;
+                vec3 vInstancePosition = (instanceMatrix * vec4(position.x, position.y, position.z, 1.0)).xyz;
                 
                 ${this.hasRotation ? `
                     float rotation_x = ${this.rotation.x};
@@ -337,6 +344,10 @@ export default class ObjectBuilder {
             transparent: this.transparent
         });
 
+        if(this.objectSpec.hasOwnProperty("material") && this.objectSpec.material.hasOwnProperty("onBeforeCompile")) {
+            material.onBeforeCompile = this.objectSpec.material.onBeforeCompile;
+        }
+
         return material;
     }
 
@@ -347,6 +358,12 @@ export default class ObjectBuilder {
             case "points":
                 return new Points(geometry, material);
             case "instance":
+                // let x = geometry.attributes.position
+                // geometry = new InstancedBufferGeometry();
+                // geometry.setAttribute("position", x);
+                // geometry.setAttribute("testAttr", new InstancedBufferAttribute(new Float32Array[
+                //     1.0, 1.0, 1.0
+                // ]), 3);
                 let result = new InstancedMesh(geometry, material, 1000);
                 box(result, 10, 10, 10);
                 return result;

@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css';
 import Universe from './objects/Universe';
 import Field from './fields/Field';
+import GUI from './gui/GUI';
 
 class App extends React.Component {
   private universe: Universe | null = null;
@@ -80,18 +81,18 @@ class App extends React.Component {
           },
           geometry: {
             type: 'sphere',
-            args: {"scale": 0.5, numPoints: 10}
-          },
-          rotation: {
-            x: "time / 2.0",
-            y: "time / 3.0",
-            z: "time / 4.0"
+            args: {"scale": 0.25, numPoints: 10}
           },
           color: {
             r: "position.x",
-            g: "0.0",
-            b: "position.y",
-            a: "0.1"
+            g: "position.x",
+            b: "position.x",
+            a: "1.0"
+          },
+          scale: {
+            x: "0.5",
+            y: "0.5",
+            z: "0.5"
           },
           pointSize: "1.0",
           // events: {
@@ -101,6 +102,12 @@ class App extends React.Component {
           //     color_b = color_b + 0.5;
 
           //   `
+          // }
+
+          // material: {
+          //   onBeforeCompile: function(shader: any) {
+          //     console.log(shader.fragmentShader);
+          //   }
           // }
         }
       ],
@@ -117,7 +124,10 @@ class App extends React.Component {
 
   render() {
     return (
-      <><canvas id="canvas"></canvas></>
+      <>
+        <GUI />
+        <canvas id="canvas"></canvas>
+      </>
     )
   }
   
