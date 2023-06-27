@@ -3,6 +3,7 @@ import {
     BoxGeometry,
     BufferGeometry,
     DodecahedronGeometry,
+    IUniform,
     InstancedBufferAttribute,
     InstancedBufferGeometry,
     InstancedMesh,
@@ -17,6 +18,8 @@ import {
 import QuantaObject from './objects/QuantaObject';
 import { fibonacciSphere } from "./Geometries";
 import { box } from './InstanceGeometries';
+import { IProgramUniforms } from "./Program";
+import { uniformsToString } from "./Common";
 
 export default class ObjectBuilder {
     // String constants
@@ -88,7 +91,7 @@ export default class ObjectBuilder {
 
     private quantaObject: QuantaObject;
     private objectSpec: any;
-    private uniforms: any;
+    private uniforms: IProgramUniforms;
     private scope: any;
 
     private commonHeader: string = `
@@ -106,7 +109,7 @@ export default class ObjectBuilder {
 
     // Required Properties
     private geometryType: string;
-    private geomertyArgs: any;
+    private geomertyArgs: IProgramUniforms;
     private meshType: string;
     private meshArgs: any;
 
@@ -233,9 +236,7 @@ export default class ObjectBuilder {
     }
 
     private buildVertexShader(): string {
-        let uniformsStr = Object.entries(this.uniforms).map((item: any) => {
-            return `uniform ${item[1].type} ${item[0]};`
-        }).join("\n");
+        let uniformsStr = uniformsToString(this.uniforms);
 
         // TODO instanceMatrixIsRequired, must use a flag to detect instancing
         // TODO apparently modelViewMatrix isn't set for instancing, instead use viewMatrix * modelMatrix
@@ -304,7 +305,9 @@ export default class ObjectBuilder {
         let geometry: BufferGeometry;
         // TODO: force lowercase
         // TODO: actually handle geometry args
-        let scale = this.geomertyArgs.scale;
+        let geomertyArgs: IProgramUniforms = this.geomertyArgs;
+        let scale: number = parseFloat(geomertyArgs.scale.value);
+        
         switch(this.geometryType) {
             case "box":
                 geometry = new BoxGeometry(scale, scale, scale);
@@ -318,14 +321,14 @@ export default class ObjectBuilder {
             case "sphere":
                 geometry = new SphereGeometry(
                     scale,
-                    this.geomertyArgs.widthSegments,
-                    this.geomertyArgs.heightSegments
+                    parseFloat(geomertyArgs.widthSegments.value),
+                    parseFloat(geomertyArgs.heightSegments.value)
                 );
                 break;
             case "fibSphere":
                 geometry = fibonacciSphere(
                     scale,
-                    this.geomertyArgs.numPoints);
+                    parseFloat(geomertyArgs.numPoints.value));
                 break;
             default:
                 throw new Error(`Unsupported geometry ${this.geometryType}`)

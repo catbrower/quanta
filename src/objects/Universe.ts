@@ -3,6 +3,7 @@ import QuantaObject from './QuantaObject';
 import Scope from '../types/Scope';
 import ObjectBuilder from '../ObjectBuilder';
 import $ from "jquery";
+import { Program } from '../Program';
 
 export default class Universe {
   private scene: THREE.Scene;
@@ -15,7 +16,7 @@ export default class Universe {
   private raycaster: THREE.Raycaster;
   private pointer: THREE.Vector2;
 
-  constructor(universeParams: any) {
+  constructor(universeParams: Program) {
     this.domElement = document.evaluate(universeParams.meta.element, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
     if(this.domElement === null) {
       throw new Error("domElement cannot be null");

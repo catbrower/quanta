@@ -1,37 +1,8 @@
-const universeParams = {
-    meta: {
-        element: "/html/body"
-    },
-    globals: [
-        {name: 'time'},
-        {name: 'seed'}
-    ],
-    objects: [
-        {
-        name: 'test object',
-        id: 'sdfsdf',
-        mesh: {
-            type: "instance",
-            args: {"count": 10}
-        },
-        // texture: "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/sprites/circle.png",
-        properties: {
-            f: {value: 0.25, type: "float"},
-            overIncrease: {value: 0.75, type: "float"}
-        },
-        geometry: {
-            type: 'sphere',
-            args: {"scale": 0.25, numPoints: 10}
-        },
-        }
-    ],
-    fields: []
-}
+import { IUniform } from "three"
 
-export interface IProgramArg {
-    name: string,
-    value: string
-}
+export type IProgramUniform = { type: string, value: string }
+
+export type IProgramUniforms = { [uniform: string]: IProgramUniform };
 
 export interface IProgramMeta {
     element: string
@@ -43,12 +14,12 @@ export interface IProgramGlobal {
 
 export interface IProgramMesh {
     type: string,
-    args: IProgramArg[]
+    args: IProgramUniforms
 }
 
 export interface IProgramGeometry {
     type: string,
-    args: IProgramArg[]
+    args: IProgramUniforms
 }
 
 export interface IProgramColor {
@@ -76,7 +47,7 @@ export interface ObjectSpec {
     id: string,
     mesh: IProgramMesh,
     geometry: IProgramGeometry,
-    properties: IProgramArg[],
+    properties: IProgramUniforms,
     color?: IProgramColor,
     rotation?: IProgramEuler,
     translation?: IProgramEuler,
