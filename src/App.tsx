@@ -1,12 +1,13 @@
 import React from 'react';
+import { configureStore } from '@reduxjs/toolkit';
 import './App.css';
 import Universe from './objects/Universe';
-import Field from './fields/Field';
 import GUI from './gui/GUI';
 import { Program } from './Program';
 
 class App extends React.Component {
   private universe: Universe | null = null;
+  private store: any;
 
   constructor(props: {}) {
     super(props);
@@ -26,13 +27,14 @@ class App extends React.Component {
           name: 'test object',
           id: 'sdfsdf',
           mesh: {
-            type: "instance",
+            type: "mesh",
             args: {count: {type: "float", value: "10"}}
           },
           // texture: "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/sprites/circle.png",
           properties: {
-            f: {type: "float", value: "0.25"},
-            overIncrease: {type: "float", value: "0.75"}
+            f: {type: "float", value: "20"},
+            b: {type: "float", value: "0.5"}
+            // overIncrease: {type: "float", value: "0.75"}
           },
           geometry: {
             type: 'box',
@@ -42,15 +44,20 @@ class App extends React.Component {
             }
           },
           color: {
-            r: "position.x",
-            g: "position.x",
-            b: "position.x",
+            r: "sin(time * b + position.x * f)",
+            g: "sin(time * b + position.y * f)",
+            b: "sin(time * b + position.z * f)",
             a: "1.0"
           },
+          rotation: {
+            x: "time / 10.0",
+            y: "time / 12.0",
+            z: "time / 11.0"
+          },
           scale: {
-            x: "0.5",
-            y: "0.5",
-            z: "0.5"
+            x: "15.5",
+            y: "15.5",
+            z: "15.5"
           },
           pointSize: "1.0",
           // events: {

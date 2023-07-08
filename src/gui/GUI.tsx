@@ -1,17 +1,11 @@
-import React from 'react';
-import { Drawer } from '@mui/material';
-import Sidebar from './Sidebar';
+import AppBarBottom from './AppBarBottom';
+import WindowsContainer from './WindowsContainer';
 
-
-
-export default class GUI extends React.Component {
-    
-
-    render() {
-        return (
-            <>
-                <Sidebar />
-            </>
-        )
-    }
+export default function GUI() {
+    return (
+        <>
+            <AppBarBottom />
+            <WindowsContainer />
+        </>
+    )
 }

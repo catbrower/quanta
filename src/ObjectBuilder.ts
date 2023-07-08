@@ -240,8 +240,11 @@ export default class ObjectBuilder {
 
         // TODO instanceMatrixIsRequired, must use a flag to detect instancing
         // TODO apparently modelViewMatrix isn't set for instancing, instead use viewMatrix * modelMatrix
-        let vPosition: string[] = ["projectionMatrix", "modelViewMatrix", "instanceMatrix"];
-        // let vPosition: string[] = ["projectionMatrix", "instanceMatrix"];
+        let vPosition: string[] = ["projectionMatrix", "modelViewMatrix"];
+        if(this.meshType === "instance") {
+            vPosition.push( "instanceMatrix");
+        }
+        
         if(this.hasRotation) {
             vPosition.push(ObjectBuilder.ROTATION_MATRIX_X, ObjectBuilder.ROTATION_MATRIX_Y, ObjectBuilder.ROTATION_MATRIX_Z);
         }
@@ -259,14 +262,14 @@ export default class ObjectBuilder {
         let result = `
             ${this.commonHeader}
             varying vec4 modelViewPosition;
-            varying vec4 instancePosition;
+            // varying vec4 instancePosition;
             ${this.hasTransformation ? "varying mat4 vPosition;" : ""}
             ${uniformsStr}
 
             varying vec3 vInstancePosition;
             void main() {
                 vUv = position;
-                vec3 vInstancePosition = (instanceMatrix * vec4(position.x, position.y, position.z, 1.0)).xyz;
+                // vec3 vInstancePosition = (instanceMatrix * vec4(position.x, position.y, position.z, 1.0)).xyz;
                 
                 ${this.hasRotation ? `
                     float rotation_x = ${this.rotation.x};
