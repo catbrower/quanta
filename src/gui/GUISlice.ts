@@ -3,7 +3,7 @@ import { RootState } from "../Store";
 
 interface GUIState {
     isMenuOpen: boolean,
-    windows: []
+    windows: any[]
 }
 
 const initialState: GUIState = {
@@ -17,11 +17,11 @@ export const guiSlice = createSlice({
     reducers: {
         openMenu: (state) => {state.isMenuOpen = true},
         closeMenu: (state) => {state.isMenuOpen = false},
-        openWindow: (state) => {},
-        closeWindow: (state) => {}
+        openObjectWindow: (state, action) => {state.windows.push(action.payload)},
+        closeObjectWindow: (state, action) => {}
     }
 });
 
-export const { openMenu, closeMenu, openWindow, closeWindow } = guiSlice.actions;
+export const { openMenu, closeMenu, openObjectWindow, closeObjectWindow } = guiSlice.actions;
 // export const getWindows = (state: RootState) => state.gui.windows;
 export default guiSlice.reducer;

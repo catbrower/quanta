@@ -9,7 +9,7 @@ const initialState: IProgram = {
         {name: 'seed'}
     ],
     objects: [{
-        name: 'test object',
+        name: 'test cube',
         id: 'sdfsdf',
         mesh: {
           type: "mesh",

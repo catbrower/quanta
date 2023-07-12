@@ -8,6 +8,7 @@ import { Collapse, Container } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
 import { useSpring, animated } from '@react-spring/web';
 import { useAppDispatch, useAppSelector } from "../Hooks";
+import { openObjectWindow } from "./GUISlice";
 
 function TransitionComponent(props: TransitionProps) {
     const style = useSpring({
@@ -42,7 +43,7 @@ export default function ProgramEditor() {
               >
               <TreeItem nodeId="1" label="Objects">
                   {objects.map((object) => (
-                      <TreeItem nodeId="0" label={object.name} />
+                      <TreeItem nodeId="0" label={object.name} onDoubleClick={() => dispatch(openObjectWindow(object))}/>
                   ))}
               </TreeItem>
               <TreeItem nodeId="5" label="Scripts">

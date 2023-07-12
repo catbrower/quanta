@@ -29,7 +29,7 @@ export default class Window extends React.Component<IProps, IState> {
         super(props);
 
         this.state = {
-            isOpen: false
+            isOpen: true
         }
     }
 
@@ -38,42 +38,45 @@ export default class Window extends React.Component<IProps, IState> {
     }
 
     handleClickOpen() {
-      this.setOpen(true);
+      // this.setOpen(true);
     }
   
-    handleClose() {
+    handleClose(event: any, reason: any) {
+      if(reason && reason == "backdropClick") {
+        return;
+      }
+
       this.setOpen(false);
     }
   
     render() {
-        return (
-            <div>
-              <Button variant="outlined" onClick={this.handleClickOpen}>
-                Open draggable dialog
+      return (
+        <div>
+          <Dialog
+            open={this.state.isOpen}
+            onClose={this.handleClose}
+            PaperComponent={PaperComponent}
+            aria-labelledby="draggable-dialog-title"
+            hideBackdrop={true}
+            disableEnforceFocus={true}
+            
+          >
+            <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
+              Subscribe
+            </DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                To subscribe to this website, please enter your email address here. We
+                will send updates occasionally.
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button autoFocus onClick={() => {this.handleClose(null, null)}}>
+                Close
               </Button>
-              <Dialog
-                open={this.state.isOpen}
-                onClose={this.handleClose}
-                PaperComponent={PaperComponent}
-                aria-labelledby="draggable-dialog-title"
-              >
-                <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
-                  Subscribe
-                </DialogTitle>
-                <DialogContent>
-                  <DialogContentText>
-                    To subscribe to this website, please enter your email address here. We
-                    will send updates occasionally.
-                  </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                  <Button autoFocus onClick={this.handleClose}>
-                    Cancel
-                  </Button>
-                  <Button onClick={this.handleClose}>Subscribe</Button>
-                </DialogActions>
-              </Dialog>
-            </div>
-          );
+            </DialogActions>
+          </Dialog>
+        </div>
+      );
     }
   }

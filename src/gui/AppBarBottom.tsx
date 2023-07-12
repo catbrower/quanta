@@ -69,47 +69,51 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 export default function AppBarBottom() {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector(state => state.gui.isMenuOpen);
+  const windows = useAppSelector(state => state.gui.windows);
 
   return (
-      <Box sx={{ display: 'flex' }}>
-        <CssBaseline />
-        <AppBar position="fixed" open={isOpen} sx={{top: "auto", bottom: 0}}>
-            <Toolbar>
-              <IconButton
-                  color="inherit"
-                  aria-label="open drawer"
-                  onClick={() => {dispatch(openMenu())}}
-                  edge="start"
-                  // sx={{ mr: 2, ...(isOpen && { display: 'none' }) }}
-              >
-                <MenuIcon />
-            </IconButton>
-            </Toolbar>
-        </AppBar>
-        <Drawer
-            sx={{
-            width: drawerWidth,
-            flexShrink: 0,
-            '& .MuiDrawer-paper': {
-                width: drawerWidth,
-                boxSizing: 'border-box',
-            },
-            }}
-            variant="persistent"
-            anchor="left"
-            open={isOpen}
-        >
-            <DrawerHeader>
-                Program
-                <IconButton onClick={() => dispatch(closeMenu())}>
-                    <ChevronLeftIcon />
-                </IconButton>
-            </DrawerHeader>
-            
-            <Divider />
+    <Box sx={{ display: 'flex' }}>
+      <CssBaseline />
+      <AppBar position="fixed" open={isOpen} sx={{top: "auto", bottom: 0}}>
+        <Toolbar>
+          <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onClick={() => {dispatch(openMenu())}}
+              edge="start"
+              // sx={{ mr: 2, ...(isOpen && { display: 'none' }) }}
+          >
+            <MenuIcon />
+        </IconButton>
 
-            <ProgramEditor />
-        </Drawer>
+        {windows.map((window) => (<div>Window</div>))}
+
+        </Toolbar>
+      </AppBar>
+      <Drawer
+        sx={{
+        width: drawerWidth,
+        flexShrink: 0,
+        '& .MuiDrawer-paper': {
+            width: drawerWidth,
+            boxSizing: 'border-box',
+        },
+        }}
+        variant="persistent"
+        anchor="left"
+        open={isOpen}
+      >
+        <DrawerHeader>
+            Program
+            <IconButton onClick={() => dispatch(closeMenu())}>
+                <ChevronLeftIcon />
+            </IconButton>
+        </DrawerHeader>
+        
+        <Divider />
+
+        <ProgramEditor />
+      </Drawer>
     </Box>
   )
 }
