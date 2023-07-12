@@ -1,7 +1,7 @@
 import React from "react";
 import { Accordion, AccordionDetails, AccordionSummary, Card, Stack, TextField, Typography } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { ObjectSpec } from "../../Program";
+import { ObjectSpec } from "../../code/Program";
 import EditableEuler from "./EditableEuler";
 
 interface IProps {

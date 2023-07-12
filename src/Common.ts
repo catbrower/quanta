@@ -1,4 +1,4 @@
-import { IProgramUniform, IProgramUniforms } from "./Program";
+import { IProgramUniform, IProgramUniforms } from "./code/Program";
 
 export function uniformsToString(uniforms: IProgramUniforms): string {
     return Object.entries(uniforms).map((pair: any) => {

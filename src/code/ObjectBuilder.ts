@@ -3,23 +3,19 @@ import {
     BoxGeometry,
     BufferGeometry,
     DodecahedronGeometry,
-    IUniform,
-    InstancedBufferAttribute,
-    InstancedBufferGeometry,
     InstancedMesh,
     Mesh,
-    MeshBasicMaterial,
     Points,
     ShaderMaterial,
     SphereGeometry,
     TetrahedronGeometry,
     TextureLoader, 
-    Vector3} from "three";
-import QuantaObject from './objects/QuantaObject';
-import { fibonacciSphere } from "./Geometries";
+} from "three";
+import QuantaObject from '../objects/QuantaObject';
 import { box } from './InstanceGeometries';
 import { IProgramUniforms } from "./Program";
-import { uniformsToString } from "./Common";
+import { uniformsToString } from "../Common";
+import { fibonacciSphere } from "./Geometries";
 
 export default class ObjectBuilder {
     // String constants

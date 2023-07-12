@@ -10,7 +10,7 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import { ObjectSpec } from '../Program';
+import { ObjectSpec } from '../code/Program';
 import ProgramEditor from './ProgramEditor';
 import { useAppDispatch, useAppSelector } from '../Hooks';
 import { openMenu, closeMenu } from './GUISlice';
@@ -108,7 +108,7 @@ export default function AppBarBottom() {
             
             <Divider />
 
-            {/* <ProgramEditor code={this.state.code} /> */}
+            <ProgramEditor />
         </Drawer>
     </Box>
   )

@@ -1,5 +1,5 @@
 import React from "react";
-import { IProgramEuler } from "../../Program";
+import { IProgramEuler } from "../../code/Program";
 import { Typography } from "@mui/material";
 
 interface IProps {

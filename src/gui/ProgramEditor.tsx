@@ -1,5 +1,5 @@
 import React from "react";
-import { ObjectSpec } from "../Program";
+import { ObjectSpec } from "../code/Program";
 import TreeView from "@mui/lab/TreeView";
 import TreeItem from "@mui/lab/TreeItem";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -7,14 +7,7 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Collapse, Container } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
 import { useSpring, animated } from '@react-spring/web';
-
-interface IProps {
-    code: ObjectSpec[]
-};
-
-interface IState {
-    objects: ObjectSpec[]
-};
+import { useAppDispatch, useAppSelector } from "../Hooks";
 
 function TransitionComponent(props: TransitionProps) {
     const style = useSpring({
@@ -35,33 +28,26 @@ function TransitionComponent(props: TransitionProps) {
     );
   }
 
-export default class ProgramEditor extends React.Component<IProps, IState> {
-    constructor(props: IProps) {
-        super(props);
+export default function ProgramEditor() {
+  const dispatch = useAppDispatch();
+  const objects = useAppSelector(state => state.code.objects);
 
-        this.state = {
-            objects: props.code
-        }
-    }
-
-    render() {
-        return (
-            <Container sx={{py: "15px"}}>
-                <TreeView
-                    aria-label="file system navigator"
-                    defaultCollapseIcon={<ExpandMoreIcon />}
-                    defaultExpandIcon={<ChevronRightIcon />}
-                    sx={{ height: 240, flexGrow: 1, maxWidth: 400, overflowY: 'auto' }}
-                    >
-                    <TreeItem nodeId="1" label="Objects">
-                        {this.state.objects.map((object) => (
-                            <TreeItem nodeId="0" label={object.name} />
-                        ))}
-                    </TreeItem>
-                    <TreeItem nodeId="5" label="Scripts">
-                    </TreeItem>
-                </TreeView>
-            </Container>
-        )
-    }
+  return (
+      <Container sx={{py: "15px"}}>
+          <TreeView
+              aria-label="file system navigator"
+              defaultCollapseIcon={<ExpandMoreIcon />}
+              defaultExpandIcon={<ChevronRightIcon />}
+              sx={{ height: 240, flexGrow: 1, maxWidth: 400, overflowY: 'auto' }}
+              >
+              <TreeItem nodeId="1" label="Objects">
+                  {objects.map((object) => (
+                      <TreeItem nodeId="0" label={object.name} />
+                  ))}
+              </TreeItem>
+              <TreeItem nodeId="5" label="Scripts">
+              </TreeItem>
+          </TreeView>
+      </Container>
+  )
 }

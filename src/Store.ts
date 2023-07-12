@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import GUISlice from "./gui/GUISlice";
+import CodeSlice from "./code/CodeSlice";
 
 export const store = configureStore({
     reducer: {
-        gui: GUISlice
+        gui: GUISlice,
+        code: CodeSlice
     }
 });
 

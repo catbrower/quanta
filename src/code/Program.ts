@@ -1,12 +1,12 @@
 import { IUniform } from "three"
 
+export type IProgramMeta = {
+    element: string
+}
+
 export type IProgramUniform = { type: string, value: string }
 
 export type IProgramUniforms = { [uniform: string]: IProgramUniform };
-
-export interface IProgramMeta {
-    element: string
-}
 
 export interface IProgramGlobal {
     name: string
@@ -56,7 +56,7 @@ export interface ObjectSpec {
     pointSize?: string
 }
 
-export interface Program {
+export interface IProgram {
     meta: IProgramMeta,
     globals: IProgramGlobal[],
     objects: ObjectSpec[]

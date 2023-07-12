@@ -1,9 +1,9 @@
 import * as THREE from 'three';
 import QuantaObject from './QuantaObject';
 import Scope from '../types/Scope';
-import ObjectBuilder from '../ObjectBuilder';
+import ObjectBuilder from '../code/ObjectBuilder';
 import $ from "jquery";
-import { Program } from '../Program';
+import { IProgram } from '../code/Program';
 
 export default class Universe {
   private scene: THREE.Scene;
@@ -16,7 +16,7 @@ export default class Universe {
   private raycaster: THREE.Raycaster;
   private pointer: THREE.Vector2;
 
-  constructor(universeParams: Program) {
+  constructor(universeParams: IProgram) {
     this.domElement = document.evaluate(universeParams.meta.element, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
     if(this.domElement === null) {
       throw new Error("domElement cannot be null");
