@@ -1,5 +1,3 @@
-import React from "react";
-import { ObjectSpec } from "../code/Program";
 import TreeView from "@mui/lab/TreeView";
 import TreeItem from "@mui/lab/TreeItem";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';

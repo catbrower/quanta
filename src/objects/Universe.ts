@@ -25,6 +25,7 @@ export default class Universe {
     // Initial globals
     this.scope = new Scope();
     this.scope.setVariable("seed", Math.random());
+    this.scope.setVariable("pi", Math.PI);
     this.scope.setVariable("time", 0);
     this.scope.setVariable("mouse_x", 0);
     this.scope.setVariable("mouse_y", 0);

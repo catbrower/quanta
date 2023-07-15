@@ -10,7 +10,6 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import { ObjectSpec } from '../code/Program';
 import ProgramEditor from './ProgramEditor';
 import { useAppDispatch, useAppSelector } from '../Hooks';
 import { openMenu, closeMenu } from './GUISlice';
@@ -86,7 +85,7 @@ export default function AppBarBottom() {
             <MenuIcon />
         </IconButton>
 
-        {windows.map((window) => (<div>Window</div>))}
+        {windows.map((window) => (<Typography>{window.name}</Typography>))}
 
         </Toolbar>
       </AppBar>

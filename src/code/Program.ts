@@ -42,7 +42,7 @@ export interface IProgramEvent {
     scale?: IProgramEuler
 }
 
-export interface ObjectSpec {
+export interface IProgramObject {
     name: string,
     id: string,
     mesh: IProgramMesh,
@@ -59,5 +59,5 @@ export interface ObjectSpec {
 export interface IProgram {
     meta: IProgramMeta,
     globals: IProgramGlobal[],
-    objects: ObjectSpec[]
+    objects: IProgramObject[]
 }

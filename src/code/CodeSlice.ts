@@ -1,24 +1,27 @@
 import { createSlice } from "@reduxjs/toolkit"
 import { RootState } from "../Store";
 import { IProgram } from "./Program";
+import {v4 as uuidv4} from 'uuid';
+import { useAppSelector } from "../Hooks";
 
 const initialState: IProgram = {
     meta: {element: "/html/body"},
     globals: [
         {name: 'time'},
-        {name: 'seed'}
+        {name: 'seed'},
+        {name: 'pi'}
     ],
     objects: [{
         name: 'test cube',
-        id: 'sdfsdf',
+        id: uuidv4(),
         mesh: {
           type: "mesh",
           args: {count: {type: "float", value: "10"}}
         },
         // texture: "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/sprites/circle.png",
         properties: {
-          f: {type: "float", value: "20"},
-          b: {type: "float", value: "0.5"}
+          f: {type: "float", value: "1"},
+          b: {type: "float", value: "0.25"}
           // overIncrease: {type: "float", value: "0.75"}
         },
         geometry: {
@@ -29,9 +32,9 @@ const initialState: IProgram = {
           }
         },
         color: {
-          r: "sin(time * b + position.x * f)",
-          g: "sin(time * b + position.y * f)",
-          b: "sin(time * b + position.z * f)",
+          r: "pow(sin(time * b + position.x * f + pi/3.0), 2.0)",
+          g: "pow(sin(time * b + position.y * f + pi*2.0/3.0), 2.0)",
+          b: "pow(sin(time * b + position.z * f + pi), 2.0)",
           a: "1.0"
         },
         rotation: {
@@ -75,4 +78,5 @@ export const codeSlice = createSlice({
 
 export const { addObject } = codeSlice.actions;
 // export const getWindows = (state: RootState) => state.gui.windows;
+
 export default codeSlice.reducer;

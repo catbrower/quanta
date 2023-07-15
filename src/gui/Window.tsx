@@ -1,6 +1,10 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Paper } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Paper, Typography } from "@mui/material";
 import React from "react";
 import Draggable from "react-draggable";
+import { IWindow } from "./GUITypes";
+import { useAppDispatch } from "../Hooks";
+import { closeObjectWindow } from "./GUISlice";
+import ObjectEditor from "./windows/ObjectEditor";
 
 interface IProps {};
 interface IState {
@@ -24,59 +28,51 @@ export class PaperComponent extends React.Component<IProps, IState> {
     }
 }
 
-export default class Window extends React.Component<IProps, IState> {
-    constructor(props: IProps) {
-        super(props);
+export default function Window(props: IWindow) {
+  const dispatch = useAppDispatch();
+  const window = props;
 
-        this.state = {
-            isOpen: true
-        }
+  function handleClose(event: any, reason: any) {
+    if(reason && reason == "backdropClick") {
+      return;
     }
 
-    setOpen(openState: boolean) {
-        this.setState({isOpen: openState});
-    }
+    dispatch(closeObjectWindow(window.id));
+  }
 
-    handleClickOpen() {
-      // this.setOpen(true);
-    }
-  
-    handleClose(event: any, reason: any) {
-      if(reason && reason == "backdropClick") {
-        return;
-      }
-
-      this.setOpen(false);
-    }
-  
-    render() {
-      return (
-        <div>
-          <Dialog
-            open={this.state.isOpen}
-            onClose={this.handleClose}
-            PaperComponent={PaperComponent}
-            aria-labelledby="draggable-dialog-title"
-            hideBackdrop={true}
-            disableEnforceFocus={true}
-            
-          >
-            <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
-              Subscribe
-            </DialogTitle>
-            <DialogContent>
-              <DialogContentText>
-                To subscribe to this website, please enter your email address here. We
-                will send updates occasionally.
-              </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-              <Button autoFocus onClick={() => {this.handleClose(null, null)}}>
-                Close
-              </Button>
-            </DialogActions>
-          </Dialog>
-        </div>
-      );
+  function getDialogContent() {
+    if(window.type === "object") {
+      return (<ObjectEditor {...window.data} />)
+    } else {
+      return (<Typography>Unimplemented</Typography>)
     }
   }
+
+  return (
+    <div>
+      <Dialog
+        open={true}
+        onClose={handleClose}
+        PaperComponent={PaperComponent}
+        aria-labelledby="draggable-dialog-title"
+        hideBackdrop={true}
+        disableEnforceFocus={true}
+        
+      >
+        <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
+          {window.name}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {getDialogContent()}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={() => {handleClose(null, "closeBtn")}}>
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
+  );
+}

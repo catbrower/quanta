@@ -5,6 +5,7 @@ import GUI from './gui/GUI';
 import { useAppDispatch, useAppSelector } from './Hooks';
 import Universe from './objects/Universe';
 import Window from './gui/Window';
+import { IWindow } from './gui/GUITypes';
 
 export default function App() {
   // private universe: Universe | null = null;
@@ -27,7 +28,7 @@ export default function App() {
       <GUI />
       <canvas id="canvas"></canvas>
 
-      {windows.map(() => (<Window />))}
+      {windows.map((window: IWindow) => (<Window {...window}/>))}
     </>
   )
 }
