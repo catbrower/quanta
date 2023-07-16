@@ -13,6 +13,8 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ProgramEditor from './ProgramEditor';
 import { useAppDispatch, useAppSelector } from '../Hooks';
 import { openMenu, closeMenu } from './GUISlice';
+import { Button, Menu, MenuItem } from '@mui/material';
+import AppBarTop from './AppBarTop';
 
 const drawerWidth = 500;
 
@@ -65,6 +67,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   justifyContent: 'flex-end',
 }));
 
+// TODO seperate this out
 export default function AppBarBottom() {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector(state => state.gui.isMenuOpen);
@@ -73,7 +76,9 @@ export default function AppBarBottom() {
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <AppBar position="fixed" open={isOpen} sx={{top: "auto", bottom: 0}}>
+      <AppBarTop />
+
+      <AppBar position="fixed" sx={{top: "auto", bottom: 0}}>
         <Toolbar>
           <IconButton
               color="inherit"
@@ -89,6 +94,7 @@ export default function AppBarBottom() {
 
         </Toolbar>
       </AppBar>
+
       <Drawer
         sx={{
         width: drawerWidth,

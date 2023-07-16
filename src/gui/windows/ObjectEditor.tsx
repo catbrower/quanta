@@ -1,5 +1,5 @@
 import { Accordion, AccordionDetails, AccordionSummary, Box, Stack, Tab, Tabs, TextField, Typography, styled } from "@mui/material";
-import { IProgramEuler, IProgramObject } from "../../code/Program";
+import { IProgramColor, IProgramEuler, IProgramObject } from "../../code/Program";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useState } from "react";
 
@@ -123,7 +123,7 @@ function TabPanel(props: TabPanelProps) {
     );
 }
 
-function editableEuler(props: IProgramEuler | undefined, name: string) {
+function editableEuler(props: IProgramEuler, name: string) {
     return (
         <Accordion>
             <AccordionSummary
@@ -144,33 +144,48 @@ function editableEuler(props: IProgramEuler | undefined, name: string) {
     )
 }
 
+function editableColor(props: IProgramColor, name: string) {
+    return (
+        <Accordion>
+            <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header"
+                >
+                <Typography>Set Color</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+                <Stack direction="column" spacing={2}>
+                    <TextField variant={textFeildVariant} id="color_r" label="R" defaultValue={props.r}/>
+                    <TextField variant={textFeildVariant} id="color_g" label="G" defaultValue={props.g}/>
+                    <TextField variant={textFeildVariant} id="color_b" label="B" defaultValue={props.b}/>
+                    <TextField variant={textFeildVariant} id="color_a" label="A" defaultValue={props.a}/>
+                </Stack>
+            </AccordionDetails>
+        </Accordion>
+    )
+}
+
 // TODO check for / create a new interface to specify props
 // events should have the exact same type as this
 // doing it this way, I can avoid writing a specialized editor for each event
 function EditorSection(props: any) {
+    let properties = [];
+    if(props.hasOwnProperty("color"))
+        properties.push(editableColor(props.color, "color"));
+
+    if(props.hasOwnProperty("rotation"))
+        properties.push(editableEuler(props.rotation, "rotation"))
+
+    if(props.hasOwnProperty("translation"))
+        properties.push(editableEuler(props.rotation, "translation"))
+    
+    if(props.hasOwnProperty("translation"))
+        properties.push(editableEuler(props.rotation, "translation"))
+
     return (
         <Stack direction="column" spacing={1} py={1}>
-            <Accordion>
-                <AccordionSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    aria-controls="panel1a-content"
-                    id="panel1a-header"
-                    >
-                    <Typography>Set Color</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                    <Stack direction="column" spacing={2}>
-                        <TextField variant={textFeildVariant} id="color_r" label="R" defaultValue={props.color?.r}/>
-                        <TextField variant={textFeildVariant} id="color_g" label="G" defaultValue={props.color?.g}/>
-                        <TextField variant={textFeildVariant} id="color_b" label="B" defaultValue={props.color?.b}/>
-                        <TextField variant={textFeildVariant} id="color_a" label="A" defaultValue={props.color?.a}/>
-                    </Stack>
-                </AccordionDetails>
-            </Accordion>
-
-            {editableEuler(props.rotation, "rotation")}
-            {editableEuler(props.translation, "translation")}
-            {editableEuler(props.scale, "scale")}
+            {properties}
         </Stack>
     )
 }
@@ -193,7 +208,6 @@ export default function ObjectEditor(props: IProgramObject) {
             >
                 <Tab label="Properties" value={0} />
                 <Tab label="Create" value={1}/>
-                <Tab label="Click" value={2}/>
             </Tabs>
             <TabPanel value={tabIndex} index={0}>
                 <TextField variant={textFeildVariant} id="name" label="Name" defaultValue={props.name}/>
@@ -201,7 +215,6 @@ export default function ObjectEditor(props: IProgramObject) {
             <TabPanel value={tabIndex} index={1}>
                 <EditorSection {...props} />
             </TabPanel>
-            <TabPanel value={tabIndex} index={2}>YAAAK</TabPanel>
         </Box>
     )
 }

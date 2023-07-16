@@ -24,6 +24,7 @@ interface IState {
     isOpen: boolean
 };
 
+// TODO paper has an xs property, see if I can move the jankey css to that instead
 export class PaperComponent extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
