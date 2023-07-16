@@ -44,3 +44,15 @@ canvas {
   width: 100vw;
   height: 100vh;
 }
+
+.dialog .MuiDialog-container .MuiPaper-root:first-child {
+  max-width: unset !important;
+  border-radius: 10px !important;
+  border: solid #CCC 2px !important;
+  overflow: hidden;
+}
+
+.dialogHeader {
+  background-image: linear-gradient(#CCC, #FFF);
+  /* font-size: medium !important; */
+}
