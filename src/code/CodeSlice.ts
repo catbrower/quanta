@@ -1,8 +1,6 @@
-import { createSlice } from "@reduxjs/toolkit"
-import { RootState } from "../Store";
-import { IProgram } from "./Program";
+import { createSlice } from "@reduxjs/toolkit";
+import { IProgram } from "./ProgramInterfaces";
 import {v4 as uuidv4} from 'uuid';
-import { useAppSelector } from "../Hooks";
 
 const initialState: IProgram = {
     meta: {element: "/html/body"},
@@ -66,14 +64,18 @@ const initialState: IProgram = {
 }
 
 export const codeSlice = createSlice({
-    name: "codeSlice",
-    initialState,
-    reducers: {
-        setMetaParams: (state, action) => {},
-        addObject: (state, action) => {state.objects.push(action.payload)},
-        removeObject: (state, action) => {},
-        updateObject: (state, action) => {}
-    }
+  name: "codeSlice",
+  initialState,
+  reducers: {
+    setMetaParams: (state, action) => {},
+    addObject: (state, action) => {state.objects.push(action.payload)},
+    removeObject: (state, action) => {},
+    updateObject: (state, action) => {
+
+    },
+    compile: (state, action) => {},
+    run: (state, action) => {}
+  }
 });
 
 export const { addObject } = codeSlice.actions;

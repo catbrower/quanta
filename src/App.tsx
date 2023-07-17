@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react';
-import { configureStore } from '@reduxjs/toolkit';
+import { useEffect } from 'react';
 import './App.css';
 import GUI from './gui/GUI';
 import { useAppDispatch, useAppSelector } from './Hooks';

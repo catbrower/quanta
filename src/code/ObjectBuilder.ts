@@ -13,7 +13,7 @@ import {
 } from "three";
 import QuantaObject from '../objects/QuantaObject';
 import { box } from './InstanceGeometries';
-import { IProgramUniforms } from "./Program";
+import { IProgramUniforms } from "./ProgramInterfaces";
 import { uniformsToString } from "../Common";
 import { fibonacciSphere } from "./Geometries";
 

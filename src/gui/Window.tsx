@@ -36,7 +36,7 @@ export class PaperComponent extends React.Component<IProps, IState> {
                 handle="#draggable-dialog-title"
                 cancel={'[class*="MuiDialogContent-root"]'}
             >
-              <Paper {...this.props} />
+              <Paper {...this.props} sx={{}}/>
             </Draggable>
         )
     }
