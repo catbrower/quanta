@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import './App.css';
 import GUI from './gui/GUI';
-import { useAppDispatch, useAppSelector } from './Hooks';
-import Universe from './objects/Universe';
+import { useAppDispatch, useAppSelector } from './redux/Hooks';
+import Universe from './removed/objects/Universe';
 import Window from './gui/Window';
 import { IWindow } from './gui/GUITypes';
 

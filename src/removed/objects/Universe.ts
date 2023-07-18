@@ -1,9 +1,9 @@
 import * as THREE from 'three';
 import QuantaObject from './QuantaObject';
-import Scope from '../types/Scope';
-import ObjectBuilder from '../code/ObjectBuilder';
+import Scope from '../../types/Scope';
+import ObjectBuilder from '../../program/builder/ObjectBuilder';
 import $ from "jquery";
-import { IProgram } from '../code/ProgramInterfaces';
+import { IProgram } from '../../program/Interfaces';
 
 export default class Universe {
   private scene: THREE.Scene;

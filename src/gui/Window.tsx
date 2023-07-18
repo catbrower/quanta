@@ -2,8 +2,8 @@ import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, D
 import React from "react";
 import Draggable from "react-draggable";
 import { IWindow } from "./GUITypes";
-import { useAppDispatch } from "../Hooks";
-import { closeObjectWindow } from "./GUISlice";
+import { useAppDispatch } from "../redux/Hooks";
+import { closeObjectWindow } from "../redux/GUISlice";
 import ObjectEditor from "./windows/ObjectEditor";
 import CloseIcon from "@mui/icons-material/CloseRounded";
 import FullscreenIcon from "@mui/icons-material/FullscreenRounded";

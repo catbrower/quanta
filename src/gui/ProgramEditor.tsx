@@ -5,8 +5,8 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Collapse, Container } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
 import { useSpring, animated } from '@react-spring/web';
-import { useAppDispatch, useAppSelector } from "../Hooks";
-import { openObjectWindow } from "./GUISlice";
+import { useAppDispatch, useAppSelector } from "../redux/Hooks";
+import { openObjectWindow } from "../redux/GUISlice";
 
 function TransitionComponent(props: TransitionProps) {
     const style = useSpring({

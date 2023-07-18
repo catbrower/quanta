@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit"
 import { RootState } from "../Store";
-import { IWindow } from "./GUITypes";
+import { IWindow } from "../gui/GUITypes";
 import { v4 as uuidv4 } from 'uuid';
 
 interface GUIState {

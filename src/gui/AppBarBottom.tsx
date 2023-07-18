@@ -11,9 +11,8 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ProgramEditor from './ProgramEditor';
-import { useAppDispatch, useAppSelector } from '../Hooks';
-import { openMenu, closeMenu } from './GUISlice';
-import { Button, Menu, MenuItem } from '@mui/material';
+import { useAppDispatch, useAppSelector } from '../redux/Hooks';
+import { openMenu, closeMenu } from '../redux/GUISlice';
 import AppBarTop from './AppBarTop';
 
 const drawerWidth = 500;

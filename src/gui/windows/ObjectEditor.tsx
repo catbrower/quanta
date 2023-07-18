@@ -1,5 +1,5 @@
 import { Accordion, AccordionDetails, AccordionSummary, Box, Stack, Tab, Tabs, TextField, Typography, styled } from "@mui/material";
-import { IProgramColor, IProgramEuler, IProgramObject } from "../../code/ProgramInterfaces";
+import { IProgramColor, IProgramEuler, IProgramObject } from "../../program/Interfaces";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useState } from "react";
 
