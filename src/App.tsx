@@ -13,8 +13,8 @@ export default function App() {
   const windows = useAppSelector(state => state.gui.windows);
 
   function createUniverse() {
-    const universe = new Universe(universeParams);
-    universe.begin();
+    // const universe = new Universe(universeParams);
+    // universe.begin();
   }
 
   // TODO the createUniverse call to some run button

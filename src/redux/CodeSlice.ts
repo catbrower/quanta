@@ -1,8 +1,32 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { IProgram } from "../program/Interfaces";
-import {v4 as uuidv4} from 'uuid';
+import { IProgram, IProgramObject } from "../program/Interfaces";
 
-const initialState: IProgram = {
+const testCube: IProgramObject = {
+  name: "Test Cube",
+  id: "0",
+  mesh: { type: 0, args: {} },
+  geometry: { type: "box", args: {scale: { type: "float", value: "15" }} },
+  properties: {},
+  events: [
+    {
+      name: "create",
+      color: {
+        r: "pow(sin(time + position.x))",
+        g: "1",
+        b: "1",
+        a: "1"
+      }
+    }
+  ]
+}
+
+interface IProgramState {
+  program: IProgram,
+  compiledProgram: string | null
+}
+
+const initialState: IProgramState = {
+  program: {
     meta: {element: "/html/body"},
     globals: {
         'time': {type: "float", value: "0.0"},
@@ -10,7 +34,9 @@ const initialState: IProgram = {
         "pi": {type: "float", value: `${Math.PI}`},
         "e": {type: "float", value: `${Math.E}`}
     },
-    objects: []
+    objects: [testCube]
+  },
+  compiledProgram: null
 }
 
 export const codeSlice = createSlice({
@@ -18,19 +44,21 @@ export const codeSlice = createSlice({
   initialState,
   reducers: {
     setMetaParams: (state, action) => {},
-    addObject: (state, action) => {state.objects.push(action.payload)},
+    addObject: (state, action) => {
+      state.program.objects.push(action.payload)
+    },
     removeObject: (state, action) => {},
     updateObject: (state, action) => {
 
     },
-    build: (state) => {
-      // https://stackoverflow.com/questions/50694881/how-to-download-file-in-react-js
+    setCompiledProgram: (state, action) => {
+      state.compiledProgram = action.payload;
     },
     run: (state, action) => {}
   }
 });
 
-export const { setMetaParams, addObject, updateObject, removeObject, build, run } = codeSlice.actions;
+export const { setMetaParams, addObject, updateObject, removeObject, setCompiledProgram, run } = codeSlice.actions;
 // export const getWindows = (state: RootState) => state.gui.windows;
 
 export default codeSlice.reducer;

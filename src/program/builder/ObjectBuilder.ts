@@ -13,10 +13,10 @@ import {
 } from "three";
 import QuantaObject from '../../removed/objects/QuantaObject';
 import { box } from '../InstanceGeometries';
-import { IProgramUniforms } from "../Interfaces";``
+import { IProgramObject, IProgramUniforms } from "../Interfaces";``
 import { fibonacciSphere } from "../Geometries";
 
-export default class ObjectBuilder {
+class ObjectBuilder {
     private quantaObject: QuantaObject;
     private objectSpec: any;
     private uniforms: IProgramUniforms;
@@ -188,4 +188,23 @@ export default class ObjectBuilder {
                 throw new Error(`Unknown mesh type: ${this.meshType}`);
         }
     }
+}
+
+export default function buildObject(objectSpec: IProgramObject): string {
+    const blending = AdditiveBlending;
+    const depthTest = false;
+    const transparent = true;
+
+    return `(() => {
+      var material = new THREE.ShaderMaterial({
+        uniforms: uniforms,
+        vertextShader: SHADERS["vertex.${objectSpec.id}.create"],
+        fragmentShader: SHADERS["fragment.${objectSpec.id}.create"],
+        blending: ${blending},
+        depthTest: ${depthTest},
+        transparent: ${transparent}
+      });
+
+      ver geometry = new THREE.BufferGeometry
+    })();`;
 }

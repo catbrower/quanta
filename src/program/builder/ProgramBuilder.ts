@@ -1,6 +1,6 @@
-import { useAppSelector } from "../../redux/Hooks";
 import { IProgram } from "../Interfaces";
 import { FRAGMENT, VERTEX } from "../ShaderTypes";
+import buildObject from "./ObjectBuilder";
 import { buildShaders } from "./ShaderBuilder";
 
 function buildShaderName(type: string, objectId: string, eventName: string) {
@@ -19,18 +19,31 @@ function buildAllShaders(code: IProgram) : string {
       }
     }
 
-    return `${result}`;
+    return `var SHADERS = ${JSON.stringify(result)};\n`;
 }
 
 // TODO program is fixed to one scene atm
 // TODO add window resize handling
 function buildAllScenes(programData: IProgram): string {
+  return ``;
+}
+
+function buildAllObjects(programData: IProgram): string {
+  const objectCode = programData.objects.map(buildObject).reduce((acc, item) => `${acc},\n${item}`);
+  return `var objects = [
+    ${objectCode}
+  ];\n`;
+}
+
+// TODO update scope
+function buildMainLoop(programData: IProgram): string {
   return `
-    var camera = THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 1000 );
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 1000 );
     camera.position.z = 10;
 
-    var renderer = THREE.WebGLRenderer({
-      canvas: document.getElementById("canvas"),
+    var renderer = new THREE.WebGLRenderer({
+      canvas: document.getElementById("renderContext"),
       antialias: true
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -38,24 +51,21 @@ function buildAllScenes(programData: IProgram): string {
     var raycaster = new THREE.Raycaster();
     var pointer = new THREE.Vector2();
 
-    document.addEventListener("pointermove", (event) => { onPointerMove(event) });
-  `
-}
+    objects.forEach((obj) => {
+      scene.add(obj);
+    });
 
-function buildAllObjects(programData: IProgram): string {
-  return '';
-}
+    document.addEventListener("pointermove", (event) => { 
+      pointer.set(
+        (event.clientX / window.innerWidth) * 2 - 1,
+        -(event.clientY / window.innerHeight) * 2 + 1
+      );
+    });
 
-// TODO update scope
-function buildMainLoop(programData: IProgram): string {
-  return `
     function animationLoop() {
       requestAnimationFrame(() => animationLoop());
 
       raycaster.setFromCamera(pointer, camera);
-      objects.forEach((item) => {
-        item.update(scope, raycaster);
-      });
 
       renderer.render(scene, camera);
     }
@@ -64,12 +74,15 @@ function buildMainLoop(programData: IProgram): string {
   `
 }
 
-export default function buildProgram(): string {
-    const code = useAppSelector(state => state.code);
-
+export default async function buildProgram(code: IProgram): Promise<string> {
     // Fetch the latest minified threejs code
     // https://stackoverflow.com/questions/50694881/how-to-download-file-in-react-js
-    const THREE = "";
+
+    const threeUrl = "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.154.0/three.min.js";
+    let THREE = await fetch(threeUrl, {
+      method: 'GET'
+    }).then(response => response.text());
+
     let rawCode = `
       ${buildAllShaders(code)}
       ${buildAllScenes(code)}
@@ -83,10 +96,28 @@ export default function buildProgram(): string {
     <html>
       <head>
         <title>my program</title>
+        <style>
+          body: {
+            padding: none;
+            margin: none;
+            overflow: hidden;
+          }
+
+          #renderContext {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 100vw;
+            height: 100vh;
+          }
+        </style>
       </head>
 
       <body>
-        <script>${THREE}</script>
+        <canvas id="renderContext" />
+        <script>
+          ${THREE}
+        </script>
         <script>
           ${finalCode}
         </script>

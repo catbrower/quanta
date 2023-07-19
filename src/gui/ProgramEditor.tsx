@@ -29,7 +29,7 @@ function TransitionComponent(props: TransitionProps) {
 
 export default function ProgramEditor() {
   const dispatch = useAppDispatch();
-  const objects = useAppSelector(state => state.code.objects);
+  // const objects = useAppSelector(state => state.code.objects);
 
   return (
       <Container sx={{py: "15px"}}>
@@ -40,9 +40,9 @@ export default function ProgramEditor() {
               sx={{ height: 240, flexGrow: 1, maxWidth: 400, overflowY: 'auto' }}
               >
               <TreeItem nodeId="1" label="Objects">
-                  {objects.map((object) => (
+                  {/* {objects.map((object) => (
                       <TreeItem nodeId="0" label={object.name} onDoubleClick={() => dispatch(openObjectWindow(object))}/>
-                  ))}
+                  ))} */}
               </TreeItem>
               <TreeItem nodeId="5" label="Scripts">
               </TreeItem>
