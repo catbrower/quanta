@@ -1,10 +1,15 @@
-import { IProgram } from "../Interfaces";
+import { buildShaderName } from "../../Common";
+import { IProgram, IProgramUniforms } from "../Interfaces";
 import { FRAGMENT, VERTEX } from "../ShaderTypes";
 import buildObject from "./ObjectBuilder";
 import { buildShaders } from "./ShaderBuilder";
 
-function buildShaderName(type: string, objectId: string, eventName: string) {
-  return `${type}.${objectId}.${eventName}`;
+function buildAllUniforms(uniforms: IProgramUniforms): string {
+  const uniformsString = Object.entries(uniforms).map((pair) => {
+    return `${pair[0]}: { type: "${pair[1].type}", value: ${pair[1].value} }`
+  }).join(",\n");
+
+  return `var uniforms = {${uniformsString}};`
 }
 
 // Build all shaders and return them as a dictionary
@@ -38,6 +43,7 @@ function buildAllObjects(programData: IProgram): string {
 // TODO update scope
 function buildMainLoop(programData: IProgram): string {
   return `
+    var START_TIME = new Date().getTime();
     var scene = new THREE.Scene();
     var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 1000 );
     camera.position.z = 10;
@@ -65,6 +71,7 @@ function buildMainLoop(programData: IProgram): string {
     function animationLoop() {
       requestAnimationFrame(() => animationLoop());
 
+      uniforms.time.value = (new Date().getTime() - START_TIME) / 1000;
       raycaster.setFromCamera(pointer, camera);
 
       renderer.render(scene, camera);
@@ -84,6 +91,7 @@ export default async function buildProgram(code: IProgram): Promise<string> {
     }).then(response => response.text());
 
     let rawCode = `
+      ${buildAllUniforms(code.globals)}
       ${buildAllShaders(code)}
       ${buildAllScenes(code)}
       ${buildAllObjects(code)}

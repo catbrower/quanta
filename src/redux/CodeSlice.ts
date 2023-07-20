@@ -5,16 +5,21 @@ const testCube: IProgramObject = {
   name: "Test Cube",
   id: "0",
   mesh: { type: 0, args: {} },
-  geometry: { type: "box", args: {scale: { type: "float", value: "15" }} },
+  geometry: { type: "box", args: {scale: { type: "float", value: "5" }} },
   properties: {},
   events: [
     {
       name: "create",
       color: {
-        r: "pow(sin(time + position.x))",
-        g: "1",
-        b: "1",
-        a: "1"
+        r: "pow(sin(time + position.x + pi/3.0), 2.0)",
+        g: "pow(sin(time + position.y + 2.0*pi/3.0), 2.0)",
+        b: "pow(sin(time + position.z + pi), 2.0)",
+        a: "1.0"
+      },
+      rotation: {
+        x: "time",
+        y: "time",
+        z: "0.0"
       }
     }
   ]

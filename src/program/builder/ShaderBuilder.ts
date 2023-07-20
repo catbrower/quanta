@@ -88,7 +88,6 @@ export function buildFragmentShader(props: IProgramEvent, uniforms: IProgramUnif
         ${COMMON_SHADER_HEADER}
         ${uniformsString}
         
-        varying vec3 vInstancePosition;
         void main() {
             vec3 position = vUv;
             float color_r = ${color.r};
@@ -99,9 +98,9 @@ export function buildFragmentShader(props: IProgramEvent, uniforms: IProgramUnif
             gl_FragColor = vec4(color_r, color_g, color_b, color_a);
             
             // Textures disabled for now
-            // {/*this.hasTexture ? "gl_FragColor = gl_FragColor * texture2D(pointTexture, gl_PointCoord);" : ""*/}
-    `;
-    
+            // {this.hasTexture ? "gl_FragColor = gl_FragColor * texture2D(pointTexture, gl_PointCoord);" : ""}
+        }`;
+
     return result;
 }
 
@@ -122,14 +121,11 @@ export function buildVertexShader(props: IProgramEvent, uniforms: IProgramUnifor
     let result = `
         ${COMMON_SHADER_HEADER}
         varying vec4 modelViewPosition;
-        // varying vec4 instancePosition;
         ${hasTransformation ? "varying mat4 vPosition;" : ""}
         ${uniformsString}
 
-        varying vec3 vInstancePosition;
         void main() {
             vUv = position;
-            // vec3 vInstancePosition = (instanceMatrix * vec4(position.x, position.y, position.z, 1.0)).xyz;
             
             ${props.rotation ? `
                 float rotation_x = ${props.rotation.x};
@@ -152,7 +148,6 @@ export function buildVertexShader(props: IProgramEvent, uniforms: IProgramUnifor
             ${props.rotation ? rotationMatricies : ""}
             ${props.translation ? translationMatricies : ""}
             ${props.scale ? scaleMatricies : ""}
-            // vUv = position;
             
             ${ props.pointSize && meshType === POINTS ? `gl_PointSize = ${props.pointSize};` : "" }
 
