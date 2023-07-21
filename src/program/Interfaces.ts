@@ -4,16 +4,10 @@ export type IProgramMeta = {
     element: string
 }
 
-export type IProgramUniform = { type: string, value: string }
-
-export type IProgramUniforms = { [uniform: string]: IProgramUniform };
-
-export interface IProgramGlobal {
-    name: string
-}
+export type IProgramUniforms = { [uniform: string]: { type: string, value: string } };
 
 export interface IProgramMesh {
-    type: string,
+    type: number,
     args: IProgramUniforms
 }
 
@@ -36,10 +30,13 @@ export interface IProgramEuler {
 }
 
 export interface IProgramEvent {
+    name: string,
     color?: IProgramColor,
     rotation?: IProgramEuler,
     translation?: IProgramEuler,
-    scale?: IProgramEuler
+    scale?: IProgramEuler,
+    pointSize?: string,
+    texture?: string
 }
 
 export interface IProgramObject {
@@ -48,16 +45,11 @@ export interface IProgramObject {
     mesh: IProgramMesh,
     geometry: IProgramGeometry,
     properties: IProgramUniforms,
-    color?: IProgramColor,
-    rotation?: IProgramEuler,
-    translation?: IProgramEuler,
-    scale?: IProgramEuler,
-    events?: IProgramEvent,
-    pointSize?: string
+    events: IProgramEvent[]
 }
 
 export interface IProgram {
     meta: IProgramMeta,
-    globals: IProgramGlobal[],
+    globals: IProgramUniforms,
     objects: IProgramObject[]
 }

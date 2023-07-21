@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import Function from '../types/Function';
-import Scope from '../types/Scope';
+import Function from '../../types/Function';
+import Scope from '../../types/Scope';
 import Field4 from '../fields/Field4';
 
 export default class QuantaObject {

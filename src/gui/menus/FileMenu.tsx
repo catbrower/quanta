@@ -18,8 +18,7 @@ export default function FileMenu() {
     return (
       <>
         <Button
-          id="basic-button"
-          aria-controls={open ? 'basic-menu' : undefined}
+          aria-controls={open ? 'file-menu' : undefined}
           aria-haspopup="true"
           aria-expanded={open ? 'true' : undefined}
           onClick={handleClick}

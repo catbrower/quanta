@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import './App.css';
 import GUI from './gui/GUI';
-import { useAppDispatch, useAppSelector } from './Hooks';
-import Universe from './objects/Universe';
+import { useAppDispatch, useAppSelector } from './redux/Hooks';
+import Universe from './removed/objects/Universe';
 import Window from './gui/Window';
 import { IWindow } from './gui/GUITypes';
 
@@ -13,8 +13,8 @@ export default function App() {
   const windows = useAppSelector(state => state.gui.windows);
 
   function createUniverse() {
-    const universe = new Universe(universeParams);
-    universe.begin();
+    // const universe = new Universe(universeParams);
+    // universe.begin();
   }
 
   // TODO the createUniverse call to some run button
@@ -26,8 +26,6 @@ export default function App() {
     <>
       <GUI />
       <canvas id="canvas"></canvas>
-
-      {windows.map((window: IWindow) => (<Window {...window}/>))}
     </>
   )
 }

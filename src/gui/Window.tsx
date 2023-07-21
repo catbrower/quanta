@@ -2,13 +2,14 @@ import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, D
 import React from "react";
 import Draggable from "react-draggable";
 import { IWindow } from "./GUITypes";
-import { useAppDispatch } from "../Hooks";
-import { closeObjectWindow } from "./GUISlice";
+import { useAppDispatch } from "../redux/Hooks";
+import { closeObjectWindow } from "../redux/GUISlice";
 import ObjectEditor from "./windows/ObjectEditor";
 import CloseIcon from "@mui/icons-material/CloseRounded";
 import FullscreenIcon from "@mui/icons-material/FullscreenRounded";
 import MinimizeIcon from "@mui/icons-material/MinimizeRounded";
 import { TransitionProps } from "@mui/material/transitions";
+import PreviewWindow from "./windows/PreviewWindow";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -26,20 +27,20 @@ interface IState {
 
 // TODO paper has an xs property, see if I can move the jankey css to that instead
 export class PaperComponent extends React.Component<IProps, IState> {
-    constructor(props: IProps) {
-        super(props);
-    }
+  constructor(props: IProps) {
+    super(props);
+  }
 
-    render() {
-        return (
-            <Draggable
-                handle="#draggable-dialog-title"
-                cancel={'[class*="MuiDialogContent-root"]'}
-            >
-              <Paper {...this.props} sx={{}}/>
-            </Draggable>
-        )
-    }
+  render() {
+    return (
+      <Draggable
+        handle="#draggable-dialog-title"
+        cancel={'[class*="MuiDialogContent-root"]'}
+      >
+        <Paper {...this.props} sx={{}}/>
+      </Draggable>
+    )
+  }
 }
 
 // TODO this componet dissapears on close, this breaks the outgoing transition
@@ -55,48 +56,41 @@ export default function Window(props: IWindow) {
     dispatch(closeObjectWindow(window.id));
   }
 
-  function handleSave(event: any, reason: any) {
-
-  }
-
   function getDialogContent() {
     if(window.type === "object") {
-      return (<ObjectEditor {...window.data} />)
+      return (<ObjectEditor onClose={handleClose} {...window.data} />)
+    } else if(window.type === "preview") {
+      return (<PreviewWindow />)
     } else {
-      return (<Typography>Unimplemented</Typography>)
+      return (<>Unimplemented</>)
     }
   }
 
   return (
-    <Dialog
-      open={true}
-      TransitionComponent={Transition}
-      onClose={handleClose}
-      PaperComponent={PaperComponent}
-      aria-labelledby="draggable-dialog-title"
-      hideBackdrop={true}
-      disableEnforceFocus={true}
-      className="dialog"
-    >
-      <DialogTitle style={{ cursor: 'move', height: "2em", display: "flex", padding: "10px 0px 25px 15px" }} id="draggable-dialog-title" className="dialogHeader">
-        <Typography variant="subtitle2" sx={{flexGrow: 1}}>{window.name}</Typography>
-        <IconButton onClick={() => {handleClose(null, "closeBtn")}}><CloseIcon fontSize="small"/></IconButton>
-        <IconButton><FullscreenIcon fontSize="small"/></IconButton>
-        <IconButton><MinimizeIcon fontSize="small"/></IconButton>
-      </DialogTitle>
-      <DialogContent>
-        <DialogContentText>
+    <>
+      <Box height="100%" style={{borderRadius: "5px", boxShadow: "inset 0px 0px 5px 0px rgba(0, 0, 0, 0.25)"}}>
+        <Typography>{props.name}</Typography>
+      </Box>
+
+      <Dialog
+        open={true}
+        TransitionComponent={Transition}
+        onClose={handleClose}
+        PaperComponent={PaperComponent}
+        aria-labelledby="draggable-dialog-title"
+        hideBackdrop={true}
+        disableEnforceFocus={true}
+        className="dialog"
+      >
+        <DialogTitle style={{ cursor: 'move', height: "2em", display: "flex", padding: "10px 0px 25px 15px" }} id="draggable-dialog-title" className="dialogHeader">
+          {window.name}
+          <Box style={{flex: "1"}} />
+          <IconButton onClick={() => {handleClose(null, "closeBtn")}}><CloseIcon fontSize="small"/></IconButton>
+          <IconButton><FullscreenIcon fontSize="small"/></IconButton>
+          <IconButton><MinimizeIcon fontSize="small"/></IconButton>
+        </DialogTitle>
           {getDialogContent()}
-        </DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button autoFocus onClick={() => {handleSave(null, "saveBtn")}}>
-          Save
-        </Button>
-        <Button autoFocus onClick={() => {handleClose(null, "closeBtn")}}>
-          Close
-        </Button>
-      </DialogActions>
-    </Dialog>
+      </Dialog>
+    </>
   );
 }
