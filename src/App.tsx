@@ -26,8 +26,6 @@ export default function App() {
     <>
       <GUI />
       <canvas id="canvas"></canvas>
-
-      {windows.map((window: IWindow) => (<Window {...window}/>))}
     </>
   )
 }

@@ -1,7 +1,9 @@
-import { Accordion, AccordionDetails, AccordionSummary, Box, Stack, Tab, Tabs, TextField, Typography, styled } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, DialogActions, DialogContent, Stack, Tab, Tabs, TextField, Typography, styled } from "@mui/material";
 import { IProgramColor, IProgramEuler, IProgramObject } from "../../program/Interfaces";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useState } from "react";
+import { useAppDispatch } from "../../redux/Hooks";
+import { closeObjectWindow } from "../../redux/GUISlice";
 
 const modalWidth = 500;
 const textFeildVariant = "standard";
@@ -190,31 +192,46 @@ function EditorSection(props: any) {
     )
 }
 
-export default function ObjectEditor(props: IProgramObject) {
+export default function ObjectEditor(props: any) {
     const [tabIndex, setTabIndex] = useState(0);
+    const dispatch = useAppDispatch();
 
     const handleTabChange = (event: React.SyntheticEvent, newIndex: number) => {
         setTabIndex(newIndex);
     }
 
+    function handleSave(event: any, reason: any) {
+
+    }
+
     return (
-        <Box
-            sx={{flexGrow: 1, bgcolor: 'background.paper', display: 'flex', height: 224}}
-        >
+      <>
+        <DialogContent>
+          <Box sx={{flexGrow: 1, bgcolor: 'background.paper', display: 'flex', height: 224}} >
             <Tabs
-                value={tabIndex}
-                onChange={handleTabChange}
-                orientation="vertical"
+              value={tabIndex}
+              onChange={handleTabChange}
+              orientation="vertical"
             >
-                <Tab label="Properties" value={0} />
-                <Tab label="Create" value={1}/>
+              <Tab label="Properties" value={0} />
+              <Tab label="Create" value={1}/>
             </Tabs>
             <TabPanel value={tabIndex} index={0}>
-                <TextField variant={textFeildVariant} id="name" label="Name" defaultValue={props.name}/>
+              <TextField variant={textFeildVariant} id="name" label="Name" defaultValue={props.name}/>
             </TabPanel>
             <TabPanel value={tabIndex} index={1}>
-                <EditorSection {...props} />
+              <EditorSection {...props} />
             </TabPanel>
-        </Box>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={() => {handleSave(null, "saveBtn")}}>
+            Save
+          </Button>
+          <Button autoFocus onClick={() => {props.onClose(null, "closeBtn")}}>
+            Close
+          </Button>
+        </DialogActions>
+      </>
     )
 }

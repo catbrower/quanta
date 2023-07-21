@@ -16,7 +16,7 @@ import { box } from '../InstanceGeometries';
 import { IProgramGeometry, IProgramMesh, IProgramObject, IProgramUniforms } from "../Interfaces";
 import { fibonacciSphere } from "../Geometries";
 import { DEFAULT, INSTANCED, POINTS } from "../MeshTypes";
-import { buildShaderName } from "../../Common";
+import { buildShaderName, innerJSON } from "../../Common";
 
 class ObjectBuilder {
     private quantaObject: QuantaObject;
@@ -251,8 +251,10 @@ export default function buildObject(objectSpec: IProgramObject): string {
 
     return `
     (() => {
+      var _uniforms = {${innerJSON(objectSpec.properties)}, ...uniforms};
+
       var material = new THREE.ShaderMaterial({
-        uniforms: uniforms,
+        uniforms: _uniforms,
         vertexShader: SHADERS["${buildShaderName('vertex', objectSpec.id, 'create')}"],
         fragmentShader: SHADERS["${buildShaderName('fragment', objectSpec.id, 'create')}"],
         blending: ${blending},

@@ -18,7 +18,7 @@ function buildAllShaders(code: IProgram) : string {
     let result: {[name: string] : string} = {};
     for(const obj of code.objects) {
       for(const event of obj.events) {
-        const shaders = buildShaders(event, uniforms, obj.mesh.type);
+        const shaders = buildShaders(event, {...uniforms, ...obj.properties}, obj.mesh.type);
         result[buildShaderName(FRAGMENT, obj.id, event.name)] = shaders.fragmentShader;
         result[buildShaderName(VERTEX, obj.id, event.name)] = shaders.vertextShader;
       }
@@ -120,13 +120,10 @@ export default async function buildProgram(code: IProgram): Promise<string> {
           }
         </style>
       </head>
-
       <body>
-        <canvas id="renderContext" />
+        <canvas id="renderContext"></canvas>
         <script>
           ${THREE}
-        </script>
-        <script>
           ${finalCode}
         </script>
       </body>

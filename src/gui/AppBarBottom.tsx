@@ -1,11 +1,9 @@
-import * as React from 'react';
 import { styled, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import CssBaseline from '@mui/material/CssBaseline';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -14,6 +12,9 @@ import ProgramEditor from './ProgramEditor';
 import { useAppDispatch, useAppSelector } from '../redux/Hooks';
 import { openMenu, closeMenu } from '../redux/GUISlice';
 import AppBarTop from './AppBarTop';
+import { IWindow } from './GUITypes';
+import Window from './Window';
+import { Typography } from '@mui/material';
 
 const drawerWidth = 500;
 
@@ -73,51 +74,54 @@ export default function AppBarBottom() {
   const windows = useAppSelector(state => state.gui.windows);
 
   return (
-    <Box sx={{ display: 'flex' }}>
-      <CssBaseline />
-      <AppBarTop />
+    <>
+      <Typography>{window.name}</Typography>
+      <Box sx={{ display: 'flex' }}>
+        <CssBaseline />
+        <AppBarTop />
 
-      <AppBar position="fixed" sx={{top: "auto", bottom: 0}}>
-        <Toolbar>
-          <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              onClick={() => {dispatch(openMenu())}}
-              edge="start"
-              // sx={{ mr: 2, ...(isOpen && { display: 'none' }) }}
-          >
-            <MenuIcon />
-        </IconButton>
+        <AppBar position="fixed" sx={{top: "auto", bottom: 0}}>
+          <Toolbar>
+            <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                onClick={() => {dispatch(openMenu())}}
+                edge="start"
+                // sx={{ mr: 2, ...(isOpen && { display: 'none' }) }}
+            >
+              <MenuIcon />
+          </IconButton>
 
-        {windows.map((window) => (<Typography>{window.name}</Typography>))}
+          {windows.map((window: IWindow) => (<Window key={window.id} {...window}/>))}
 
-        </Toolbar>
-      </AppBar>
+          </Toolbar>
+        </AppBar>
 
-      <Drawer
-        sx={{
-        width: drawerWidth,
-        flexShrink: 0,
-        '& .MuiDrawer-paper': {
-            width: drawerWidth,
-            boxSizing: 'border-box',
-        },
-        }}
-        variant="persistent"
-        anchor="left"
-        open={isOpen}
-      >
-        <DrawerHeader>
-            Program
-            <IconButton onClick={() => dispatch(closeMenu())}>
-                <ChevronLeftIcon />
-            </IconButton>
-        </DrawerHeader>
-        
-        <Divider />
+        <Drawer
+          sx={{
+          width: drawerWidth,
+          flexShrink: 0,
+          '& .MuiDrawer-paper': {
+              width: drawerWidth,
+              boxSizing: 'border-box',
+          },
+          }}
+          variant="persistent"
+          anchor="left"
+          open={isOpen}
+        >
+          <DrawerHeader>
+              Program
+              <IconButton onClick={() => dispatch(closeMenu())}>
+                  <ChevronLeftIcon />
+              </IconButton>
+          </DrawerHeader>
+          
+          <Divider />
 
-        <ProgramEditor />
-      </Drawer>
-    </Box>
+          <ProgramEditor />
+        </Drawer>
+      </Box>
+    </>
   )
 }
