@@ -78,7 +78,6 @@ export default function AppBarBottom() {
       <Typography>{window.name}</Typography>
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
-        <AppBarTop />
 
         <AppBar position="fixed" sx={{top: "auto", bottom: 0}}>
           <Toolbar>

@@ -1,11 +1,11 @@
 import AppBarBottom from './AppBarBottom';
-import WindowsContainer from './WindowsContainer';
+import AppBarTop from './AppBarTop';
 
 export default function GUI() {
-    return (
-        <>
-            <AppBarBottom />
-            <WindowsContainer />
-        </>
-    )
+  return (
+    <>
+      <AppBarTop />
+      <AppBarBottom />
+    </>
+  )
 }

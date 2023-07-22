@@ -20,7 +20,7 @@ export default function ProgramEditor() {
               >
               <TreeItem nodeId="1" label="Objects">
                   {objects.map((object) => (
-                      <TreeItem nodeId="0" label={object.name} onDoubleClick={() => dispatch(openObjectWindow(object))}/>
+                      <TreeItem nodeId={object.id} key={object.id} label={object.name} onDoubleClick={() => dispatch(openObjectWindow(object))}/>
                   ))}
               </TreeItem>
               <TreeItem nodeId="5" label="Scripts">

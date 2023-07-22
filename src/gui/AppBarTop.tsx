@@ -39,10 +39,6 @@ export default function AppBarTop() {
           <PlayArrowIcon />
         </IconButton>
 
-        <IconButton onClick={() => buildProgramWrapper()}>
-          <HardwareIcon />
-        </IconButton>
-
         <IconButton
           disabled={builtProgram === null}
           href={`data:text/plain;charset=utf-8,${encodeURIComponent(builtProgram ? builtProgram : '')}`}

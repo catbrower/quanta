@@ -1,12 +1,12 @@
-import { Accordion, AccordionDetails, AccordionSummary, Box, Button, DialogActions, DialogContent, Stack, Tab, Tabs, TextField, Typography, styled } from "@mui/material";
-import { IProgramColor, IProgramEuler, IProgramObject } from "../../program/Interfaces";
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { useState } from "react";
-import { useAppDispatch } from "../../redux/Hooks";
-import { closeObjectWindow } from "../../redux/GUISlice";
+import { Box, Button, DialogActions, DialogContent, FormControl, Stack, Tab, Tabs, TextField, styled } from "@mui/material";
+import { IProgramEvent, IProgramObject } from "../../../program/Interfaces";
+import { useReducer, useState } from "react";
+import { useAppDispatch } from "../../../redux/Hooks";
+import { updateObject } from "../../../redux/CodeSlice";
+import EditableColor from "./EditableColor";
+import EditableEuler from "./EditableEuler";
 
 const modalWidth = 500;
-const textFeildVariant = "standard";
 
 const AntTabs = styled(Tabs)({
     borderBottom: '1px solid #e8e8e8',
@@ -95,9 +95,6 @@ const AntTabs = styled(Tabs)({
     },
   }));
 
-
-
-
 interface TabPanelProps {
     children?: React.ReactNode;
     index: number;
@@ -125,65 +122,26 @@ function TabPanel(props: TabPanelProps) {
     );
 }
 
-function editableEuler(props: IProgramEuler, name: string) {
-    return (
-        <Accordion>
-            <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel1a-content"
-                id="panel1a-header"
-                >
-                <Typography>Set {name}</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-                <Stack direction="column" spacing={2}>
-                    <TextField variant={textFeildVariant} id={`${name}_x`} label="X" defaultValue={props?.x}/>
-                    <TextField variant={textFeildVariant} id={`${name}_y`} label="Y" defaultValue={props?.y}/>
-                    <TextField variant={textFeildVariant} id={`${name}_z`} label="Z" defaultValue={props?.z}/>
-                </Stack>
-            </AccordionDetails>
-        </Accordion>
-    )
-}
-
-function editableColor(props: IProgramColor, name: string) {
-    return (
-        <Accordion>
-            <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel1a-content"
-                id="panel1a-header"
-                >
-                <Typography>Set Color</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-                <Stack direction="column" spacing={2}>
-                    <TextField variant={textFeildVariant} id="color_r" label="R" defaultValue={props.r}/>
-                    <TextField variant={textFeildVariant} id="color_g" label="G" defaultValue={props.g}/>
-                    <TextField variant={textFeildVariant} id="color_b" label="B" defaultValue={props.b}/>
-                    <TextField variant={textFeildVariant} id="color_a" label="A" defaultValue={props.a}/>
-                </Stack>
-            </AccordionDetails>
-        </Accordion>
-    )
+interface IEditorSectionProps extends IProgramEvent {
+  onChange: any
 }
 
 // TODO check for / create a new interface to specify props
 // events should have the exact same type as this
 // doing it this way, I can avoid writing a specialized editor for each event
-function EditorSection(props: any) {
+function EditorSection(props: IEditorSectionProps) {
     let properties = [];
-    if(props.hasOwnProperty("color"))
-        properties.push(editableColor(props.color, "color"));
+    if(props.color)
+        properties.push((<EditableColor name="Color" {...props.color} />));
 
-    if(props.hasOwnProperty("rotation"))
-        properties.push(editableEuler(props.rotation, "rotation"))
+    if(props.rotation)
+        properties.push((<EditableEuler name="Rotation" {...props.rotation} />));
 
-    if(props.hasOwnProperty("translation"))
-        properties.push(editableEuler(props.rotation, "translation"))
+    if(props.translation)
+        properties.push((<EditableEuler name="translation" {...props.translation}/> ));
     
-    if(props.hasOwnProperty("translation"))
-        properties.push(editableEuler(props.rotation, "translation"))
+    if(props.scale)
+        properties.push((<EditableEuler name="scale" {...props.scale} />));
 
     return (
         <Stack direction="column" spacing={1} py={1}>
@@ -192,20 +150,37 @@ function EditorSection(props: any) {
     )
 }
 
-export default function ObjectEditor(props: any) {
-    const [tabIndex, setTabIndex] = useState(0);
-    const dispatch = useAppDispatch();
+const formReducer = (state: any, event: any) => {
+  return {
+    ...state,
+    [event.target.name]: event.target.value
+  }
+}
 
+interface IObjectEditorProps {
+  object: IProgramObject,
+  onClose: any
+}
+export default function ObjectEditor(props: IObjectEditorProps) {
+    const [tabIndex, setTabIndex] = useState(0);
+    const [formData, setFormData] = useReducer(formReducer, props.object);
+    const objectId = props.object.id;
+    const dispatch = useAppDispatch();
     const handleTabChange = (event: React.SyntheticEvent, newIndex: number) => {
-        setTabIndex(newIndex);
+      setTabIndex(newIndex);
     }
 
-    function handleSave(event: any, reason: any) {
+    function handleSave(event: React.FormEvent<HTMLFormElement>) {
+      event.preventDefault();
+      dispatch( updateObject(formData) );
+    }
 
+    function updateEvent(eventIndex: number, eventData: IProgramEvent) {
+      console.log(eventData);
     }
 
     return (
-      <>
+      <form onSubmit={handleSave}>
         <DialogContent>
           <Box sx={{flexGrow: 1, bgcolor: 'background.paper', display: 'flex', height: 224}} >
             <Tabs
@@ -214,24 +189,31 @@ export default function ObjectEditor(props: any) {
               orientation="vertical"
             >
               <Tab label="Properties" value={0} />
-              <Tab label="Create" value={1}/>
+              {formData.events.map((item: IProgramEvent, index: number) => {
+                return (<Tab label={item.name} value={index + 1} />)
+              })}
             </Tabs>
-            <TabPanel value={tabIndex} index={0}>
-              <TextField variant={textFeildVariant} id="name" label="Name" defaultValue={props.name}/>
-            </TabPanel>
-            <TabPanel value={tabIndex} index={1}>
-              <EditorSection {...props} />
-            </TabPanel>
+              <TabPanel value={tabIndex} index={0}>
+                <TextField variant="standard" onChange={setFormData} label="Name" name="name" defaultValue={props.object.name}/>
+              </TabPanel>
+
+              {formData.events.map((item: IProgramEvent, index: number) => {
+                return (
+                  <TabPanel value={tabIndex} index={1}>
+                    <EditorSection onChange={(newData: IProgramEvent) => updateEvent(index - 1, newData)} {...item} />
+                  </TabPanel>
+                )
+              })}
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button autoFocus onClick={() => {handleSave(null, "saveBtn")}}>
+          <Button type="submit" >
             Save
           </Button>
-          <Button autoFocus onClick={() => {props.onClose(null, "closeBtn")}}>
+          <Button onClick={() => {props.onClose(null, "closeBtn")}}>
             Close
           </Button>
         </DialogActions>
-      </>
+      </form>
     )
 }

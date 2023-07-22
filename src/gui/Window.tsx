@@ -4,7 +4,7 @@ import Draggable from "react-draggable";
 import { IWindow } from "./GUITypes";
 import { useAppDispatch } from "../redux/Hooks";
 import { closeObjectWindow } from "../redux/GUISlice";
-import ObjectEditor from "./windows/ObjectEditor";
+import ObjectEditor from "./windows/ObjectEditor/ObjectEditor";
 import CloseIcon from "@mui/icons-material/CloseRounded";
 import FullscreenIcon from "@mui/icons-material/FullscreenRounded";
 import MinimizeIcon from "@mui/icons-material/MinimizeRounded";
@@ -49,6 +49,7 @@ export default function Window(props: IWindow) {
   const window = props;
 
   function handleClose(event: any, reason: any) {
+    event.preventDefault();
     if(reason && reason == "backdropClick") {
       return;
     }
@@ -58,7 +59,7 @@ export default function Window(props: IWindow) {
 
   function getDialogContent() {
     if(window.type === "object") {
-      return (<ObjectEditor onClose={handleClose} {...window.data} />)
+      return (<ObjectEditor onClose={handleClose} object={window.data} />)
     } else if(window.type === "preview") {
       return (<PreviewWindow />)
     } else {
