@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import QuantaObject from './QuantaObject';
-import Scope from '../../types/Scope';
+import Scope from '../types/Scope';
 import ObjectBuilder from '../../program/builder/ObjectBuilder';
 import $ from "jquery";
 import { IProgram } from '../../program/Interfaces';

@@ -79,43 +79,43 @@ export default function AppBarBottom() {
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
 
-        <AppBar position="fixed" sx={{top: "auto", bottom: 0}}>
+        <AppBar position="fixed" sx={{ top: "auto", bottom: 0 }}>
           <Toolbar>
             <IconButton
-                color="inherit"
-                aria-label="open drawer"
-                onClick={() => {dispatch(openMenu())}}
-                edge="start"
-                // sx={{ mr: 2, ...(isOpen && { display: 'none' }) }}
+              color="inherit"
+              aria-label="open drawer"
+              onClick={() => { dispatch(openMenu()) }}
+              edge="start"
+            // sx={{ mr: 2, ...(isOpen && { display: 'none' }) }}
             >
               <MenuIcon />
-          </IconButton>
+            </IconButton>
 
-          {windows.map((window: IWindow) => (<Window key={window.id} {...window}/>))}
+            {windows.map((window: IWindow) => (<Window key={window.id} {...window} />))}
 
           </Toolbar>
         </AppBar>
 
         <Drawer
           sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          '& .MuiDrawer-paper': {
+            width: drawerWidth,
+            flexShrink: 0,
+            '& .MuiDrawer-paper': {
               width: drawerWidth,
               boxSizing: 'border-box',
-          },
+            },
           }}
           variant="persistent"
           anchor="left"
           open={isOpen}
         >
           <DrawerHeader>
-              Program
-              <IconButton onClick={() => dispatch(closeMenu())}>
-                  <ChevronLeftIcon />
-              </IconButton>
+            Program
+            <IconButton onClick={() => dispatch(closeMenu())}>
+              <ChevronLeftIcon />
+            </IconButton>
           </DrawerHeader>
-          
+
           <Divider />
 
           <ProgramEditor />

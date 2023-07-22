@@ -4,11 +4,11 @@ import { IProgramColor, IProgramEvent, IProgramUniforms } from "../Interfaces";
 // String constants
 const ROTATION_X: string = "rotation_x";
 const ROTATION_Y: string = "rotation_y";
-const ROTATION_Z: string = "rotation_z";    
+const ROTATION_Z: string = "rotation_z";
 const TRANSLATION_X: string = "translation_x";
-const TRANSLATION_Y: string = "translation_y";    
+const TRANSLATION_Y: string = "translation_y";
 const TRANSLATION_Z: string = "translation_z";
-const SCALE_X: string = "scale_x";    
+const SCALE_X: string = "scale_x";
 const SCALE_Y: string = "scale_y";
 const SCALE_Z: string = "scale_z";
 const ROTATION_MATRIX_X: string = "rotation_matrix_x";
@@ -71,20 +71,20 @@ mat4 ${SCALE_MATRIX} = mat4(
 
 const COMMON_SHADER_HEADER: string = `varying vec3 vUv;`;
 
-const DEFAULT_COLOR: IProgramColor = {r: "0.5", g: "0.0", b: "1.0", a: "1.0"}
+const DEFAULT_COLOR: IProgramColor = { r: "0.5", g: "0.0", b: "1.0", a: "1.0" }
 
 function buildUniforms(uniforms: IProgramUniforms): string {
-    return Object.entries(uniforms).map((item: any) => {
-        return `uniform ${item[1].type} ${item[0]};`
-    }).join("\n");
+  return Object.entries(uniforms).map((item: any) => {
+    return `uniform ${item[1].type} ${item[0]};`
+  }).join("\n");
 }
 
 export function buildFragmentShader(props: IProgramEvent, uniforms: IProgramUniforms): string {
-    const color = props.color ? props.color : DEFAULT_COLOR;
+  const color = props.color ? props.color : DEFAULT_COLOR;
 
-    const uniformsString = buildUniforms(uniforms);
+  const uniformsString = buildUniforms(uniforms);
 
-    let result =  `
+  let result = `
         ${COMMON_SHADER_HEADER}
         ${uniformsString}
         
@@ -101,24 +101,24 @@ export function buildFragmentShader(props: IProgramEvent, uniforms: IProgramUnif
             // {this.hasTexture ? "gl_FragColor = gl_FragColor * texture2D(pointTexture, gl_PointCoord);" : ""}
         }`;
 
-    return result;
+  return result;
 }
 
 export function buildVertexShader(props: IProgramEvent, uniforms: IProgramUniforms, meshType: number): string {
-    let uniformsString = buildUniforms(uniforms);
-    const hasTransformation = props.rotation || props.translation || props.scale;
+  let uniformsString = buildUniforms(uniforms);
+  const hasTransformation = props.rotation || props.translation || props.scale;
 
-    // TODO instanceMatrixIsRequired, must use a flag to detect instancing
-    // TODO apparently modelViewMatrix isn't set for instancing, instead use viewMatrix * modelMatrix
-    let vPosition: string[] = ["projectionMatrix", "modelViewMatrix"];
-    if(meshType === INSTANCED) vPosition.push( "instanceMatrix");
-    if(props.rotation) vPosition.push(ROTATION_MATRIX_X, ROTATION_MATRIX_Y, ROTATION_MATRIX_Z);
-    if(props.translation) vPosition.push(TRANSLATION_MATRIX);
-    if(props.scale) vPosition.push(SCALE_MATRIX);
+  // TODO instanceMatrixIsRequired, must use a flag to detect instancing
+  // TODO apparently modelViewMatrix isn't set for instancing, instead use viewMatrix * modelMatrix
+  let vPosition: string[] = ["projectionMatrix", "modelViewMatrix"];
+  if (meshType === INSTANCED) vPosition.push("instanceMatrix");
+  if (props.rotation) vPosition.push(ROTATION_MATRIX_X, ROTATION_MATRIX_Y, ROTATION_MATRIX_Z);
+  if (props.translation) vPosition.push(TRANSLATION_MATRIX);
+  if (props.scale) vPosition.push(SCALE_MATRIX);
 
-    vPosition.push("vec4(position, 1.0)");
+  vPosition.push("vec4(position, 1.0)");
 
-    let result = `
+  let result = `
         ${COMMON_SHADER_HEADER}
         varying vec4 modelViewPosition;
         ${hasTransformation ? "varying mat4 vPosition;" : ""}
@@ -149,20 +149,20 @@ export function buildVertexShader(props: IProgramEvent, uniforms: IProgramUnifor
             ${props.translation ? translationMatricies : ""}
             ${props.scale ? scaleMatricies : ""}
             
-            ${ props.pointSize && meshType === POINTS ? `gl_PointSize = ${props.pointSize};` : "" }
+            ${props.pointSize && meshType === POINTS ? `gl_PointSize = ${props.pointSize};` : ""}
 
             gl_Position = ${vPosition.join(" * ")};
         }
     `;
 
-    return result;
+  return result;
 }
 
 export function buildShaders(shaderData: IProgramEvent, uniforms: IProgramUniforms, meshType: number = DEFAULT) {
-    const result = {
-        vertextShader: buildVertexShader(shaderData, uniforms, meshType),
-        fragmentShader: buildFragmentShader(shaderData, uniforms)
-    }
+  const result = {
+    vertextShader: buildVertexShader(shaderData, uniforms, meshType),
+    fragmentShader: buildFragmentShader(shaderData, uniforms)
+  }
 
-    return result;
+  return result;
 }

@@ -5,17 +5,17 @@ import { useEffect } from 'react';
 const frameId = uuidv4();
 
 export default function PreviewWindow() {
-    const compiledProgram = useAppSelector(state => state.code.compiledProgram);
-    
-    useEffect(() => {
-        const element = document.getElementById(frameId) as HTMLIFrameElement;
+  const compiledProgram = useAppSelector(state => state.code.compiledProgram);
 
-        if(element && compiledProgram) {
-            element.contentWindow?.document.write(compiledProgram);
-        }
-    });
+  useEffect(() => {
+    const element = document.getElementById(frameId) as HTMLIFrameElement;
 
-    return (
-        <iframe style={{ width: "50vw", height: "50vh" }} id={frameId}></iframe>
-    )
+    if (element && compiledProgram) {
+      element.contentWindow?.document.write(compiledProgram);
+    }
+  });
+
+  return (
+    <iframe style={{ width: "50vw", height: "50vh" }} id={frameId}></iframe>
+  )
 }

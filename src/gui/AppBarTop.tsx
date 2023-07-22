@@ -1,7 +1,7 @@
 import {
-    AppBar,
-    IconButton,
-    Toolbar
+  AppBar,
+  IconButton,
+  Toolbar
 } from "@mui/material";
 import HardwareIcon from '@mui/icons-material/HardwareRounded';
 import DownloadIcon from '@mui/icons-material/DownloadRounded';
@@ -16,21 +16,21 @@ import { openPreviewWindow } from "../redux/GUISlice";
 
 export default function AppBarTop() {
   const dispatch = useAppDispatch();
-  const program = useAppSelector( state => state.code.program );
+  const program = useAppSelector(state => state.code.program);
   const builtProgram: string | null = useAppSelector(state => state.code.compiledProgram);
 
   const buildProgramWrapper = async () => {
     const compiledProgram = await buildProgram(program);
-    dispatch( setCompiledProgram(compiledProgram) );
+    dispatch(setCompiledProgram(compiledProgram));
   }
 
   const buildAndPlay = async () => {
     buildProgramWrapper();
-    dispatch( openPreviewWindow() );
+    dispatch(openPreviewWindow());
   }
 
   return (
-    <AppBar position="fixed" sx={{bottom: "auto", top: 0}}>
+    <AppBar position="fixed" sx={{ bottom: "auto", top: 0 }}>
       <Toolbar>
         <FileMenu />
         <RunMenu />

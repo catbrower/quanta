@@ -13,18 +13,18 @@ function buildAllUniforms(uniforms: IProgramUniforms): string {
 }
 
 // Build all shaders and return them as a dictionary
-function buildAllShaders(code: IProgram) : string {
+function buildAllShaders(code: IProgram): string {
   let uniforms = code.globals;
-    let result: {[name: string] : string} = {};
-    for(const obj of code.objects) {
-      for(const event of obj.events) {
-        const shaders = buildShaders(event, {...uniforms, ...obj.properties}, obj.mesh.type);
-        result[buildShaderName(FRAGMENT, obj.id, event.name)] = shaders.fragmentShader;
-        result[buildShaderName(VERTEX, obj.id, event.name)] = shaders.vertextShader;
-      }
+  let result: { [name: string]: string } = {};
+  for (const obj of code.objects) {
+    for (const event of obj.events) {
+      const shaders = buildShaders(event, { ...uniforms, ...obj.properties }, obj.mesh.type);
+      result[buildShaderName(FRAGMENT, obj.id, event.name)] = shaders.fragmentShader;
+      result[buildShaderName(VERTEX, obj.id, event.name)] = shaders.vertextShader;
     }
+  }
 
-    return `var SHADERS = ${JSON.stringify(result)};\n`;
+  return `var SHADERS = ${JSON.stringify(result)};\n`;
 }
 
 // TODO program is fixed to one scene atm
@@ -82,25 +82,25 @@ function buildMainLoop(programData: IProgram): string {
 }
 
 export default async function buildProgram(code: IProgram): Promise<string> {
-    // Fetch the latest minified threejs code
-    // https://stackoverflow.com/questions/50694881/how-to-download-file-in-react-js
+  // Fetch the latest minified threejs code
+  // https://stackoverflow.com/questions/50694881/how-to-download-file-in-react-js
 
-    const threeUrl = "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.154.0/three.min.js";
-    let THREE = await fetch(threeUrl, {
-      method: 'GET'
-    }).then(response => response.text());
+  const threeUrl = "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.154.0/three.min.js";
+  let THREE = await fetch(threeUrl, {
+    method: 'GET'
+  }).then(response => response.text());
 
-    let rawCode = `
+  let rawCode = `
       ${buildAllUniforms(code.globals)}
       ${buildAllShaders(code)}
       ${buildAllScenes(code)}
       ${buildAllObjects(code)}
       ${buildMainLoop(code)}
     `
-    // TODO either prettify or minify based on user specification
-    let finalCode = rawCode;
+  // TODO either prettify or minify based on user specification
+  let finalCode = rawCode;
 
-    const program = `
+  const program = `
     <html>
       <head>
         <title>my program</title>
@@ -129,5 +129,5 @@ export default async function buildProgram(code: IProgram): Promise<string> {
       </body>
     </hmtl>
     `
-    return program;
+  return program;
 }

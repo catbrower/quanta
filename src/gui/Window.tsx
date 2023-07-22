@@ -20,9 +20,9 @@ const Transition = React.forwardRef(function Transition(
   return <Grow in={true} ref={ref} {...props} />;
 });
 
-interface IProps {};
+interface IProps { };
 interface IState {
-    isOpen: boolean
+  isOpen: boolean
 };
 
 // TODO paper has an xs property, see if I can move the jankey css to that instead
@@ -37,7 +37,7 @@ export class PaperComponent extends React.Component<IProps, IState> {
         handle="#draggable-dialog-title"
         cancel={'[class*="MuiDialogContent-root"]'}
       >
-        <Paper {...this.props} sx={{}}/>
+        <Paper {...this.props} sx={{}} />
       </Draggable>
     )
   }
@@ -50,7 +50,7 @@ export default function Window(props: IWindow) {
 
   function handleClose(event: any, reason: any) {
     event.preventDefault();
-    if(reason && reason == "backdropClick") {
+    if (reason && reason == "backdropClick") {
       return;
     }
 
@@ -58,9 +58,9 @@ export default function Window(props: IWindow) {
   }
 
   function getDialogContent() {
-    if(window.type === "object") {
+    if (window.type === "object") {
       return (<ObjectEditor onClose={handleClose} object={window.data} />)
-    } else if(window.type === "preview") {
+    } else if (window.type === "preview") {
       return (<PreviewWindow />)
     } else {
       return (<>Unimplemented</>)
@@ -69,7 +69,7 @@ export default function Window(props: IWindow) {
 
   return (
     <>
-      <Box height="100%" style={{borderRadius: "5px", boxShadow: "inset 0px 0px 5px 0px rgba(0, 0, 0, 0.25)"}}>
+      <Box height="100%" style={{ borderRadius: "5px", boxShadow: "inset 0px 0px 5px 0px rgba(0, 0, 0, 0.25)" }}>
         <Typography>{props.name}</Typography>
       </Box>
 
@@ -85,12 +85,12 @@ export default function Window(props: IWindow) {
       >
         <DialogTitle style={{ cursor: 'move', height: "2em", display: "flex", padding: "10px 0px 25px 15px" }} id="draggable-dialog-title" className="dialogHeader">
           {window.name}
-          <Box style={{flex: "1"}} />
-          <IconButton onClick={() => {handleClose(null, "closeBtn")}}><CloseIcon fontSize="small"/></IconButton>
-          <IconButton><FullscreenIcon fontSize="small"/></IconButton>
-          <IconButton><MinimizeIcon fontSize="small"/></IconButton>
+          <Box style={{ flex: "1" }} />
+          <IconButton onClick={() => { handleClose(null, "closeBtn") }}><CloseIcon fontSize="small" /></IconButton>
+          <IconButton><FullscreenIcon fontSize="small" /></IconButton>
+          <IconButton><MinimizeIcon fontSize="small" /></IconButton>
         </DialogTitle>
-          {getDialogContent()}
+        {getDialogContent()}
       </Dialog>
     </>
   );

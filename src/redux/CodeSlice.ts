@@ -6,8 +6,8 @@ const testCube: IProgramObject = {
   name: "Test Cube",
   id: "0",
   mesh: { type: 0, args: {} },
-  geometry: { type: "box", args: {scale: { type: "float", value: "5" }} },
-  properties: { x: { type: "float", value: "0.2"}},
+  geometry: { type: "box", args: { scale: { type: "float", value: "5" } } },
+  properties: { x: { type: "float", value: "0.2" } },
   events: [
     {
       name: "create",
@@ -33,12 +33,12 @@ interface IProgramState {
 
 const initialState: IProgramState = {
   program: {
-    meta: {element: "/html/body"},
+    meta: { element: "/html/body" },
     globals: {
-        'time': {type: "float", value: "0.0"},
-        "seed": {type: "float", value: "0.0"},
-        "pi": {type: "float", value: `${Math.PI}`},
-        "e": {type: "float", value: `${Math.E}`}
+      'time': { type: "float", value: "0.0" },
+      "seed": { type: "float", value: "0.0" },
+      "pi": { type: "float", value: `${Math.PI}` },
+      "e": { type: "float", value: `${Math.E}` }
     },
     objects: [testCube]
   },
@@ -49,14 +49,14 @@ export const codeSlice = createSlice({
   name: "codeSlice",
   initialState,
   reducers: {
-    setMetaParams: (state, action) => {},
+    setMetaParams: (state, action) => { },
     addObject: (state, action) => {
       state.program.objects.push(action.payload)
     },
-    removeObject: (state, action) => {},
+    removeObject: (state, action) => { },
     updateObject: (state, action) => {
-      for(let i = 0; i < state.program.objects.length; i++) {
-        if(state.program.objects[i].id === action.payload.id) {
+      for (let i = 0; i < state.program.objects.length; i++) {
+        if (state.program.objects[i].id === action.payload.id) {
           state.program.objects[i] = action.payload;
         }
       }
@@ -64,7 +64,7 @@ export const codeSlice = createSlice({
     setCompiledProgram: (state, action) => {
       state.compiledProgram = action.payload;
     },
-    run: (state, action) => {}
+    run: (state, action) => { }
   }
 });
 
