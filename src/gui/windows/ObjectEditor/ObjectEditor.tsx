@@ -1,10 +1,13 @@
-import { Box, Button, DialogActions, DialogContent, FormControl, Stack, Tab, Tabs, TextField, styled } from "@mui/material";
-import { IProgramEvent, IProgramObject } from "../../../program/Interfaces";
+import { Box, Button, DialogActions, DialogContent, Stack, Tab, Tabs, TextField, styled } from "@mui/material";
 import { useReducer, useState } from "react";
+import { OBJECT_JSON_PATH_SEPERATOR, deepCopyJSON, updateJSONValue } from "../../../Common";
+import { IProgramColor, IProgramEvent, IProgramObject } from "../../../program/Interfaces";
+import { updateObjectEditorData } from "../../../redux/GUISlice";
 import { useAppDispatch } from "../../../redux/Hooks";
-import { updateObject } from "../../../redux/CodeSlice";
+import { IWindow } from "../../GUITypes";
 import EditableColor from "./EditableColor";
 import EditableEuler from "./EditableEuler";
+import { updateObject } from "../../../redux/CodeSlice";
 
 const modalWidth = 500;
 
@@ -122,26 +125,54 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
-interface IEditorSectionProps extends IProgramEvent {
-  onChange: any
+interface IEventEditorProps extends IProgramEvent {
+  name: string,
+  event: IProgramEvent,
+  onUpdate: any
 }
 
 // TODO check for / create a new interface to specify props
 // events should have the exact same type as this
 // doing it this way, I can avoid writing a specialized editor for each event
-function EditorSection(props: IEditorSectionProps) {
+function EventEditor(props: IEventEditorProps) {
+  const dispatch = useAppDispatch();
+  const onUpdate = (path: string, data: any) => {
+    dispatch(updateObjectEditorData({ data: data, path: path }))
+  }
+
   let properties = [];
-  if (props.color)
-    properties.push((<EditableColor name="Color" {...props.color} />));
+  const path = `event.${props.name}`;
+  if (props.event.color)
+    properties.push((
+      <EditableColor
+        name={`${props.name}${OBJECT_JSON_PATH_SEPERATOR}color`}
+        onUpdate={props.onUpdate}
+        data={props.event.color} />
+    ));
 
-  if (props.rotation)
-    properties.push((<EditableEuler name="Rotation" {...props.rotation} />));
+  if (props.event.rotation)
+    properties.push((
+      <EditableEuler
+        name={`${props.name}${OBJECT_JSON_PATH_SEPERATOR}rotation`}
+        onUpdate={props.onUpdate}
+        data={props.event.rotation} />
+    ));
 
-  if (props.translation)
-    properties.push((<EditableEuler name="translation" {...props.translation} />));
+  if (props.event.translation)
+    properties.push((
+      <EditableEuler
+        name={`${props.name}${OBJECT_JSON_PATH_SEPERATOR}translation`}
+        onUpdate={props.onUpdate}
+        data={props.event.translation} />
+    ));
 
-  if (props.scale)
-    properties.push((<EditableEuler name="scale" {...props.scale} />));
+  if (props.event.scale)
+    properties.push((
+      <EditableEuler
+        name={`${props.name}${OBJECT_JSON_PATH_SEPERATOR}scale`}
+        onUpdate={props.onUpdate}
+        data={props.event.scale} />
+    ));
 
   return (
     <Stack direction="column" spacing={1} py={1}>
@@ -150,21 +181,45 @@ function EditorSection(props: IEditorSectionProps) {
   )
 }
 
-const formReducer = (state: any, event: any) => {
-  return {
-    ...state,
-    [event.target.name]: event.target.value
-  }
-}
-
 interface IObjectEditorProps {
+  window: IWindow,
   object: IProgramObject,
   onClose: any
 }
 export default function ObjectEditor(props: IObjectEditorProps) {
+  const formReducer = (state: IProgramObject, event: any) => {
+    let result = deepCopyJSON(state);
+    const path = event.target.name;
+    const pathParts = path.split(OBJECT_JSON_PATH_SEPERATOR);
+    if (pathParts[0] === "event") {
+      for (let eventIndex = 0; eventIndex < props.object.events.length; eventIndex++) {
+        const objEvent = props.object.events[eventIndex];
+        if (objEvent.name !== pathParts[1]) {
+          continue;
+        }
+
+        if (pathParts[2] === "color") {
+          result.events[eventIndex].color = updateJSONValue(result.events[eventIndex].color, pathParts[3], event.target.value) as IProgramColor;
+        }
+      }
+    }
+
+    return result;
+  }
+
+  // const formReducer = (state: any, event: any) => {
+  //   let data = state;
+  //   const pathParts = event.target.name.split(OBJECT_JSON_PATH_SEPERATOR);
+  //   const last = pathParts.pop();
+  //   pathParts.forEach((e: string) => (data[e] = data[e] || {}) && (data = data[e]));
+  //   data[last] = event.target.value;
+
+  //   console.log(state);
+  //   return state;
+  // }
+
   const [tabIndex, setTabIndex] = useState(0);
   const [formData, setFormData] = useReducer(formReducer, props.object);
-  const objectId = props.object.id;
   const dispatch = useAppDispatch();
   const handleTabChange = (event: React.SyntheticEvent, newIndex: number) => {
     setTabIndex(newIndex);
@@ -172,11 +227,8 @@ export default function ObjectEditor(props: IObjectEditorProps) {
 
   function handleSave(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    // console.log(windowEditData);
     dispatch(updateObject(formData));
-  }
-
-  function updateEvent(eventIndex: number, eventData: IProgramEvent) {
-    console.log(eventData);
   }
 
   return (
@@ -194,20 +246,20 @@ export default function ObjectEditor(props: IObjectEditorProps) {
             })}
           </Tabs>
           <TabPanel value={tabIndex} index={0}>
-            <TextField variant="standard" onChange={setFormData} label="Name" name="name" defaultValue={props.object.name} />
+            <TextField variant="standard" label="Name" name="name" onChange={setFormData} defaultValue={props.object.name} />
           </TabPanel>
 
           {formData.events.map((item: IProgramEvent, index: number) => {
             return (
               <TabPanel value={tabIndex} index={1}>
-                <EditorSection onChange={(newData: IProgramEvent) => updateEvent(index - 1, newData)} {...item} />
+                <EventEditor onUpdate={setFormData} name={`event${OBJECT_JSON_PATH_SEPERATOR}${item.name}`} event={item} />
               </TabPanel>
             )
           })}
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button type="submit" >
+        <Button type="submit">
           Save
         </Button>
         <Button onClick={() => { props.onClose(null, "closeBtn") }}>

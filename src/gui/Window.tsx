@@ -1,7 +1,7 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grow, IconButton, Paper, Slide, Typography } from "@mui/material";
 import React from "react";
 import Draggable from "react-draggable";
-import { IWindow } from "./GUITypes";
+import { IEditorWindow, IWindow } from "./GUITypes";
 import { useAppDispatch } from "../redux/Hooks";
 import { closeObjectWindow } from "../redux/GUISlice";
 import ObjectEditor from "./windows/ObjectEditor/ObjectEditor";
@@ -10,6 +10,7 @@ import FullscreenIcon from "@mui/icons-material/FullscreenRounded";
 import MinimizeIcon from "@mui/icons-material/MinimizeRounded";
 import { TransitionProps } from "@mui/material/transitions";
 import PreviewWindow from "./windows/PreviewWindow";
+import { IProgramObject } from "../program/Interfaces";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -49,7 +50,7 @@ export default function Window(props: IWindow) {
   const window = props;
 
   function handleClose(event: any, reason: any) {
-    event.preventDefault();
+    // event.preventDefault();
     if (reason && reason == "backdropClick") {
       return;
     }
@@ -59,7 +60,7 @@ export default function Window(props: IWindow) {
 
   function getDialogContent() {
     if (window.type === "object") {
-      return (<ObjectEditor onClose={handleClose} object={window.data} />)
+      return (<ObjectEditor window={props} onClose={handleClose} object={(window as IEditorWindow<IProgramObject>).data} />)
     } else if (window.type === "preview") {
       return (<PreviewWindow />)
     } else {

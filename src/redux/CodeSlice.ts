@@ -55,6 +55,7 @@ export const codeSlice = createSlice({
     },
     removeObject: (state, action) => { },
     updateObject: (state, action) => {
+      console.log(action.payload)
       for (let i = 0; i < state.program.objects.length; i++) {
         if (state.program.objects[i].id === action.payload.id) {
           state.program.objects[i] = action.payload;
