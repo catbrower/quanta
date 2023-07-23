@@ -1,16 +1,16 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grow, IconButton, Paper, Slide, Typography } from "@mui/material";
-import React from "react";
-import Draggable from "react-draggable";
-import { IEditorWindow, IWindow } from "./GUITypes";
-import { useAppDispatch } from "../redux/Hooks";
-import { closeObjectWindow } from "../redux/GUISlice";
-import ObjectEditor from "./windows/ObjectEditor/ObjectEditor";
 import CloseIcon from "@mui/icons-material/CloseRounded";
 import FullscreenIcon from "@mui/icons-material/FullscreenRounded";
 import MinimizeIcon from "@mui/icons-material/MinimizeRounded";
+import { Box, Dialog, DialogTitle, Grow, IconButton, Paper, Typography } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
-import PreviewWindow from "./windows/PreviewWindow";
+import React from "react";
+import Draggable from "react-draggable";
 import { IProgramObject } from "../program/Interfaces";
+import { closeObjectWindow } from "../redux/GUISlice";
+import { useAppDispatch } from "../redux/Hooks";
+import { IEditorWindow, IWindow } from "./GUITypes";
+import ObjectEditor from "./windows/ObjectEditor/ObjectEditor";
+import PreviewWindow from "./windows/PreviewWindow";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -27,21 +27,18 @@ interface IState {
 };
 
 // TODO paper has an xs property, see if I can move the jankey css to that instead
-export class PaperComponent extends React.Component<IProps, IState> {
-  constructor(props: IProps) {
-    super(props);
-  }
+function PaperComponent(props: any) {
+  const nodeRef = React.useRef(null);
 
-  render() {
-    return (
-      <Draggable
-        handle="#draggable-dialog-title"
-        cancel={'[class*="MuiDialogContent-root"]'}
-      >
-        <Paper {...this.props} sx={{}} />
-      </Draggable>
-    )
-  }
+  return (
+    <Draggable
+      handle="#draggable-dialog-title"
+      cancel={'[class*="MuiDialogContent-root"]'}
+      nodeRef={nodeRef}
+    >
+      <Paper ref={nodeRef} {...props} />
+    </Draggable>
+  )
 }
 
 // TODO this componet dissapears on close, this breaks the outgoing transition
@@ -76,7 +73,6 @@ export default function Window(props: IWindow) {
 
       <Dialog
         open={true}
-        TransitionComponent={Transition}
         onClose={handleClose}
         PaperComponent={PaperComponent}
         aria-labelledby="draggable-dialog-title"

@@ -8,6 +8,7 @@ import { IWindow } from "../../GUITypes";
 import EditableColor from "./EditableColor";
 import EditableEuler from "./EditableEuler";
 import { updateObject } from "../../../redux/CodeSlice";
+import { v4 as uuidv4 } from 'uuid';
 
 const modalWidth = 500;
 
@@ -142,37 +143,49 @@ function EventEditor(props: IEventEditorProps) {
 
   let properties = [];
   const path = `event.${props.name}`;
-  if (props.event.color)
+  if (props.event.color) {
+    const name = `${props.name}${OBJECT_JSON_PATH_SEPERATOR}color`;
     properties.push((
       <EditableColor
-        name={`${props.name}${OBJECT_JSON_PATH_SEPERATOR}color`}
+        key={uuidv4()}
+        name={name}
         onUpdate={props.onUpdate}
         data={props.event.color} />
     ));
+  }
 
-  if (props.event.rotation)
+  if (props.event.rotation) {
+    const name = `${props.name}${OBJECT_JSON_PATH_SEPERATOR}rotation`;
     properties.push((
       <EditableEuler
-        name={`${props.name}${OBJECT_JSON_PATH_SEPERATOR}rotation`}
+        key={uuidv4()}
+        name={name}
         onUpdate={props.onUpdate}
         data={props.event.rotation} />
     ));
+  }
 
-  if (props.event.translation)
+  if (props.event.translation) {
+    const name = `${props.name}${OBJECT_JSON_PATH_SEPERATOR}translation`;
     properties.push((
       <EditableEuler
-        name={`${props.name}${OBJECT_JSON_PATH_SEPERATOR}translation`}
+        key={uuidv4()}
+        name={name}
         onUpdate={props.onUpdate}
         data={props.event.translation} />
     ));
+  }
 
-  if (props.event.scale)
+  if (props.event.scale) {
+    const name = `${props.name}${OBJECT_JSON_PATH_SEPERATOR}scale`
     properties.push((
       <EditableEuler
-        name={`${props.name}${OBJECT_JSON_PATH_SEPERATOR}scale`}
+        key={uuidv4()}
+        name={name}
         onUpdate={props.onUpdate}
         data={props.event.scale} />
     ));
+  }
 
   return (
     <Stack direction="column" spacing={1} py={1}>
@@ -190,6 +203,13 @@ export default function ObjectEditor(props: IObjectEditorProps) {
   const formReducer = (state: IProgramObject, event: any) => {
     let result = deepCopyJSON(state);
     const path = event.target.name;
+    if (path === "name") {
+      return {
+        ...result,
+        [event.target.name]: event.target.value
+      }
+    }
+
     const pathParts = path.split(OBJECT_JSON_PATH_SEPERATOR);
     if (pathParts[0] === "event") {
       for (let eventIndex = 0; eventIndex < props.object.events.length; eventIndex++) {
@@ -207,17 +227,6 @@ export default function ObjectEditor(props: IObjectEditorProps) {
     return result;
   }
 
-  // const formReducer = (state: any, event: any) => {
-  //   let data = state;
-  //   const pathParts = event.target.name.split(OBJECT_JSON_PATH_SEPERATOR);
-  //   const last = pathParts.pop();
-  //   pathParts.forEach((e: string) => (data[e] = data[e] || {}) && (data = data[e]));
-  //   data[last] = event.target.value;
-
-  //   console.log(state);
-  //   return state;
-  // }
-
   const [tabIndex, setTabIndex] = useState(0);
   const [formData, setFormData] = useReducer(formReducer, props.object);
   const dispatch = useAppDispatch();
@@ -225,14 +234,12 @@ export default function ObjectEditor(props: IObjectEditorProps) {
     setTabIndex(newIndex);
   }
 
-  function handleSave(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    // console.log(windowEditData);
+  function handleSave(event: any) {
     dispatch(updateObject(formData));
   }
 
   return (
-    <form onSubmit={handleSave}>
+    <>
       <DialogContent>
         <Box sx={{ flexGrow: 1, bgcolor: 'background.paper', display: 'flex', height: 224 }} >
           <Tabs
@@ -242,7 +249,7 @@ export default function ObjectEditor(props: IObjectEditorProps) {
           >
             <Tab label="Properties" value={0} />
             {formData.events.map((item: IProgramEvent, index: number) => {
-              return (<Tab label={item.name} value={index + 1} />)
+              return (<Tab key={uuidv4()} label={item.name} value={index + 1} />)
             })}
           </Tabs>
           <TabPanel value={tabIndex} index={0}>
@@ -251,7 +258,7 @@ export default function ObjectEditor(props: IObjectEditorProps) {
 
           {formData.events.map((item: IProgramEvent, index: number) => {
             return (
-              <TabPanel value={tabIndex} index={1}>
+              <TabPanel key={uuidv4()} value={tabIndex} index={1}>
                 <EventEditor onUpdate={setFormData} name={`event${OBJECT_JSON_PATH_SEPERATOR}${item.name}`} event={item} />
               </TabPanel>
             )
@@ -259,13 +266,13 @@ export default function ObjectEditor(props: IObjectEditorProps) {
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button type="submit">
+        <Button onClick={handleSave}>
           Save
         </Button>
         <Button onClick={() => { props.onClose(null, "closeBtn") }}>
           Close
         </Button>
       </DialogActions>
-    </form>
+    </>
   )
 }
