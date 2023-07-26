@@ -3,7 +3,7 @@ import QuantaObject from './QuantaObject';
 import Scope from '../types/Scope';
 import ObjectBuilder from '../../program/builder/ObjectBuilder';
 import $ from "jquery";
-import { IProgram } from '../../program/Interfaces';
+import { IProgram } from '../../program/ProgramInterfaces';
 
 export default class Universe {
   // private scene: THREE.Scene;

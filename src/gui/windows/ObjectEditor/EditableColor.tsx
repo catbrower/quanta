@@ -1,8 +1,8 @@
-import { Stack, TextField } from "@mui/material";
+import { Stack, TextField, capitalize } from "@mui/material";
 import { useReducer } from "react";
-import { IProgramColor } from "../../../program/Interfaces";
+import { IProgramColor } from "../../../program/ProgramInterfaces";
 import CollapsableProperty from "./CollapsableProperty";
-import { OBJECT_JSON_PATH_SEPERATOR } from "../../../Common";
+import { OBJECT_JSON_PATH_SEPERATOR, lastItem } from "../../../Common";
 
 interface IEditableColorProps {
   name: string,
@@ -12,7 +12,7 @@ interface IEditableColorProps {
 
 export default function EditableColor(props: IEditableColorProps) {
   return (
-    <CollapsableProperty name={props.name}>
+    <CollapsableProperty name={`Set ${capitalize(lastItem(props.name.split(OBJECT_JSON_PATH_SEPERATOR)))}`}>
       <Stack direction="column" spacing={2}>
         <TextField variant="standard" id="color_r" label="R" name={`${props.name}${OBJECT_JSON_PATH_SEPERATOR}r`} onChange={props.onUpdate} defaultValue={props.data.r} />
         <TextField variant="standard" id="color_g" label="G" name={`${props.name}${OBJECT_JSON_PATH_SEPERATOR}g`} onChange={props.onUpdate} defaultValue={props.data.g} />

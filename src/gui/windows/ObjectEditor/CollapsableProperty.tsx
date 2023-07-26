@@ -9,7 +9,7 @@ export default function CollapsableProperty(props: any) {
         aria-controls="panel1a-content"
         id="panel1a-header"
       >
-        <Typography>Set {props.name}</Typography>
+        <Typography>{props.name}</Typography>
       </AccordionSummary>
       <AccordionDetails>
         {props.children}

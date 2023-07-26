@@ -1,73 +1,89 @@
-import { DEFAULT, INSTANCED, POINTS } from "../MeshTypes";
-import { IProgramColor, IProgramEvent, IProgramUniforms } from "../Interfaces";
+import { LineSegments } from "three";
+import { EVENT_STEP_ROTATE, EVENT_STEP_SCALE, EVENT_STEP_TRANSFORMATIONS, EVENT_STEP_TRANSLATE, MESH_TYPE_INSTANCED, MESH_TYPE_POINTS } from "../../Constants";
+import { IProgramColor, IProgramEuler, IProgramEvent, IProgramEventStep, IProgramUniforms } from "../ProgramInterfaces";
+import { generateRandomFunctionName, indentLine } from "../../Common";
 
-// String constants
-const ROTATION_X: string = "rotation_x";
-const ROTATION_Y: string = "rotation_y";
-const ROTATION_Z: string = "rotation_z";
-const TRANSLATION_X: string = "translation_x";
-const TRANSLATION_Y: string = "translation_y";
-const TRANSLATION_Z: string = "translation_z";
-const SCALE_X: string = "scale_x";
-const SCALE_Y: string = "scale_y";
-const SCALE_Z: string = "scale_z";
-const ROTATION_MATRIX_X: string = "rotation_matrix_x";
-const ROTATION_MATRIX_Y: string = "rotation_matrix_y";
-const ROTATION_MATRIX_Z: string = "rotation_matrix_z";
-const TRANSLATION_MATRIX: string = "translation_matrix";
-const SCALE_MATRIX: string = "scale_matrix";
+// TODO these functions should return a string representation of a function that
+// takes a mat4 as input, applies these transforms, and returns the result
+// that way, I can take advantage of only applying the tring functions once
+// without polluting scope. They can then all be chained together at the end
+// to calculate the final vertex positions
 
-const rotationMatricies = `
-// Rotation
-float srx = cos(${ROTATION_X});
-float crx = sin(${ROTATION_X});
-float sry = cos(${ROTATION_Y});
-float cry = sin(${ROTATION_Y});
-float srz = cos(${ROTATION_Z});
-float crz = sin(${ROTATION_Z});
+// TODO for rotation, it can be optimized more by checking if any of the rotations are zero and excluding those
+const rotationMatrixFunction = (rotX: string, rotY: string, rotZ: string): string[] => {
+  const offset = 5;
+  const funcName = generateRandomFunctionName();
+  const lines = [
+    `mat4 rotate_${funcName}(mat4 input) {`,
+    indentLine(`mat4 x = mat4(vec4(1.0, 0.0,  0.0, 0.0),`, 1),
+    indentLine(`vec4(0.0, crx, -srx, 0.0),`, offset),
+    indentLine(`vec4(0.0, srx,  crx, 0.0),`, offset),
+    indentLine(`vec4(0.0, 0.0,  0.0, 1.0));`, offset),
+    "",
+    indentLine(`mat4 y = mat4(vec4( cry, 0.0, sry, 0.0),`, 1),
+    indentLine(`vec4( 0.0, 1.0, 0.0, 0.0),`, offset),
+    indentLine(`vec4(-sry, 0.0, cry, 0.0),`, offset),
+    indentLine(`vec4( 0.0, 0.0, 0.0, 1.0));`, offset),
+    "",
+    indentLine(`mat4 z = mat4(vec4(crz, -srz, 0.0, 0.0),`, 1),
+    indentLine(`vec4(srz,  crz, 0.0, 0.0),`, offset),
+    indentLine(`vec4(0.0,  0.0, 1.0, 0.0),`, offset),
+    indentLine(`vec4(0.0,  0.0, 0.0, 1.0));`, offset),
+    "",
+    indentLine(`return input * x * y * z;`, 1),
+    `}`
+  ];
 
-mat4 ${ROTATION_MATRIX_X} = mat4(
-    vec4(1.0, 0.0,  0.0, 0.0), 
-    vec4(0.0, crx, -srx, 0.0), 
-    vec4(0.0, srx,  crx, 0.0), 
-    vec4(0.0, 0.0,  0.0, 1.0)
-);
+  return [lines.join('\n'), funcName];
+}
 
-mat4 ${ROTATION_MATRIX_Y} = mat4(
-    vec4( cry, 0.0, sry, 0.0), 
-    vec4( 0.0, 1.0, 0.0, 0.0), 
-    vec4(-sry, 0.0, cry, 0.0), 
-    vec4( 0.0, 0.0, 0.0, 1.0)
-);
+const translationMatrixFunction = (transX: string, transY: string, transZ: string): string[] => {
+  const funcName = generateRandomFunctionName();
+  const offset = 4;
+  const lines = [
+    `mat4 trans_${funcName}(mat4 input) {`,
+    indentLine(`mat4 rotation = mat4(`, 1),
+    indentLine(`vec4(1.0, 0.0, 0.0, 0.0),`, offset),
+    indentLine(`vec4(0.0, 1.0, 0.0, 0.0),`, offset),
+    indentLine(`vec4(0.0, 0.0, 1.0, 0.0),`, offset),
+    indentLine(`vec4(${transX}, ${transY}, ${transZ}, 1.0));`, offset),
+    indentLine(`return input * rotation;`, 1),
+    `}`
+  ];
 
-mat4 ${ROTATION_MATRIX_Z} = mat4(
-    vec4(crz, -srz, 0.0, 0.0), 
-    vec4(srz,  crz, 0.0, 0.0), 
-    vec4(0.0,  0.0, 1.0, 0.0), 
-    vec4(0.0,  0.0, 0.0, 1.0)
-);
-`;
+  return [lines.join('\n'), funcName];
+}
 
-const translationMatricies = `
-// Translation
-mat4 ${TRANSLATION_MATRIX} = mat4(
-    vec4(1.0, 0.0, 0.0, 0.0), 
-    vec4(0.0, 1.0, 0.0, 0.0), 
-    vec4(0.0, 0.0, 1.0, 0.0), 
-    vec4(${TRANSLATION_X}, ${TRANSLATION_Y}, ${TRANSLATION_Z}, 1.0)
-);
-`;
+const scaleMatrixFunction = (scaleX: string, scaleY: string, scaleZ: string): string[] => {
+  const funcName = generateRandomFunctionName();
+  const offset = 4;
+  const lines = [
+    `mat4 scale_${funcName}(mat4 input) {`,
+    indentLine(`mat4 scale = mat4(`, 1),
+    indentLine(`vec4(${scaleX}, 0.0, 0.0, 0.0),`, offset),
+    indentLine(`vec4(0.0, ${scaleY}, 0.0, 0.0),`, offset),
+    indentLine(`vec4(0.0, 0.0, ${scaleZ}, 0.0),`, offset),
+    indentLine(`vec4(0.0, 0.0, 0.0, 1.0));`, offset),
+    indentLine(`return input * scale;`, 1),
+    `}`
+  ]
 
-const scaleMatricies = `
-// Scale
-mat4 ${SCALE_MATRIX} = mat4(
-    vec4(${SCALE_X}, 0.0, 0.0, 0.0), 
-    vec4(0.0, ${SCALE_Y}, 0.0, 0.0), 
-    vec4(0.0, 0.0, ${SCALE_Z}, 0.0), 
-    vec4(0.0, 0.0, 0.0, 1.0)
-);
-`;
+  return [lines.join('\n'), funcName];
+}
 
+const eventStepToTransFunc = (step: IProgramEventStep) => {
+  const content = step.content as IProgramEuler
+  switch (step.type) {
+    case EVENT_STEP_ROTATE:
+      return rotationMatrixFunction(content.x, content.y, content.z);
+    case EVENT_STEP_SCALE:
+      return scaleMatrixFunction(content.x, content.y, content.z);
+    case EVENT_STEP_TRANSLATE:
+      return translationMatrixFunction(content.x, content.y, content.z);
+    default:
+      throw new Error("Provided EventStep is not a type of transformation");
+  }
+}
 
 const COMMON_SHADER_HEADER: string = `varying vec3 vUv;`;
 
@@ -80,7 +96,8 @@ function buildUniforms(uniforms: IProgramUniforms): string {
 }
 
 export function buildFragmentShader(props: IProgramEvent, uniforms: IProgramUniforms): string {
-  const color = props.color ? props.color : DEFAULT_COLOR;
+  // const color = props.color ? props.color : DEFAULT_COLOR;
+  const color = DEFAULT_COLOR;
 
   const uniformsString = buildUniforms(uniforms);
 
@@ -104,18 +121,16 @@ export function buildFragmentShader(props: IProgramEvent, uniforms: IProgramUnif
   return result;
 }
 
-export function buildVertexShader(props: IProgramEvent, uniforms: IProgramUniforms, meshType: number): string {
+export function buildVertexShader(props: IProgramEvent, uniforms: IProgramUniforms, meshType: string): string {
   let uniformsString = buildUniforms(uniforms);
-  const hasTransformation = props.rotation || props.translation || props.scale;
+  const steps = props.steps;
+  const hasTransformation = steps.map((step) => step.type in EVENT_STEP_TRANSFORMATIONS).reduce((acc, cur) => acc || cur);
+  const transformationFuncs = steps.filter((step) => step.type in EVENT_STEP_TRANSFORMATIONS).map((step) => eventStepToTransFunc(step));
 
   // TODO instanceMatrixIsRequired, must use a flag to detect instancing
   // TODO apparently modelViewMatrix isn't set for instancing, instead use viewMatrix * modelMatrix
   let vPosition: string[] = ["projectionMatrix", "modelViewMatrix"];
-  if (meshType === INSTANCED) vPosition.push("instanceMatrix");
-  if (props.rotation) vPosition.push(ROTATION_MATRIX_X, ROTATION_MATRIX_Y, ROTATION_MATRIX_Z);
-  if (props.translation) vPosition.push(TRANSLATION_MATRIX);
-  if (props.scale) vPosition.push(SCALE_MATRIX);
-
+  if (meshType === MESH_TYPE_INSTANCED) vPosition.push("instanceMatrix");
   vPosition.push("vec4(position, 1.0)");
 
   let result = `
@@ -126,39 +141,16 @@ export function buildVertexShader(props: IProgramEvent, uniforms: IProgramUnifor
 
         void main() {
             vUv = position;
-            
-            ${props.rotation ? `
-                float rotation_x = ${props.rotation.x};
-                float rotation_y = ${props.rotation.y};
-                float rotation_z = ${props.rotation.z};
-            `: ""}
-
-            ${props.translation ? `
-                float translation_x = ${props.translation.x};
-                float translation_y = ${props.translation.y};
-                float translation_z = ${props.translation.z};
-            `: ""}
-
-            ${props.scale ? `
-                float scale_x = ${props.scale.x};
-                float scale_y = ${props.scale.y};
-                float scale_z = ${props.scale.z};
-            `: ""}
-
-            ${props.rotation ? rotationMatricies : ""}
-            ${props.translation ? translationMatricies : ""}
-            ${props.scale ? scaleMatricies : ""}
-            
-            ${props.pointSize && meshType === POINTS ? `gl_PointSize = ${props.pointSize};` : ""}
-
-            gl_Position = ${vPosition.join(" * ")};
+            gl_Position = ${vPosition.join(" * ")};    
         }
     `;
 
+  // Point size is removed for now
+  // ${ props.pointSize && meshType === MESH_TYPE_POINTS ? `gl_PointSize = ${props.pointSize};` : "" }
   return result;
 }
 
-export function buildShaders(shaderData: IProgramEvent, uniforms: IProgramUniforms, meshType: number = DEFAULT) {
+export function buildShaders(shaderData: IProgramEvent, uniforms: IProgramUniforms, meshType: string) {
   const result = {
     vertextShader: buildVertexShader(shaderData, uniforms, meshType),
     fragmentShader: buildFragmentShader(shaderData, uniforms)

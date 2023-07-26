@@ -1,27 +1,40 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { IProgram, IProgramObject } from "../program/Interfaces";
+import { IProgram, IProgramObject } from "../program/ProgramInterfaces";
+import { EVENT_STEP_COLOR, EVENT_STEP_ROTATE, MESH_TYPE_DEFAULT } from "../Constants";
+import { v4 as uuidv4 } from 'uuid';
 
 // TODO need a way to reference aspects of mesh / geomeyry or set them based on props
 const testCube: IProgramObject = {
   name: "Test Cube",
   id: "0",
-  mesh: { type: 0, args: {} },
+  mesh: { type: MESH_TYPE_DEFAULT, args: {} },
   geometry: { type: "box", args: { scale: { type: "float", value: "5" } } },
   properties: { x: { type: "float", value: "0.2" } },
   events: [
     {
       name: "create",
-      color: {
-        r: "pow(sin(time + position.x * x + pi/3.0), 2.0)",
-        g: "pow(sin(time + position.y * x + 2.0*pi/3.0), 2.0)",
-        b: "pow(sin(time + position.z * x + pi), 2.0)",
-        a: "1.0"
-      },
-      rotation: {
-        x: "time",
-        y: "time",
-        z: "0.0"
-      }
+      steps: [
+        {
+          type: EVENT_STEP_COLOR,
+          id: uuidv4(),
+          content: {
+            r: "pow(sin(time + position.x * x + pi/3.0), 2.0)",
+            g: "pow(sin(time + position.y * x + 2.0*pi/3.0), 2.0)",
+            b: "pow(sin(time + position.z * x + pi), 2.0)",
+            a: "1.0"
+          }
+        },
+        {
+          type: EVENT_STEP_ROTATE,
+          id: uuidv4(),
+          content: {
+            x: "time",
+            y: "time",
+            z: "0.0"
+          }
+        }
+      ]
+
     }
   ]
 }

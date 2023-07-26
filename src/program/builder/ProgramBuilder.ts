@@ -1,5 +1,5 @@
 import { buildShaderName } from "../../Common";
-import { IProgram, IProgramUniforms } from "../Interfaces";
+import { IProgram, IProgramUniforms } from "../ProgramInterfaces";
 import { FRAGMENT, VERTEX } from "../ShaderTypes";
 import buildObject from "./ObjectBuilder";
 import { buildShaders } from "./ShaderBuilder";
