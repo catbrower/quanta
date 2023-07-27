@@ -16,13 +16,6 @@ export function innerJSON(json: any): string {
   return result;
 }
 
-export function simpleJSONReducer(state: any, event: any) {
-  return {
-    ...state,
-    [event.target.name]: event.target.value
-  }
-}
-
 // Typescript doesn't like that many of the json objects can potentially be undefined
 // utility function to handle the eslint error so I don't have to do it a bunch of times
 export function updateJSONValue(json: {} | undefined, name: string, value: any) {
@@ -90,4 +83,26 @@ export function generateRandomFunctionName(length: number = 16, allowNums: boole
     result += allChars[index];
   }
   return result;
+}
+
+//TODO doesn't format multiline '( )'
+export function format(code: string): string {
+  let lines = code.split('\n').map((line) => line.replace(/^\s+|\s+$/g, '')).filter((line) => line.length > 0);
+  let resultLines = [];
+  let indent = 0;
+  for (const line of lines) {
+    resultLines.push(indentLine(line, indent));
+    const bracketDeficit = line.split("").map((char): number => {
+      if (char === '{') {
+        return 1;
+      } else if (char === '}') {
+        return -1;
+      } else {
+        return 0;
+      }
+    }).reduce((acc, item) => acc + item)
+    indent += bracketDeficit;
+  }
+
+  return resultLines.join('\n');
 }

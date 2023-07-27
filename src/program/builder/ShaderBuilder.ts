@@ -1,7 +1,6 @@
-import { LineSegments } from "three";
-import { EVENT_STEP_ROTATE, EVENT_STEP_SCALE, EVENT_STEP_TRANSFORMATIONS, EVENT_STEP_TRANSLATE, MESH_TYPE_INSTANCED, MESH_TYPE_POINTS } from "../../Constants";
-import { IProgramColor, IProgramEuler, IProgramEvent, IProgramEventStep, IProgramUniforms } from "../ProgramInterfaces";
 import { generateRandomFunctionName, indentLine } from "../../Common";
+import { EVENT_STEPS, EVENT_STEP_TRANSFORMATIONS, MESH_TYPE_INSTANCED } from "../../Constants";
+import { IProgramColor, IProgramEuler, IProgramEvent, IProgramEventStep, IProgramUniforms } from "../ProgramInterfaces";
 
 // TODO these functions should return a string representation of a function that
 // takes a mat4 as input, applies these transforms, and returns the result
@@ -74,11 +73,11 @@ const scaleMatrixFunction = (scaleX: string, scaleY: string, scaleZ: string): st
 const eventStepToTransFunc = (step: IProgramEventStep) => {
   const content = step.content as IProgramEuler
   switch (step.type) {
-    case EVENT_STEP_ROTATE:
+    case EVENT_STEPS.SET_ROTATION:
       return rotationMatrixFunction(content.x, content.y, content.z);
-    case EVENT_STEP_SCALE:
+    case EVENT_STEPS.SET_SCALE:
       return scaleMatrixFunction(content.x, content.y, content.z);
-    case EVENT_STEP_TRANSLATE:
+    case EVENT_STEPS.SET_TRANSLATE:
       return translationMatrixFunction(content.x, content.y, content.z);
     default:
       throw new Error("Provided EventStep is not a type of transformation");

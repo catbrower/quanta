@@ -2,9 +2,10 @@ import {
   AdditiveBlending,
   BufferGeometry
 } from "three";
-import { buildShaderName, innerJSON } from "../../Common";
-import { MESH_TYPE_DEFAULT, MESH_TYPE_INSTANCED, MESH_TYPE_POINTS } from "../../Constants";
-import { IProgramGeometry, IProgramMesh, IProgramObject } from "../ProgramInterfaces";
+import { buildShaderName, format, innerJSON } from "../../Common";
+import { MATERIAL_TYPES, MESH_TYPE_DEFAULT, MESH_TYPE_INSTANCED, MESH_TYPE_POINTS } from "../../Constants";
+import { IProgramGeometry, IProgramMaterial, IProgramMesh, IProgramObject } from "../ProgramInterfaces";
+import { buildEvent } from "./EventBuilder";
 
 function buildMesh(meshSpec: IProgramMesh): string {
   const meshType = meshSpec.type;
@@ -58,26 +59,42 @@ function buildGeometry(geometrySpec: IProgramGeometry): string {
   }
 }
 
-export default function buildObject(objectSpec: IProgramObject): string {
-  const blending = AdditiveBlending;
-  const depthTest = false;
-  const transparent = true;
+function buildMaterial(objectSpec: IProgramObject) {
+  let result = '';
+  switch (objectSpec.material.type) {
+    case MATERIAL_TYPES.BASIC:
+      result = 'new THREE.MeshBasicMaterial();'
+      break;
+    case MATERIAL_TYPES.SHADER:
+      result = `new THREE.ShaderMaterial({
+          uniforms: _uniforms,
+          vertexShader: SHADERS["${buildShaderName('vertex', objectSpec.id, 'create')}"],
+          fragmentShader: SHADERS["${buildShaderName('fragment', objectSpec.id, 'create')}"],
+          ${objectSpec.material.blending ? `blending: ${objectSpec.material.blending},` : ''},
+          ${objectSpec.material.depthTest ? `depthTest: ${objectSpec.material.depthTest},` : ''}
+          ${objectSpec.material.transparent ? `transparent: ${objectSpec.material.transparent}` : ''}
+        });`
+      break;
+  }
 
-  return `
+
+  return format(result);
+}
+
+export default function buildObject(objectSpec: IProgramObject): string {
+  const eventCode = objectSpec.events.map(event => buildEvent(event))
+
+  let result = `
     (() => {
       var _uniforms = {${innerJSON(objectSpec.properties)}, ...uniforms};
-
-      var material = new THREE.ShaderMaterial({
-        uniforms: _uniforms,
-        vertexShader: SHADERS["${buildShaderName('vertex', objectSpec.id, 'create')}"],
-        fragmentShader: SHADERS["${buildShaderName('fragment', objectSpec.id, 'create')}"],
-        blending: ${blending},
-        depthTest: ${depthTest},
-        transparent: ${transparent}
-      });
-
+      var material = ${buildMaterial(objectSpec)}
       var geometry = ${buildGeometry(objectSpec.geometry)};
+      var mesh = ${buildMesh(objectSpec.mesh)};
 
-      return ${buildMesh(objectSpec.mesh)};
+      mesh.events = ${JSON.stringify(eventCode)};
+
+      return mesh;
     })()`;
+
+  return format(result);
 }

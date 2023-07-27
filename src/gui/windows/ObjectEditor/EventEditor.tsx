@@ -3,7 +3,7 @@ import { IconButton, ListItemText, Menu, MenuItem, MenuList, Paper, Stack } from
 import React from "react";
 import { v4 as uuidv4 } from "uuid";
 import { OBJECT_JSON_PATH_SEPERATOR, capitalize } from "../../../Common";
-import { EVENT_STEP_ALL, EVENT_STEP_COLOR, EVENT_STEP_POINT_SIZE, EVENT_STEP_ROTATE, EVENT_STEP_SCALE, EVENT_STEP_SET_SHADER, EVENT_STEP_TRANSLATE } from "../../../Constants";
+import { EVENT_STEPS, EVENT_STEP_ALL } from "../../../Constants";
 import { IProgramEvent } from "../../../program/ProgramInterfaces";
 import EditableColor from "./EditableColor";
 import EditableEuler from "./EditableEuler";
@@ -38,7 +38,7 @@ export default function EventEditor(props: IEventEditorProps) {
   let eventSteps = [];
   for (const eventStep of props.event.steps) {
     switch (eventStep.type) {
-      case (EVENT_STEP_COLOR):
+      case (EVENT_STEPS.SET_COLOR):
         eventSteps.push(
           <EditableColor
             key={uuidv4()}
@@ -47,18 +47,18 @@ export default function EventEditor(props: IEventEditorProps) {
             data={eventStep.content} />
         )
         break;
-      case (EVENT_STEP_SCALE):
-      case (EVENT_STEP_TRANSLATE):
-      case (EVENT_STEP_ROTATE):
+      case (EVENT_STEPS.SET_SCALE):
+      case (EVENT_STEPS.SET_TRANSLATE):
+      case (EVENT_STEPS.SET_ROTATION):
         <EditableEuler
           key={uuidv4()}
           name={`${props.name}${OBJECT_JSON_PATH_SEPERATOR}${eventStep.type}`}
           onUpdate={props.onUpdate}
           data={eventStep.content} />
         break;
-      case (EVENT_STEP_POINT_SIZE):
+      case (EVENT_STEPS.SET_POINT_SIZE):
         break;
-      case (EVENT_STEP_SET_SHADER):
+      case (EVENT_STEPS.SET_SHADER):
         break;
     }
   }

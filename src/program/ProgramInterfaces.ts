@@ -16,6 +16,15 @@ export interface IProgramGeometry {
   args: IProgramUniforms
 }
 
+export interface IProgramMaterial {
+  type: string,
+  blending?: string,
+  depthTest?: boolean,
+  transparent?: boolean,
+  vertexShaderKey?: string,
+  fragmentShaderKey?: string
+}
+
 export interface IProgramColor {
   r: string,
   g: string,
@@ -55,6 +64,7 @@ export interface IProgramObject {
   id: string,
   mesh: IProgramMesh,
   geometry: IProgramGeometry,
+  material: IProgramMaterial,
   properties: IProgramUniforms,
   events: IProgramEvent[]
 }
