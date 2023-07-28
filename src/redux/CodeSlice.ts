@@ -11,17 +11,20 @@ const testCube: IProgramObject = {
   geometry: { type: "box", args: { scale: { type: "float", value: "5" } } },
   material: { type: MATERIAL_TYPES.BASIC },
   properties: { x: { type: "float", value: "0.2" } },
-  events: [
-    {
+  events: {
+    'create': {
       name: "create",
       steps: [
         {
           type: EVENT_STEPS.SET_COLOR,
           id: uuidv4(),
           content: {
-            r: "pow(sin(time + position.x * x + pi/3.0), 2.0)",
-            g: "pow(sin(time + position.y * x + 2.0*pi/3.0), 2.0)",
-            b: "pow(sin(time + position.z * x + pi), 2.0)",
+            // r: "pow(sin(time + position.x * x + pi/3.0), 2.0)",
+            // g: "pow(sin(time + position.y * x + 2.0*pi/3.0), 2.0)",
+            // b: "pow(sin(time + position.z * x + pi), 2.0)",
+            r: "1",
+            g: "0",
+            b: "1",
             a: "1.0"
           }
         },
@@ -37,7 +40,7 @@ const testCube: IProgramObject = {
       ]
 
     }
-  ]
+  }
 }
 
 interface IProgramState {

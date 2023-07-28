@@ -204,8 +204,8 @@ export default function ObjectEditor(props: IObjectEditorProps) {
             orientation="vertical"
           >
             <Tab label="Properties" value={0} />
-            {formData.events.map((item: IProgramEvent, index: number) => {
-              return (<Tab key={uuidv4()} label={item.name} value={index + 1} />)
+            {Object.entries(formData.events).map(([k, v], i) => {
+              return (<Tab key={uuidv4()} label={v.name} value={i + 1} />)
             })}
           </Tabs>
           <TabPanel value={tabIndex} index={0}>
@@ -218,10 +218,10 @@ export default function ObjectEditor(props: IObjectEditorProps) {
             </Stack>
           </TabPanel>
 
-          {formData.events.map((item: IProgramEvent, index: number) => {
+          {Object.entries(formData.events).map(([k, v], i) => {
             return (
-              <TabPanel key={uuidv4()} value={tabIndex} index={1}>
-                <EventEditor onUpdate={setFormData} name={`event${OBJECT_JSON_PATH_SEPERATOR}${item.name}`} event={item} />
+              <TabPanel key={uuidv4()} value={tabIndex} index={i}>
+                <EventEditor onUpdate={setFormData} name={`event${OBJECT_JSON_PATH_SEPERATOR}${v.name}`} event={v} />
               </TabPanel>
             )
           })}

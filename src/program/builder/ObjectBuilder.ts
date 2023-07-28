@@ -3,7 +3,7 @@ import {
   BufferGeometry
 } from "three";
 import { buildShaderName, format, innerJSON } from "../../Common";
-import { MATERIAL_TYPES, MESH_TYPE_DEFAULT, MESH_TYPE_INSTANCED, MESH_TYPE_POINTS } from "../../Constants";
+import { EVENTS, MATERIAL_TYPES, MESH_TYPE_DEFAULT, MESH_TYPE_INSTANCED, MESH_TYPE_POINTS } from "../../Constants";
 import { IProgramGeometry, IProgramMaterial, IProgramMesh, IProgramObject } from "../ProgramInterfaces";
 import { buildEvent } from "./EventBuilder";
 
@@ -82,8 +82,9 @@ function buildMaterial(objectSpec: IProgramObject) {
 }
 
 export default function buildObject(objectSpec: IProgramObject): string {
-  const eventCode = objectSpec.events.map(event => buildEvent(event))
+  const eventCode = Object.fromEntries(Object.entries(objectSpec.events).map(([key, value]) => [key, buildEvent(value)]))
 
+  let x: THREE.Mesh;
   let result = `
     (() => {
       var _uniforms = {${innerJSON(objectSpec.properties)}, ...uniforms};
@@ -92,9 +93,13 @@ export default function buildObject(objectSpec: IProgramObject): string {
       var mesh = ${buildMesh(objectSpec.mesh)};
 
       mesh.events = ${JSON.stringify(eventCode)};
-
+      ${EVENTS.CREATE in objectSpec.events ? `(${eventCode[EVENTS.CREATE]}).apply(mesh)` : ''}
+      
       return mesh;
     })()`;
 
   return format(result);
 }
+
+// 
+// 

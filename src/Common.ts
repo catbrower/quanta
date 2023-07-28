@@ -61,8 +61,9 @@ export function uniformEuler(value: string): IProgramEuler {
   return { x: value, y: value, z: value };
 }
 
+// TODO this check shouldn't be necessary, somethng else is wrong...
 export function indentLine(line: string, amount: number) {
-  return `${INDENT.repeat(amount)}${line}`;
+  return `${INDENT.repeat(amount > 0 ? amount : 0)}${line}`;
 }
 
 export function indentMultiLine(lines: string, amount: number) {
@@ -86,6 +87,7 @@ export function generateRandomFunctionName(length: number = 16, allowNums: boole
 }
 
 //TODO doesn't format multiline '( )'
+// This code is wrong :/
 export function format(code: string): string {
   let lines = code.split('\n').map((line) => line.replace(/^\s+|\s+$/g, '')).filter((line) => line.length > 0);
   let resultLines = [];

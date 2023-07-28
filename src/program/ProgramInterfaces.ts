@@ -66,7 +66,7 @@ export interface IProgramObject {
   geometry: IProgramGeometry,
   material: IProgramMaterial,
   properties: IProgramUniforms,
-  events: IProgramEvent[]
+  events: { [name: string]: IProgramEvent }
 }
 
 export interface IProgram {

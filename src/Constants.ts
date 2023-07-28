@@ -13,6 +13,12 @@ export const MESH_TYPE_ALL = [
   MESH_TYPE_INSTANCED
 ];
 
+export const EVENTS = {
+  CREATE: 'create',
+  LEFT_CLICK: 'lclick',
+  STEP: 'step'
+}
+
 export const EVENT_STEPS = {
   SET_COLOR: "color",
   SET_TRANSLATE: "translate",
