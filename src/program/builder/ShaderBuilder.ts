@@ -9,6 +9,7 @@ import { IProgramColor, IProgramEuler, IProgramEvent, IProgramEventStep, IProgra
 // to calculate the final vertex positions
 
 // TODO for rotation, it can be optimized more by checking if any of the rotations are zero and excluding those
+// TODO remove the line indenting here. Code will all be formatted at the end
 const rotationMatrixFunction = (rotX: string, rotY: string, rotZ: string): string[] => {
   const offset = 5;
   const funcName = generateRandomFunctionName();

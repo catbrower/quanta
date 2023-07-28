@@ -5,9 +5,9 @@ export function setColor(objName: string): string {
 }
 
 export function newColor(color: IProgramColor): string {
-  return `new THREE.Color(${color.r}, ${color.g}, ${color.b}, ${color.a});`
+  return `new THREE.Color(${color.r}, ${color.g}, ${color.b}, ${color.a})`
 }
 
 export function newEuler(euler: IProgramEuler) {
-  return `new THREE.Euler(${euler.x}, ${euler.y}, ${euler.z});`;
+  return `new THREE.Euler(${euler.x}, ${euler.y}, ${euler.z})`;
 }

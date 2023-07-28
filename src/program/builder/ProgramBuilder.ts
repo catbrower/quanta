@@ -74,6 +74,12 @@ function buildMainLoop(programData: IProgram): string {
       uniforms.time.value = (new Date().getTime() - START_TIME) / 1000;
       raycaster.setFromCamera(pointer, camera);
 
+      objects.forEach((obj) => {
+        if(obj.events.step) {
+          obj.events.step.apply(obj, uniforms)
+        }
+      })
+
       renderer.render(scene, camera);
     }
 

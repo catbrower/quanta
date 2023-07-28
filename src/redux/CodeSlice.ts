@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { IProgram, IProgramObject } from "../program/ProgramInterfaces";
-import { EVENT_STEPS, MATERIAL_TYPES, MESH_TYPE_DEFAULT } from "../Constants";
+import { EVENTS, EVENT_STEPS, MATERIAL_TYPES, MESH_TYPE_DEFAULT } from "../Constants";
 import { v4 as uuidv4 } from 'uuid';
 
 // TODO need a way to reference aspects of mesh / geomeyry or set them based on props
@@ -12,34 +12,36 @@ const testCube: IProgramObject = {
   material: { type: MATERIAL_TYPES.BASIC },
   properties: { x: { type: "float", value: "0.2" } },
   events: {
-    'create': {
-      name: "create",
+    [EVENTS.CREATE]: {
+      name: EVENTS.CREATE,
       steps: [
         {
           type: EVENT_STEPS.SET_COLOR,
           id: uuidv4(),
           content: {
-            // r: "pow(sin(time + position.x * x + pi/3.0), 2.0)",
-            // g: "pow(sin(time + position.y * x + 2.0*pi/3.0), 2.0)",
-            // b: "pow(sin(time + position.z * x + pi), 2.0)",
             r: "1",
-            g: "0",
-            b: "1",
+            g: "0.01",
+            b: "Math.PI / 10",
             a: "1.0"
-          }
-        },
-        {
-          type: EVENT_STEPS.SET_ROTATION,
-          id: uuidv4(),
-          content: {
-            x: "time",
-            y: "time",
-            z: "0.0"
           }
         }
       ]
-
-    }
+    },
+    [EVENTS.STEP]: {
+      name: EVENTS.STEP,
+      steps: [
+        {
+          type: EVENT_STEPS.SET_COLOR,
+          id: uuidv4(),
+          content: {
+            r: "pow(sin(uniforms.time.value), 2)",
+            g: "0.01",
+            b: "Math.PI / 10",
+            a: "1.0"
+          }
+        }
+      ]
+    },
   }
 }
 

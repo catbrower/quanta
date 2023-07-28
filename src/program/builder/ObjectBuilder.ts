@@ -88,12 +88,12 @@ export default function buildObject(objectSpec: IProgramObject): string {
   let result = `
     (() => {
       var _uniforms = {${innerJSON(objectSpec.properties)}, ...uniforms};
-      var material = ${buildMaterial(objectSpec)}
+      var material = ${buildMaterial(objectSpec)};
       var geometry = ${buildGeometry(objectSpec.geometry)};
       var mesh = ${buildMesh(objectSpec.mesh)};
 
-      mesh.events = ${JSON.stringify(eventCode)};
-      ${EVENTS.CREATE in objectSpec.events ? `(${eventCode[EVENTS.CREATE]}).apply(mesh)` : ''}
+      mesh.events = { ${Object.entries(eventCode).map(([k, v]) => { return `${k}: ${v}` }).reduce((acc, cur) => { return `${acc}, ${cur}` })} };
+      ${EVENTS.CREATE in objectSpec.events ? `(${eventCode[EVENTS.CREATE]}).apply(mesh);` : ''}
       
       return mesh;
     })()`;
