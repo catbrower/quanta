@@ -1,7 +1,7 @@
 import { Stack, TextField, capitalize } from "@mui/material";
-import { IProgramEuler } from "../../../program/ProgramInterfaces";
-import CollapsableProperty from "./CollapsableProperty";
-import { OBJECT_JSON_PATH_SEPERATOR, lastItem } from "../../../Common";
+import { IProgramEuler } from "../program/ProgramInterfaces";
+import CollapsableProperty from "../gui/windows/ObjectEditor/CollapsableProperty";
+import { OBJECT_JSON_PATH_SEPERATOR, lastItem } from "../Common";
 
 interface IEditableEulerProps {
   name: string,

@@ -130,6 +130,8 @@ interface IObjectEditorProps {
   object: IProgramObject,
   onClose: any
 }
+
+// TODO when switching tabs the size of the modal sometimes changes, this should not happen
 export default function ObjectEditor(props: IObjectEditorProps) {
   const formReducer = (state: IProgramObject, event: any) => {
     let result: IProgramObject = deepCopyJSON(state);
@@ -141,58 +143,29 @@ export default function ObjectEditor(props: IObjectEditorProps) {
       }
     }
 
-    const pathParts = path.split(OBJECT_JSON_PATH_SEPERATOR);
-    // if (pathParts[0] === "event") {
-    //   for (let eventIndex = 0; eventIndex < props.object.events.length; eventIndex++) {
-    //     const objEvent = props.object.events[eventIndex];
-    //     if (objEvent.name !== pathParts[1]) {
-    //       continue;
-    //     }
-
-    //     let newEvent: IProgramEvent = result.events[eventIndex];
-    //     if (pathParts[2] in newEvent) {
-    //       if (pathParts[2] === "color") {
-    //         let color = getJSONProperty(newEvent, "color") as IProgramColor;
-    //         newEvent.color = {
-    //           ...color,
-    //           [pathParts[3]]: event.target.value
-    //         };
-    //       } else {
-    //         let property = {
-    //           ...getJSONProperty(newEvent, pathParts[2]) as IProgramEuler,
-    //           [pathParts[3]]: event.target.value
-    //         };
-    //         result.events[eventIndex] = updateJSONValue(newEvent, pathParts[2], property) as IProgramEvent;
-    //       }
-    //     } else {
-    //       // TODO This can probably be replaced with Object.defineProperty
-    //       if (pathParts[2] === EVENT_PROPERTY_COLOR) {
-    //         newEvent.color = event.target.value ? event.target.value : uniformColor("1.0");
-    //       } else {
-    //         let newValue = event.target.value ? event.target.value : uniformEuler("1.0");
-    //         result.events[eventIndex] = updateJSONValue(newEvent, pathParts[2], newValue) as IProgramEvent;
-    //       }
-    //     }
-    //   }
-    // } else if (pathParts[0] === "mesh") {
-    //   if (pathParts[1] === "type") {
-    //     result.mesh.type = event.target.value;
-    //   }
-    // }
-
     return result;
   }
 
   const [tabIndex, setTabIndex] = useState(0);
-  const [formData, setFormData] = useReducer(formReducer, props.object);
+  // const [formData, setFormData] = useReducer(formReducer, props.object);
+  const [editedObject, setEditedObject] = useState(props.object);
   const dispatch = useAppDispatch();
   const handleTabChange = (event: React.SyntheticEvent, newIndex: number) => {
     setTabIndex(newIndex);
   }
 
   function handleSave(event: any) {
-    dispatch(updateObject(formData));
+    dispatch(updateObject(editedObject));
   }
+
+  const updateEvent = (eventName: string, eventData: IProgramEvent) => {
+    let result = { ...editedObject };
+    result.events = { ...editedObject.events };
+    result.events[eventData.name] = eventData;
+    setEditedObject(result);
+  }
+
+  const setFormData = () => { }
 
   return (
     <>
@@ -204,12 +177,12 @@ export default function ObjectEditor(props: IObjectEditorProps) {
             orientation="vertical"
           >
             <Tab label="Properties" value={0} />
-            {Object.entries(formData.events).map(([k, v], i) => {
+            {Object.entries(editedObject.events).map(([k, v], i) => {
               return (<Tab key={uuidv4()} label={v.name} value={i + 1} />)
             })}
           </Tabs>
           <TabPanel value={tabIndex} index={0}>
-            <Stack spacing={1}>
+            <Stack direction="column" spacing={1}>
               <TextField variant="standard" label="Name" name="name" onChange={setFormData} defaultValue={props.object.name} />
               <Divider />
               <Select name="mesh.type" onChange={setFormData} defaultValue={props.object.mesh.type}>
@@ -218,10 +191,10 @@ export default function ObjectEditor(props: IObjectEditorProps) {
             </Stack>
           </TabPanel>
 
-          {Object.entries(formData.events).map(([k, v], i) => {
+          {Object.entries(editedObject.events).map(([k, v], i) => {
             return (
-              <TabPanel key={uuidv4()} value={tabIndex} index={i}>
-                <EventEditor onUpdate={setFormData} name={`event${OBJECT_JSON_PATH_SEPERATOR}${v.name}`} event={v} />
+              <TabPanel key={uuidv4()} value={tabIndex} index={i + 1}>
+                <EventEditor onUpdate={(e: any) => { updateEvent(k, e) }} event={v} />
               </TabPanel>
             )
           })}
