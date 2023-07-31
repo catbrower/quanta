@@ -194,7 +194,7 @@ export default function ObjectEditor(props: IObjectEditorProps) {
           {Object.entries(editedObject.events).map(([k, v], i) => {
             return (
               <TabPanel key={uuidv4()} value={tabIndex} index={i + 1}>
-                <EventEditor onUpdate={(e: any) => { updateEvent(k, e) }} event={v} />
+                <EventEditor key={`${props.object.id}.${v.name}`} objectId={props.object.id} onUpdate={(e: any) => { updateEvent(k, e) }} event={v} />
               </TabPanel>
             )
           })}

@@ -2,12 +2,13 @@ import { Stack, TextField } from "@mui/material";
 import { useEffect, useReducer, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import CollapsableProperty from "./CollapsableProperty";
+import { IProgramEventStep } from "../../../program/ProgramInterfaces";
 
 interface IEditableColorProps {
   name: string,
   label: string,
   onUpdate: any,
-  data: {}
+  data: IProgramEventStep
 }
 
 export default function EditableStruct(props: IEditableColorProps) {
@@ -29,10 +30,10 @@ export default function EditableStruct(props: IEditableColorProps) {
   })
 
   const [shouldUpdate, setShouldUpdate] = useState(false);
-  const [data, setData] = useReducer(updateData, props.data);
+  const [data, setData] = useReducer(updateData, props.data.content);
 
   return (
-    <CollapsableProperty name={props.label}>
+    <CollapsableProperty id={props.data.content.id} name={props.label}>
       <Stack direction="column" spacing={2}>
         {Object.entries(data).map(([k, v]) => {
           return (

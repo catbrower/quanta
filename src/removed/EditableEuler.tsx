@@ -11,7 +11,7 @@ interface IEditableEulerProps {
 
 export default function EditableEuler(props: IEditableEulerProps) {
   return (
-    <CollapsableProperty name={`Set ${capitalize(lastItem(props.name.split(OBJECT_JSON_PATH_SEPERATOR)))}`}>
+    <CollapsableProperty id="" name={`Set ${capitalize(lastItem(props.name.split(OBJECT_JSON_PATH_SEPERATOR)))}`}>
       <Stack direction="column" spacing={2}>
         <TextField variant="standard" id={`${props.name}_x`} label="X" defaultValue={props.data.x} />
         <TextField variant="standard" id={`${props.name}_y`} label="Y" defaultValue={props.data.y} />

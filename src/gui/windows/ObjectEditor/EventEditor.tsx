@@ -8,6 +8,7 @@ import { IProgramEvent } from "../../../program/ProgramInterfaces";
 import EditableStruct from "./EditableStruct";
 
 interface IEventEditorProps {
+  objectId: string,
   event: IProgramEvent,
   onUpdate: any
 }
@@ -36,29 +37,29 @@ export default function EventEditor(props: IEventEditorProps) {
   };
 
   const addEventStep = (stepType: string) => {
-    let result = { ...props.event }
-    result.steps = [...props.event.steps]
-    switch (stepType) {
-      case EVENT_STEPS.SET_COLOR:
-        result.steps.push({
-          id: uuidv4(),
-          type: stepType,
-          content: uniformColor("0")
-        });
-        break;
-      case EVENT_STEPS.SET_ROTATION:
-      case EVENT_STEPS.SET_SCALE:
-      case EVENT_STEPS.SET_TRANSLATE:
-        result.steps.push({
-          id: uuidv4(),
-          type: stepType,
-          content: uniformEuler("0")
-        });
-        break;
-      default:
-        throw new Error(`Cannot add unkown step type: ${stepType}`);
-    }
-    props.onUpdate(result);
+    // let result = { ...props.event }
+    // result.steps = [...props.event.steps]
+    // switch (stepType) {
+    //   case EVENT_STEPS.SET_COLOR:
+    //     result.steps.push({
+    //       id: uuidv4(),
+    //       type: stepType,
+    //       content: uniformColor("0")
+    //     });
+    //     break;
+    //   case EVENT_STEPS.SET_ROTATION:
+    //   case EVENT_STEPS.SET_SCALE:
+    //   case EVENT_STEPS.SET_TRANSLATE:
+    //     result.steps.push({
+    //       id: uuidv4(),
+    //       type: stepType,
+    //       content: uniformEuler("0")
+    //     });
+    //     break;
+    //   default:
+    //     throw new Error(`Cannot add unkown step type: ${stepType}`);
+    // }
+    // props.onUpdate(result);
   }
 
   let eventSteps = [];
@@ -72,11 +73,11 @@ export default function EventEditor(props: IEventEditorProps) {
       case (EVENT_STEPS.SET_ROTATION):
         eventSteps.push(
           <EditableStruct
-            key={uuidv4()}
+            key={`${props.objectId}.${props.event.name}.${i}`}
             name={`step.${i}`}
             label={`Set ${capitalize(eventStep.type)}`}
             onUpdate={(e: any) => { setEventStep(i, e.target.value) }}
-            data={eventStep.content} />
+            data={eventStep} />
         )
         break;
       case (EVENT_STEPS.SET_POINT_SIZE):
