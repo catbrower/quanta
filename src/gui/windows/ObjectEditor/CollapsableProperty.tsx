@@ -51,5 +51,4 @@ export default class CollapsableProperty extends React.Component<IProps, IState>
       </Accordion>
     )
   }
-
 }

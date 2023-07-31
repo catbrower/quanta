@@ -15,7 +15,7 @@ export function buildEvent(event: IProgramEvent) {
         lines.push(`this.material.color = ${newColor(step.content)};`);
         break;
       case EVENT_STEPS.SET_ROTATION:
-        lines.push(`this.rotation = ${newEuler(step.content)};`);
+        lines.push(`this.setRotationFromEuler(${newEuler(step.content)});`);
         break;
     }
   }

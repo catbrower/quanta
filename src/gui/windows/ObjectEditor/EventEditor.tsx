@@ -2,7 +2,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { IconButton, ListItemText, Menu, MenuItem, MenuList, Paper, Stack } from "@mui/material";
 import React from "react";
 import { v4 as uuidv4 } from "uuid";
-import { capitalize } from "../../../Common";
+import { capitalize, uniformColor, uniformEuler } from "../../../Common";
 import { EVENT_STEPS, EVENT_STEP_ALL } from "../../../Constants";
 import { IProgramEvent } from "../../../program/ProgramInterfaces";
 import EditableStruct from "./EditableStruct";
@@ -35,12 +35,30 @@ export default function EventEditor(props: IEventEditorProps) {
     setAddMenuAnchorEl(null);
   };
 
-  const createAddEvent = (propName: string) => {
-    // return {
-    //   target: {
-    //     name: `${props.name}${OBJECT_JSON_PATH_SEPERATOR}${propName}`
-    //   }
-    // }
+  const addEventStep = (stepType: string) => {
+    let result = { ...props.event }
+    result.steps = [...props.event.steps]
+    switch (stepType) {
+      case EVENT_STEPS.SET_COLOR:
+        result.steps.push({
+          id: uuidv4(),
+          type: stepType,
+          content: uniformColor("0")
+        });
+        break;
+      case EVENT_STEPS.SET_ROTATION:
+      case EVENT_STEPS.SET_SCALE:
+      case EVENT_STEPS.SET_TRANSLATE:
+        result.steps.push({
+          id: uuidv4(),
+          type: stepType,
+          content: uniformEuler("0")
+        });
+        break;
+      default:
+        throw new Error(`Cannot add unkown step type: ${stepType}`);
+    }
+    props.onUpdate(result);
   }
 
   let eventSteps = [];
@@ -85,7 +103,7 @@ export default function EventEditor(props: IEventEditorProps) {
             <MenuList>
               {EVENT_STEP_ALL.filter((propName) => !(propName in props.event)).map((propName) => {
                 return (
-                  <MenuItem key={uuidv4()} onClick={(e) => props.onUpdate(createAddEvent(propName))}>
+                  <MenuItem key={uuidv4()} onClick={(e) => addEventStep(propName)}>
                     <ListItemText>{capitalize(propName)}</ListItemText>
                   </MenuItem>
                 )
