@@ -44,16 +44,6 @@ export interface IProgramEventStep {
   content: any
 }
 
-// export interface IProgramEvent {
-//   name: string,
-//   color?: IProgramColor,
-//   rotation?: IProgramEuler,
-//   translation?: IProgramEuler,
-//   scale?: IProgramEuler,
-//   pointSize?: string,
-//   texture?: string
-// }
-
 export interface IProgramEvent {
   name: string,
   steps: IProgramEventStep[]

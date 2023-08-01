@@ -171,7 +171,14 @@ export default function ObjectEditor(props: IObjectEditorProps) {
     result.mesh = { ...result.mesh }
     result.mesh.type = event.target.value;
     setEditedObject(result)
-    console.log(result)
+  }
+
+  const setName = (event: any) => {
+    let result = {
+      ...editedObject,
+      "name": event.target.value
+    }
+    setEditedObject(result)
   }
 
   return (
@@ -190,7 +197,7 @@ export default function ObjectEditor(props: IObjectEditorProps) {
           </Tabs>
           <TabPanel value={tabIndex} index={0}>
             <Stack direction="column" spacing={1}>
-              <TextField variant="standard" label="Name" name="name" onChange={() => { }} defaultValue={props.object.name} />
+              <TextField variant="standard" label="Name" name="name" onChange={setName} defaultValue={props.object.name} />
               <Divider />
               <Select name="mesh.type" onChange={setMeshType} defaultValue={props.object.mesh.type}>
                 {MESH_TYPE_ALL.map((meshType) => (<MenuItem key={uuidv4()} value={meshType}>{capitalize(meshType)}</MenuItem>))}
