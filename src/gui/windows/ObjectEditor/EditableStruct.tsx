@@ -11,6 +11,7 @@ interface IEditableColorProps {
   data: IProgramEventStep
 }
 
+// TODO change the random uuid to a unique but static value. Hopefully this will help with focus like it did elsewhere
 export default function EditableStruct(props: IEditableColorProps) {
   const updateData = (state: {}, event: any) => {
     // event.preventDefault();
@@ -22,12 +23,17 @@ export default function EditableStruct(props: IEditableColorProps) {
     return result;
   }
 
-  useEffect(() => {
-    if (shouldUpdate) {
-      setShouldUpdate(false);
-      props.onUpdate({ target: { name: props.name, value: data } })
-    }
-  })
+  // useEffect(() => {
+  //   if (shouldUpdate) {
+  //     setShouldUpdate(false);
+  //     props.onUpdate({ target: { name: props.name, value: data } })
+  //   }
+  // })
+
+  const bubbleUpdate = () => {
+    console.log('bubble')
+    props.onUpdate({ target: { name: props.name, value: data } })
+  }
 
   const [shouldUpdate, setShouldUpdate] = useState(false);
   const [data, setData] = useReducer(updateData, props.data.content);
@@ -37,7 +43,7 @@ export default function EditableStruct(props: IEditableColorProps) {
       <Stack direction="column" spacing={2}>
         {Object.entries(data).map(([k, v]) => {
           return (
-            <TextField variant="standard" key={uuidv4()} label={`${k}`} name={`${k}`} onChange={setData} defaultValue={v} />
+            <TextField variant="standard" key={uuidv4()} label={`${k}`} name={`${k}`} onChange={setData} onBlur={bubbleUpdate} defaultValue={v} />
           )
         })}
       </Stack>
