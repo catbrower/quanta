@@ -33,7 +33,7 @@ export default function EditableStruct(props: IEditableColorProps) {
   const [data, setData] = useReducer(updateData, props.data.content);
 
   return (
-    <CollapsableProperty id={props.data.content.id} name={props.label}>
+    <CollapsableProperty id={props.data.id} name={props.label}>
       <Stack direction="column" spacing={2}>
         {Object.entries(data).map(([k, v]) => {
           return (

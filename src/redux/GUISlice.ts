@@ -1,12 +1,11 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { v4 as uuidv4 } from 'uuid';
 import { IEditorWindow, IWindow } from "../gui/GUITypes";
-import { act } from "react-dom/test-utils";
 
-interface ICollapseableProperty {
+interface IAddCollapseablePropertyAction {
   id: string,
   isOpen: boolean,
-  focus: HTMLElement
+  focus: HTMLElement | null
 }
 
 interface GUIState {
@@ -58,15 +57,29 @@ export const guiSlice = createSlice({
         });
       }
     },
-    setCollapsablePropertyState: (state, action: PayloadAction<ICollapseableProperty>) => {
-      state.collapseableProperties = {
-        ...state.collapseableProperties,
-        [action.payload.id]: action.payload
+    addCollapseablePropertyState: (state, action: PayloadAction<IAddCollapseablePropertyAction>) => {
+      if (!(action.payload.id in state.collapseableProperties)) {
+        console.log("adding new state")
+        state.collapseableProperties = {
+          ...state.collapseableProperties,
+          [action.payload.id]: action.payload
+        }
       }
+    },
+    openCollapseableProperty: (state, action) => {
+      if (action.payload.id in state.collapseableProperties) {
+        const newValue = action.payload
+        // console.log(current(newValue))
+        state.collapseableProperties = {
+          ...state.collapseableProperties,
+          [action.payload.id]: newValue
+        }
+      }
+      // console.log(state.collapseableProperties)
     }
   }
 });
 
-export const { openMenu, closeMenu, openObjectWindow, closeObjectWindow, openPreviewWindow } = guiSlice.actions;
+export const { openMenu, closeMenu, openObjectWindow, closeObjectWindow, openPreviewWindow, addCollapseablePropertyState, openCollapseableProperty } = guiSlice.actions;
 // export const getWindows = (state: RootState) => state.gui.windows;
 export default guiSlice.reducer;

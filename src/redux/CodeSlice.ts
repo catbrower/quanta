@@ -12,21 +12,6 @@ const testCube: IProgramObject = {
   material: { type: MATERIAL_TYPES.BASIC },
   properties: { x: { type: "float", value: "0.2" } },
   events: {
-    [EVENTS.CREATE]: {
-      name: EVENTS.CREATE,
-      steps: [
-        {
-          type: EVENT_STEPS.SET_COLOR,
-          id: uuidv4(),
-          content: {
-            r: "1",
-            g: "0.01",
-            b: "Math.PI / 10",
-            a: "1.0"
-          }
-        }
-      ]
-    },
     [EVENTS.STEP]: {
       name: EVENTS.STEP,
       steps: [

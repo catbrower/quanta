@@ -1,10 +1,14 @@
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Accordion, AccordionDetails, AccordionSummary, Typography } from "@mui/material";
-import React from "react";
+import { useDispatch } from 'react-redux';
+import { getJSONProperty } from '../../../Common';
+import { addCollapseablePropertyState, openCollapseableProperty } from '../../../redux/GUISlice';
+import { useAppSelector } from '../../../redux/Hooks';
 
-interface IState {
+interface ICollapseableState {
+  id: string,
   isOpen: boolean,
-  userHasUpdated: boolean
+  focus: HTMLElement | null
 }
 
 interface IProps {
@@ -13,32 +17,29 @@ interface IProps {
   children: any
 }
 
-// TODO fix the accordion
-export default class CollapsableProperty extends React.Component<IProps, IState> {
-  // const [open, setOpen] = useState(false);
-  constructor(props: any) {
-    super(props);
+export default function CollapsableProperty(props: IProps) {
+  const dispatch = useDispatch();
+  dispatch(addCollapseablePropertyState({ id: props.id, isOpen: false, focus: null }));
 
-    this.state = {
-      isOpen: true,
-      userHasUpdated: false
-    }
+  const state = useAppSelector(state => getJSONProperty(state.gui.collapseableProperties, props.id)) as ICollapseableState;
+  let isOpen = state && state.isOpen ? state.isOpen : false
+
+  const handleChange = () => {
+    dispatch(openCollapseableProperty({ id: props.id, isOpen: !isOpen, focus: null }));
   }
 
-  render() {
-    return (
-      <Accordion expanded={this.state.isOpen} onChange={() => { this.setState({ isOpen: !this.state.isOpen, userHasUpdated: true }) }}>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel1a-content"
-          id="panel1a-header"
-        >
-          <Typography>{this.props.name}</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          {this.props.children}
-        </AccordionDetails>
-      </Accordion>
-    )
-  }
+  return (
+    <Accordion expanded={isOpen} onChange={() => { handleChange() }}>
+      <AccordionSummary
+        expandIcon={<ExpandMoreIcon />}
+        aria-controls="panel1a-content"
+        id="panel1a-header"
+      >
+        <Typography>{props.name}</Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+        {props.children}
+      </AccordionDetails>
+    </Accordion>
+  )
 }

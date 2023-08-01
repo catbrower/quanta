@@ -37,29 +37,29 @@ export default function EventEditor(props: IEventEditorProps) {
   };
 
   const addEventStep = (stepType: string) => {
-    // let result = { ...props.event }
-    // result.steps = [...props.event.steps]
-    // switch (stepType) {
-    //   case EVENT_STEPS.SET_COLOR:
-    //     result.steps.push({
-    //       id: uuidv4(),
-    //       type: stepType,
-    //       content: uniformColor("0")
-    //     });
-    //     break;
-    //   case EVENT_STEPS.SET_ROTATION:
-    //   case EVENT_STEPS.SET_SCALE:
-    //   case EVENT_STEPS.SET_TRANSLATE:
-    //     result.steps.push({
-    //       id: uuidv4(),
-    //       type: stepType,
-    //       content: uniformEuler("0")
-    //     });
-    //     break;
-    //   default:
-    //     throw new Error(`Cannot add unkown step type: ${stepType}`);
-    // }
-    // props.onUpdate(result);
+    let result = { ...props.event }
+    result.steps = [...props.event.steps]
+    switch (stepType) {
+      case EVENT_STEPS.SET_COLOR:
+        result.steps.push({
+          id: uuidv4(),
+          type: stepType,
+          content: uniformColor("0")
+        });
+        break;
+      case EVENT_STEPS.SET_ROTATION:
+      case EVENT_STEPS.SET_SCALE:
+      case EVENT_STEPS.SET_TRANSLATE:
+        result.steps.push({
+          id: uuidv4(),
+          type: stepType,
+          content: uniformEuler("0")
+        });
+        break;
+      default:
+        throw new Error(`Cannot add unkown step type: ${stepType}`);
+    }
+    props.onUpdate(result);
   }
 
   let eventSteps = [];
