@@ -183,35 +183,39 @@ export default function ObjectEditor(props: IObjectEditorProps) {
 
   return (
     <>
-      <DialogContent>
-        <Box sx={{ flexGrow: 1, bgcolor: 'background.paper', display: 'flex', height: 224 }} >
-          <Tabs
-            value={tabIndex}
-            onChange={handleTabChange}
-            orientation="vertical"
-          >
-            <Tab label="Properties" value={0} />
-            {Object.entries(editedObject.events).map(([k, v], i) => {
-              return (<Tab key={uuidv4()} label={v.name} value={i + 1} />)
-            })}
-          </Tabs>
-          <TabPanel value={tabIndex} index={0}>
-            <Stack direction="column" spacing={1}>
-              <TextField variant="standard" label="Name" name="name" onChange={setName} defaultValue={props.object.name} />
-              <Divider />
-              <Select name="mesh.type" onChange={setMeshType} defaultValue={props.object.mesh.type}>
-                {MESH_TYPE_ALL.map((meshType) => (<MenuItem key={uuidv4()} value={meshType}>{capitalize(meshType)}</MenuItem>))}
-              </Select>
-            </Stack>
-          </TabPanel>
+      <DialogContent style={{ overflow: "hidden", height: "50vh" }}>
+        <Box sx={{ flexGrow: 1, bgcolor: 'background.paper', display: 'flex' }} >
+          <Box style={{ overflow: "hidden", height: "100px" }}>
+            <Tabs
+              value={tabIndex}
+              onChange={handleTabChange}
+              orientation="vertical"
+            >
+              <Tab label="Properties" value={0} />
+              {Object.entries(editedObject.events).map(([k, v], i) => {
+                return (<Tab key={uuidv4()} label={v.name} value={i + 1} />)
+              })}
+            </Tabs>
+          </Box>
+          <Box style={{ height: "50vh", overflowY: "auto" }}>
+            <TabPanel value={tabIndex} index={0}>
+              <Stack direction="column" spacing={1}>
+                <TextField variant="standard" label="Name" name="name" onChange={setName} defaultValue={props.object.name} />
+                <Divider />
+                <Select name="mesh.type" onChange={setMeshType} defaultValue={props.object.mesh.type}>
+                  {MESH_TYPE_ALL.map((meshType) => (<MenuItem key={uuidv4()} value={meshType}>{capitalize(meshType)}</MenuItem>))}
+                </Select>
+              </Stack>
+            </TabPanel>
 
-          {Object.entries(editedObject.events).map(([k, v], i) => {
-            return (
-              <TabPanel key={uuidv4()} value={tabIndex} index={i + 1}>
-                <EventEditor key={`${props.object.id}.${v.name}`} objectId={props.object.id} onUpdate={(e: any) => { updateEvent(k, e) }} event={v} />
-              </TabPanel>
-            )
-          })}
+            {Object.entries(editedObject.events).map(([k, v], i) => {
+              return (
+                <TabPanel key={uuidv4()} value={tabIndex} index={i + 1}>
+                  <EventEditor key={`${props.object.id}.${v.name}`} objectId={props.object.id} onUpdate={(e: any) => { updateEvent(k, e) }} event={v} />
+                </TabPanel>
+              )
+            })}
+          </Box>
         </Box>
       </DialogContent>
       <DialogActions>
