@@ -7,13 +7,22 @@ export type IProgramMeta = {
 export type IProgramUniforms = { [uniform: string]: { type: string, value: string } };
 
 export interface IProgramMesh {
-  type: number,
+  type: string,
   args: IProgramUniforms
 }
 
 export interface IProgramGeometry {
   type: string,
   args: IProgramUniforms
+}
+
+export interface IProgramMaterial {
+  type: string,
+  blending?: string,
+  depthTest?: boolean,
+  transparent?: boolean,
+  vertexShaderKey?: string,
+  fragmentShaderKey?: string
 }
 
 export interface IProgramColor {
@@ -29,14 +38,15 @@ export interface IProgramEuler {
   z: string
 }
 
+export interface IProgramEventStep {
+  id: string,
+  type: string,
+  content: any
+}
+
 export interface IProgramEvent {
   name: string,
-  color?: IProgramColor,
-  rotation?: IProgramEuler,
-  translation?: IProgramEuler,
-  scale?: IProgramEuler,
-  pointSize?: string,
-  texture?: string
+  steps: IProgramEventStep[]
 }
 
 export interface IProgramObject {
@@ -44,8 +54,9 @@ export interface IProgramObject {
   id: string,
   mesh: IProgramMesh,
   geometry: IProgramGeometry,
+  material: IProgramMaterial,
   properties: IProgramUniforms,
-  events: IProgramEvent[]
+  events: { [name: string]: IProgramEvent }
 }
 
 export interface IProgram {

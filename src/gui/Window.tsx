@@ -5,7 +5,7 @@ import { Box, Dialog, DialogTitle, Grow, IconButton, Paper, Typography } from "@
 import { TransitionProps } from "@mui/material/transitions";
 import React from "react";
 import Draggable from "react-draggable";
-import { IProgramObject } from "../program/Interfaces";
+import { IProgramObject } from "../program/ProgramInterfaces";
 import { closeObjectWindow } from "../redux/GUISlice";
 import { useAppDispatch } from "../redux/Hooks";
 import { IEditorWindow, IWindow } from "./GUITypes";
@@ -20,11 +20,6 @@ const Transition = React.forwardRef(function Transition(
 ) {
   return <Grow in={true} ref={ref} {...props} />;
 });
-
-interface IProps { };
-interface IState {
-  isOpen: boolean
-};
 
 // TODO paper has an xs property, see if I can move the jankey css to that instead
 function PaperComponent(props: any) {

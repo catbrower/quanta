@@ -1,14 +1,13 @@
-import { Box, Button, DialogActions, DialogContent, Stack, Tab, Tabs, TextField, styled } from "@mui/material";
+import { Box, Button, DialogActions, DialogContent, Divider, MenuItem, Select, Stack, Tab, Tabs, TextField, styled } from "@mui/material";
 import { useReducer, useState } from "react";
-import { OBJECT_JSON_PATH_SEPERATOR, deepCopyJSON, updateJSONValue } from "../../../Common";
-import { IProgramColor, IProgramEvent, IProgramObject } from "../../../program/Interfaces";
-import { updateObjectEditorData } from "../../../redux/GUISlice";
+import { v4 as uuidv4 } from 'uuid';
+import { OBJECT_JSON_PATH_SEPERATOR, capitalize, deepCopyJSON } from "../../../Common";
+import { MESH_TYPE_ALL } from "../../../Constants";
+import { IProgramEvent, IProgramObject } from "../../../program/ProgramInterfaces";
+import { updateObject } from "../../../redux/CodeSlice";
 import { useAppDispatch } from "../../../redux/Hooks";
 import { IWindow } from "../../GUITypes";
-import EditableColor from "./EditableColor";
-import EditableEuler from "./EditableEuler";
-import { updateObject } from "../../../redux/CodeSlice";
-import { v4 as uuidv4 } from 'uuid';
+import EventEditor from "./EventEditor";
 
 const modalWidth = 500;
 
@@ -126,82 +125,17 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
-interface IEventEditorProps extends IProgramEvent {
-  name: string,
-  event: IProgramEvent,
-  onUpdate: any
-}
-
-// TODO check for / create a new interface to specify props
-// events should have the exact same type as this
-// doing it this way, I can avoid writing a specialized editor for each event
-function EventEditor(props: IEventEditorProps) {
-  const dispatch = useAppDispatch();
-  const onUpdate = (path: string, data: any) => {
-    dispatch(updateObjectEditorData({ data: data, path: path }))
-  }
-
-  let properties = [];
-  const path = `event.${props.name}`;
-  if (props.event.color) {
-    const name = `${props.name}${OBJECT_JSON_PATH_SEPERATOR}color`;
-    properties.push((
-      <EditableColor
-        key={uuidv4()}
-        name={name}
-        onUpdate={props.onUpdate}
-        data={props.event.color} />
-    ));
-  }
-
-  if (props.event.rotation) {
-    const name = `${props.name}${OBJECT_JSON_PATH_SEPERATOR}rotation`;
-    properties.push((
-      <EditableEuler
-        key={uuidv4()}
-        name={name}
-        onUpdate={props.onUpdate}
-        data={props.event.rotation} />
-    ));
-  }
-
-  if (props.event.translation) {
-    const name = `${props.name}${OBJECT_JSON_PATH_SEPERATOR}translation`;
-    properties.push((
-      <EditableEuler
-        key={uuidv4()}
-        name={name}
-        onUpdate={props.onUpdate}
-        data={props.event.translation} />
-    ));
-  }
-
-  if (props.event.scale) {
-    const name = `${props.name}${OBJECT_JSON_PATH_SEPERATOR}scale`
-    properties.push((
-      <EditableEuler
-        key={uuidv4()}
-        name={name}
-        onUpdate={props.onUpdate}
-        data={props.event.scale} />
-    ));
-  }
-
-  return (
-    <Stack direction="column" spacing={1} py={1}>
-      {properties}
-    </Stack>
-  )
-}
-
 interface IObjectEditorProps {
   window: IWindow,
   object: IProgramObject,
   onClose: any
 }
+
+// TODO instead of using uuids, should pass down the json path of the value starting with the object id
+// that way it's unique but doesn't change
 export default function ObjectEditor(props: IObjectEditorProps) {
   const formReducer = (state: IProgramObject, event: any) => {
-    let result = deepCopyJSON(state);
+    let result: IProgramObject = deepCopyJSON(state);
     const path = event.target.name;
     if (path === "name") {
       return {
@@ -210,32 +144,41 @@ export default function ObjectEditor(props: IObjectEditorProps) {
       }
     }
 
-    const pathParts = path.split(OBJECT_JSON_PATH_SEPERATOR);
-    if (pathParts[0] === "event") {
-      for (let eventIndex = 0; eventIndex < props.object.events.length; eventIndex++) {
-        const objEvent = props.object.events[eventIndex];
-        if (objEvent.name !== pathParts[1]) {
-          continue;
-        }
-
-        if (pathParts[2] === "color") {
-          result.events[eventIndex].color = updateJSONValue(result.events[eventIndex].color, pathParts[3], event.target.value) as IProgramColor;
-        }
-      }
-    }
-
     return result;
   }
 
   const [tabIndex, setTabIndex] = useState(0);
-  const [formData, setFormData] = useReducer(formReducer, props.object);
+  // const [formData, setFormData] = useReducer(formReducer, props.object);
+  const [editedObject, setEditedObject] = useState(props.object);
   const dispatch = useAppDispatch();
   const handleTabChange = (event: React.SyntheticEvent, newIndex: number) => {
     setTabIndex(newIndex);
   }
 
   function handleSave(event: any) {
-    dispatch(updateObject(formData));
+    dispatch(updateObject(editedObject));
+  }
+
+  const updateEvent = (eventName: string, eventData: IProgramEvent) => {
+    let result = { ...editedObject };
+    result.events = { ...editedObject.events };
+    result.events[eventData.name] = eventData;
+    setEditedObject(result);
+  }
+
+  const setMeshType = (event: any) => {
+    let result = { ...editedObject }
+    result.mesh = { ...result.mesh }
+    result.mesh.type = event.target.value;
+    setEditedObject(result)
+  }
+
+  const setName = (event: any) => {
+    let result = {
+      ...editedObject,
+      "name": event.target.value
+    }
+    setEditedObject(result)
   }
 
   return (
@@ -248,18 +191,24 @@ export default function ObjectEditor(props: IObjectEditorProps) {
             orientation="vertical"
           >
             <Tab label="Properties" value={0} />
-            {formData.events.map((item: IProgramEvent, index: number) => {
-              return (<Tab key={uuidv4()} label={item.name} value={index + 1} />)
+            {Object.entries(editedObject.events).map(([k, v], i) => {
+              return (<Tab key={uuidv4()} label={v.name} value={i + 1} />)
             })}
           </Tabs>
           <TabPanel value={tabIndex} index={0}>
-            <TextField variant="standard" label="Name" name="name" onChange={setFormData} defaultValue={props.object.name} />
+            <Stack direction="column" spacing={1}>
+              <TextField variant="standard" label="Name" name="name" onChange={setName} defaultValue={props.object.name} />
+              <Divider />
+              <Select name="mesh.type" onChange={setMeshType} defaultValue={props.object.mesh.type}>
+                {MESH_TYPE_ALL.map((meshType) => (<MenuItem key={uuidv4()} value={meshType}>{capitalize(meshType)}</MenuItem>))}
+              </Select>
+            </Stack>
           </TabPanel>
 
-          {formData.events.map((item: IProgramEvent, index: number) => {
+          {Object.entries(editedObject.events).map(([k, v], i) => {
             return (
-              <TabPanel key={uuidv4()} value={tabIndex} index={1}>
-                <EventEditor onUpdate={setFormData} name={`event${OBJECT_JSON_PATH_SEPERATOR}${item.name}`} event={item} />
+              <TabPanel key={uuidv4()} value={tabIndex} index={i + 1}>
+                <EventEditor key={`${props.object.id}.${v.name}`} objectId={props.object.id} onUpdate={(e: any) => { updateEvent(k, e) }} event={v} />
               </TabPanel>
             )
           })}

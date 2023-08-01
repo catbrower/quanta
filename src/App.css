@@ -32,6 +32,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -47,8 +48,8 @@ canvas {
 
 .dialog .MuiDialog-container .MuiPaper-root:first-child {
   max-width: unset !important;
-  border-radius: 10px !important;
-  border: solid #CCC 2px !important;
+  /* border-radius: 10px !important; */
+  /* border: solid #CCC 2px !important; */
   overflow: hidden;
 }
 

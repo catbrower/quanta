@@ -1,5 +1,5 @@
 import { buildShaderName } from "../../Common";
-import { IProgram, IProgramUniforms } from "../Interfaces";
+import { IProgram, IProgramUniforms } from "../ProgramInterfaces";
 import { FRAGMENT, VERTEX } from "../ShaderTypes";
 import buildObject from "./ObjectBuilder";
 import { buildShaders } from "./ShaderBuilder";
@@ -17,7 +17,7 @@ function buildAllShaders(code: IProgram): string {
   let uniforms = code.globals;
   let result: { [name: string]: string } = {};
   for (const obj of code.objects) {
-    for (const event of obj.events) {
+    for (const [key, event] of Object.entries(obj.events)) {
       const shaders = buildShaders(event, { ...uniforms, ...obj.properties }, obj.mesh.type);
       result[buildShaderName(FRAGMENT, obj.id, event.name)] = shaders.fragmentShader;
       result[buildShaderName(VERTEX, obj.id, event.name)] = shaders.vertextShader;
@@ -74,6 +74,12 @@ function buildMainLoop(programData: IProgram): string {
       uniforms.time.value = (new Date().getTime() - START_TIME) / 1000;
       raycaster.setFromCamera(pointer, camera);
 
+      objects.forEach((obj) => {
+        if(obj.events.step) {
+          obj.events.step.apply(obj, uniforms)
+        }
+      })
+
       renderer.render(scene, camera);
     }
 
@@ -124,6 +130,9 @@ export default async function buildProgram(code: IProgram): Promise<string> {
         <canvas id="renderContext"></canvas>
         <script>
           ${THREE}
+          var pow = Math.pow;
+          var sin = Math.sin;
+          var time = 0;
           ${finalCode}
         </script>
       </body>
