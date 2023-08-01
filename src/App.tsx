@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from './redux/Hooks';
 import Universe from './removed/objects/Universe';
 import Window from './gui/Window';
 import { IWindow } from './gui/GUITypes';
+import { Typography } from '@mui/material';
 
 export default function App() {
   // private universe: Universe | null = null;
@@ -25,7 +26,9 @@ export default function App() {
   return (
     <>
       <GUI />
-      <canvas id="canvas"></canvas>
+      <Typography id="bgText" variant='h1' align="center">
+        Quanta
+      </Typography>
     </>
   )
 }

@@ -79,20 +79,18 @@ export default function AppBarBottom() {
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
 
-        <AppBar position="fixed" sx={{ top: "auto", bottom: 0 }}>
+        <AppBar position="fixed" sx={{ top: "auto", bottom: 0, boxShadow: "0px -2px 4px -1px rgba(0,0,0,0.2), 0px -4px 5px 0px rgba(0,0,0,0.14), 0px -1px 10px 0px rgba(0,0,0,0.12);" }}>
           <Toolbar>
             <IconButton
               color="inherit"
               aria-label="open drawer"
               onClick={() => { dispatch(openMenu()) }}
               edge="start"
-            // sx={{ mr: 2, ...(isOpen && { display: 'none' }) }}
             >
               <MenuIcon />
             </IconButton>
 
             {windows.map((window: IWindow) => (<Window key={window.id} {...window} />))}
-
           </Toolbar>
         </AppBar>
 
