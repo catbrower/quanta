@@ -62,6 +62,10 @@ export default function EventEditor(props: IEventEditorProps) {
     props.onUpdate(result);
   }
 
+  const deleteEventStep = (index: number) => {
+
+  }
+
   let eventSteps = [];
   // for (const eventStep of props.event.steps) {
   for (let i = 0; i < props.event.steps.length; i++) {
@@ -77,6 +81,7 @@ export default function EventEditor(props: IEventEditorProps) {
             name={`step.${i}`}
             label={`Set ${capitalize(eventStep.type)}`}
             onUpdate={(e: any) => { setEventStep(i, e.target.value) }}
+            onDelete={() => deleteEventStep(i)}
             data={eventStep} />
         )
         break;

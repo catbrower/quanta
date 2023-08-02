@@ -67,3 +67,7 @@ body {
   font-weight: bolder;
   user-select: none;
 }
+
+.unselectable {
+  user-select: none;
+}

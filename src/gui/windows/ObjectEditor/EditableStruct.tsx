@@ -1,41 +1,36 @@
 import { Stack, TextField } from "@mui/material";
 import { useEffect, useReducer, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
-import CollapsableProperty from "./CollapsableProperty";
 import { IProgramEventStep } from "../../../program/ProgramInterfaces";
+import CollapsableProperty from "./CollapsableProperty";
 
 interface IEditableColorProps {
   name: string,
   label: string,
   onUpdate: any,
+  onDelete: any,
   data: IProgramEventStep
 }
 
-// TODO change the random uuid to a unique but static value. Hopefully this will help with focus like it did elsewhere
 export default function EditableStruct(props: IEditableColorProps) {
+  const [canUpdate, setCanUpdate] = useState(false);
+
   const updateData = (state: {}, event: any) => {
-    // event.preventDefault();
     const result = {
       ...state,
       [event.target.name]: event.target.value
     }
-    setShouldUpdate(true);
+    setCanUpdate(true);
     return result;
   }
 
-  // useEffect(() => {
-  //   if (shouldUpdate) {
-  //     setShouldUpdate(false);
-  //     props.onUpdate({ target: { name: props.name, value: data } })
-  //   }
-  // })
+  useEffect(() => {
+    if (canUpdate) {
+      setCanUpdate(false);
+      props.onUpdate({ target: { name: props.name, value: data } });
+    }
+  });
 
-  const bubbleUpdate = () => {
-    console.log('bubble')
-    props.onUpdate({ target: { name: props.name, value: data } })
-  }
-
-  const [shouldUpdate, setShouldUpdate] = useState(false);
   const [data, setData] = useReducer(updateData, props.data.content);
 
   return (
@@ -43,7 +38,8 @@ export default function EditableStruct(props: IEditableColorProps) {
       <Stack direction="column" spacing={2}>
         {Object.entries(data).map(([k, v]) => {
           return (
-            <TextField variant="standard" key={uuidv4()} label={`${k}`} name={`${k}`} onChange={setData} onBlur={bubbleUpdate} defaultValue={v} />
+            // onChange = { setData }
+            <TextField variant="standard" key={uuidv4()} label={`${k}`} name={`${k}`} onBlur={setData} defaultValue={v} />
           )
         })}
       </Stack>
