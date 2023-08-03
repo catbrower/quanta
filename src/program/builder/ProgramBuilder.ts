@@ -1,8 +1,5 @@
-import { buildShaderName } from "../../Common";
 import { IProgram, IProgramUniforms } from "../ProgramInterfaces";
-import { FRAGMENT, VERTEX } from "../ShaderTypes";
 import buildObject from "./ObjectBuilder";
-import { buildShaders } from "./ShaderBuilder";
 
 function buildAllUniforms(uniforms: IProgramUniforms): string {
   const uniformsString = Object.entries(uniforms).map((pair) => {
@@ -13,18 +10,20 @@ function buildAllUniforms(uniforms: IProgramUniforms): string {
 }
 
 // Build all shaders and return them as a dictionary
+// TODO diable for now
 function buildAllShaders(code: IProgram): string {
-  let uniforms = code.globals;
-  let result: { [name: string]: string } = {};
-  for (const obj of code.objects) {
-    for (const [key, event] of Object.entries(obj.events)) {
-      const shaders = buildShaders(event, { ...uniforms, ...obj.properties }, obj.mesh.type);
-      result[buildShaderName(FRAGMENT, obj.id, event.name)] = shaders.fragmentShader;
-      result[buildShaderName(VERTEX, obj.id, event.name)] = shaders.vertextShader;
-    }
-  }
+  return '';
+  // let uniforms = code.globals;
+  // let result: { [name: string]: string } = {};
+  // for (const obj of code.objects) {
+  //   for (const [key, event] of Object.entries(obj.events)) {
+  //     const shaders = buildShaders(event, { ...uniforms, ...obj.properties }, obj.mesh.type);
+  //     result[buildShaderName(FRAGMENT, obj.id, event.name)] = shaders.fragmentShader;
+  //     result[buildShaderName(VERTEX, obj.id, event.name)] = shaders.vertextShader;
+  //   }
+  // }
 
-  return `var SHADERS = ${JSON.stringify(result)};\n`;
+  // return `var SHADERS = ${JSON.stringify(result)};\n`;
 }
 
 // TODO program is fixed to one scene atm
@@ -35,6 +34,7 @@ function buildAllScenes(programData: IProgram): string {
 
 function buildAllObjects(programData: IProgram): string {
   const objectCode = programData.objects.map(buildObject).reduce((acc, item) => `${acc},\n${item}`);
+  console.log(objectCode)
   return `var objects = [
     ${objectCode}
   ];\n`;
@@ -88,9 +88,6 @@ function buildMainLoop(programData: IProgram): string {
 }
 
 export default async function buildProgram(code: IProgram): Promise<string> {
-  // Fetch the latest minified threejs code
-  // https://stackoverflow.com/questions/50694881/how-to-download-file-in-react-js
-
   const threeUrl = "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.154.0/three.min.js";
   let THREE = await fetch(threeUrl, {
     method: 'GET'

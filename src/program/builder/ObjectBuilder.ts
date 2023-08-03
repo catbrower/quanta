@@ -1,10 +1,9 @@
 import {
-  AdditiveBlending,
   BufferGeometry
 } from "three";
 import { buildShaderName, format, innerJSON } from "../../Common";
 import { EVENTS, MATERIAL_TYPES, MESH_TYPE_DEFAULT, MESH_TYPE_INSTANCED, MESH_TYPE_POINTS } from "../../Constants";
-import { IProgramGeometry, IProgramMaterial, IProgramMesh, IProgramObject } from "../ProgramInterfaces";
+import { IProgramGeometry, IProgramMesh, IProgramObject } from "../ProgramInterfaces";
 import { buildEvent } from "./EventBuilder";
 
 function buildMesh(meshSpec: IProgramMesh): string {
@@ -82,7 +81,7 @@ function buildMaterial(objectSpec: IProgramObject) {
 }
 
 export default function buildObject(objectSpec: IProgramObject): string {
-  const eventCode = Object.fromEntries(Object.entries(objectSpec.events).map(([key, value]) => [key, buildEvent(value)]))
+  const eventCode = Object.fromEntries(Object.entries(objectSpec.events).map(([key, value]) => [key, buildEvent(value)]));
 
   let x: THREE.Mesh;
   let result = `

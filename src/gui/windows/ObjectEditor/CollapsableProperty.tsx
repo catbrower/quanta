@@ -1,9 +1,11 @@
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Accordion, AccordionDetails, AccordionSummary, Typography } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, IconButton, Stack, Typography } from "@mui/material";
 import { useDispatch } from 'react-redux';
 import { getJSONProperty } from '../../../Common';
 import { addCollapseablePropertyState, openCollapseableProperty } from '../../../redux/GUISlice';
 import { useAppSelector } from '../../../redux/Hooks';
+import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
+import zIndex from '@mui/material/styles/zIndex';
 
 interface ICollapseableState {
   id: string,
@@ -14,7 +16,8 @@ interface ICollapseableState {
 interface IProps {
   id: string,
   name: string,
-  children: any
+  children: any,
+  onDelete: any
 }
 
 export default function CollapsableProperty(props: IProps) {
@@ -29,17 +32,26 @@ export default function CollapsableProperty(props: IProps) {
   }
 
   return (
-    <Accordion expanded={isOpen} onChange={() => { handleChange() }}>
-      <AccordionSummary
-        expandIcon={<ExpandMoreIcon />}
-        aria-controls="panel1a-content"
-        id="panel1a-header"
-      >
-        <Typography>{props.name}</Typography>
-      </AccordionSummary>
-      <AccordionDetails>
-        {props.children}
-      </AccordionDetails>
-    </Accordion>
+    <>
+      <Stack direction="row" pl={1} style={{ position: "absolute", zIndex: "1", height: "3em" }}>
+        <IconButton onClick={props.onDelete}>
+          <ClearRoundedIcon />
+        </IconButton>
+        <Typography lineHeight={0} style={{ transform: "translateY(50%)" }}>{props.name}</Typography>
+      </Stack>
+
+      <Accordion style={{ marginRight: "0.25em", marginLeft: "0.25em", marginTop: "0px" }} expanded={isOpen} onClick={() => { }} onChange={() => { handleChange() }}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1a-content"
+          id="panel1a-header"
+          style={{ marginLeft: "3em", height: "3em" }}
+        >
+        </AccordionSummary>
+        <AccordionDetails>
+          {props.children}
+        </AccordionDetails>
+      </Accordion>
+    </>
   )
 }

@@ -1,11 +1,8 @@
+import { Typography } from '@mui/material';
 import { useEffect } from 'react';
 import './App.css';
 import GUI from './gui/GUI';
 import { useAppDispatch, useAppSelector } from './redux/Hooks';
-import Universe from './removed/objects/Universe';
-import Window from './gui/Window';
-import { IWindow } from './gui/GUITypes';
-import { Typography } from '@mui/material';
 
 export default function App() {
   // private universe: Universe | null = null;

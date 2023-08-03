@@ -12,10 +12,17 @@ interface IEventEditorProps {
   event: IProgramEvent,
   onUpdate: any
 }
-// TODO check for / create a new interface to specify props
-// events should have the exact same type as this
-// doing it this way, I can avoid writing a specialized editor for each event
+
 export default function EventEditor(props: IEventEditorProps) {
+  const [addMenuAnchorEl, setAddMenuAnchorEl] = React.useState<null | HTMLElement>(null);
+  const addMenuIsOpen = Boolean(addMenuAnchorEl);
+  const handleAddClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAddMenuAnchorEl(event.currentTarget);
+  };
+  const handleAddClose = () => {
+    setAddMenuAnchorEl(null);
+  };
+
   const setEventStep = (index: number, data: any) => {
     let result = { ...props.event };
     result.steps = [...props.event.steps];
@@ -25,16 +32,6 @@ export default function EventEditor(props: IEventEditorProps) {
     };
     props.onUpdate(result);
   }
-
-  // const [event, setEvent] = useReducer(updateEvent, props.event);
-  const [addMenuAnchorEl, setAddMenuAnchorEl] = React.useState<null | HTMLElement>(null);
-  const addMenuIsOpen = Boolean(addMenuAnchorEl);
-  const handleAddClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAddMenuAnchorEl(event.currentTarget);
-  };
-  const handleAddClose = () => {
-    setAddMenuAnchorEl(null);
-  };
 
   const addEventStep = (stepType: string) => {
     let result = { ...props.event }
@@ -62,8 +59,12 @@ export default function EventEditor(props: IEventEditorProps) {
     props.onUpdate(result);
   }
 
-  const deleteEventStep = (index: number) => {
-
+  const deleteEventStep = (event: any, removeIndex: number) => {
+    let result = { ...props.event };
+    console.log(result.steps)
+    result.steps = [...props.event.steps].filter((_, index) => { return index !== removeIndex })
+    console.log(result.steps)
+    props.onUpdate(result);
   }
 
   let eventSteps = [];
@@ -81,7 +82,7 @@ export default function EventEditor(props: IEventEditorProps) {
             name={`step.${i}`}
             label={`Set ${capitalize(eventStep.type)}`}
             onUpdate={(e: any) => { setEventStep(i, e.target.value) }}
-            onDelete={() => deleteEventStep(i)}
+            onDelete={(e: any) => deleteEventStep(e, i)}
             data={eventStep} />
         )
         break;
