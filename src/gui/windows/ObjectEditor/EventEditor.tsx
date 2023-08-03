@@ -61,9 +61,7 @@ export default function EventEditor(props: IEventEditorProps) {
 
   const deleteEventStep = (event: any, removeIndex: number) => {
     let result = { ...props.event };
-    console.log(result.steps)
-    result.steps = [...props.event.steps].filter((_, index) => { return index !== removeIndex })
-    console.log(result.steps)
+    result.steps = [...props.event.steps].filter((_, index) => { return index !== removeIndex });
     props.onUpdate(result);
   }
 
@@ -94,7 +92,7 @@ export default function EventEditor(props: IEventEditorProps) {
   }
 
   return (
-    <Stack direction="column" spacing={1} py={1}>
+    <Stack direction="column" py={1}>
       {eventSteps}
       <Stack direction="row" alignItems="center" justifyContent="center">
         <IconButton onClick={handleAddClick}>

@@ -59,7 +59,6 @@ export const guiSlice = createSlice({
     },
     addCollapseablePropertyState: (state, action: PayloadAction<IAddCollapseablePropertyAction>) => {
       if (!(action.payload.id in state.collapseableProperties)) {
-        console.log("adding new state")
         state.collapseableProperties = {
           ...state.collapseableProperties,
           [action.payload.id]: action.payload
@@ -69,13 +68,11 @@ export const guiSlice = createSlice({
     openCollapseableProperty: (state, action) => {
       if (action.payload.id in state.collapseableProperties) {
         const newValue = action.payload
-        // console.log(current(newValue))
         state.collapseableProperties = {
           ...state.collapseableProperties,
           [action.payload.id]: newValue
         }
       }
-      // console.log(state.collapseableProperties)
     }
   }
 });

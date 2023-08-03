@@ -1,11 +1,13 @@
+import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Accordion, AccordionDetails, AccordionSummary, IconButton, Stack, Typography } from "@mui/material";
 import { useDispatch } from 'react-redux';
 import { getJSONProperty } from '../../../Common';
 import { addCollapseablePropertyState, openCollapseableProperty } from '../../../redux/GUISlice';
 import { useAppSelector } from '../../../redux/Hooks';
-import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
-import zIndex from '@mui/material/styles/zIndex';
+
+const HEADER_HEIGHT = "3em";
+const RIGHT_MARGIN = "2.5em";
 
 interface ICollapseableState {
   id: string,
@@ -33,25 +35,26 @@ export default function CollapsableProperty(props: IProps) {
 
   return (
     <>
-      <Stack direction="row" pl={1} style={{ position: "absolute", zIndex: "1", height: "3em" }}>
+      <Stack direction="row" mb={0} style={{ position: "relative", border: "solid 1px black", zIndex: "1", height: HEADER_HEIGHT, width: RIGHT_MARGIN, overflow: "show" }}>
         <IconButton onClick={props.onDelete}>
           <ClearRoundedIcon />
         </IconButton>
-        <Typography lineHeight={0} style={{ transform: "translateY(50%)" }}>{props.name}</Typography>
       </Stack>
 
-      <Accordion style={{ marginRight: "0.25em", marginLeft: "0.25em", marginTop: "0px" }} expanded={isOpen} onClick={() => { }} onChange={() => { handleChange() }}>
+      <Accordion style={{ marginRight: RIGHT_MARGIN, marginTop: "0px", marginBottom: "0px", top: `-${HEADER_HEIGHT}` }} expanded={isOpen} onChange={() => { handleChange() }}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1a-content"
           id="panel1a-header"
-          style={{ marginLeft: "3em", height: "3em" }}
+          style={{ marginLeft: RIGHT_MARGIN, height: HEADER_HEIGHT, backgroundColor: "aliceblue" }}
         >
+          <Typography className="unselectable" lineHeight={0} style={{ transform: "translateY(50%)" }}>{props.name}</Typography>
         </AccordionSummary>
         <AccordionDetails>
           {props.children}
         </AccordionDetails>
       </Accordion>
+
     </>
   )
 }

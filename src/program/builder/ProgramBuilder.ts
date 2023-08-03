@@ -34,7 +34,6 @@ function buildAllScenes(programData: IProgram): string {
 
 function buildAllObjects(programData: IProgram): string {
   const objectCode = programData.objects.map(buildObject).reduce((acc, item) => `${acc},\n${item}`);
-  console.log(objectCode)
   return `var objects = [
     ${objectCode}
   ];\n`;
