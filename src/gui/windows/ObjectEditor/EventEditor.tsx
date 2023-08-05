@@ -3,7 +3,7 @@ import { IconButton, ListItemText, Menu, MenuItem, MenuList, Paper, Stack } from
 import React from "react";
 import { v4 as uuidv4 } from "uuid";
 import { capitalize, uniformColor, uniformEuler } from "../../../Common";
-import { EVENT_STEPS, EVENT_STEP_ALL } from "../../../Constants";
+import { EVENT_STEPS } from "../../../Constants";
 import { IProgramEvent } from "../../../program/ProgramInterfaces";
 import EditableStruct from "./EditableStruct";
 
@@ -106,7 +106,7 @@ export default function EventEditor(props: IEventEditorProps) {
         >
           <Paper>
             <MenuList>
-              {EVENT_STEP_ALL.filter((propName) => !(propName in props.event)).map((propName) => {
+              {Object.values(EVENT_STEPS).filter((propName) => !(propName in props.event)).map((propName) => {
                 return (
                   <MenuItem key={uuidv4()} onClick={(e) => addEventStep(propName)}>
                     <ListItemText>{capitalize(propName)}</ListItemText>

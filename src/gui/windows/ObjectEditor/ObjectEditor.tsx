@@ -1,13 +1,15 @@
-import { Box, Button, DialogActions, DialogContent, Divider, MenuItem, Select, Stack, Tab, Tabs, TextField, styled } from "@mui/material";
-import { useReducer, useState } from "react";
+import { Box, Button, DialogActions, DialogContent, Divider, IconButton, ListItemText, Menu, MenuItem, MenuList, Paper, Select, Stack, Tab, Tabs, TextField, styled } from "@mui/material";
+import { useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
-import { OBJECT_JSON_PATH_SEPERATOR, capitalize, deepCopyJSON } from "../../../Common";
-import { MESH_TYPE_ALL } from "../../../Constants";
+import { capitalize, deepCopyJSON } from "../../../Common";
+import { EVENTS, MESH_TYPE_ALL } from "../../../Constants";
 import { IProgramEvent, IProgramObject } from "../../../program/ProgramInterfaces";
 import { updateObject } from "../../../redux/CodeSlice";
 import { useAppDispatch } from "../../../redux/Hooks";
 import { IWindow } from "../../GUITypes";
 import EventEditor from "./EventEditor";
+import AddRoundedIcon from '@mui/icons-material/AddRounded';
+import React from "react";
 
 const modalWidth = 500;
 
@@ -181,11 +183,34 @@ export default function ObjectEditor(props: IObjectEditorProps) {
     setEditedObject(result)
   }
 
+  // Add event menu
+  const [addEventMenuAnchorEl, setAddMenuAnchorEl] = React.useState<null | HTMLElement>(null);
+  const addEventMenuIsOpen = Boolean(addEventMenuAnchorEl);
+  const handleAddClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAddMenuAnchorEl(event.currentTarget);
+  };
+  const handleAddClose = () => {
+    setAddMenuAnchorEl(null);
+  };
+  const addEvent = (eventName: string) => {
+    if (!(eventName in props.object.events)) {
+      let result = { ...editedObject };
+      result.events = {
+        ...editedObject.events,
+        [eventName]: {
+          name: eventName,
+          steps: []
+        }
+      }
+      setEditedObject(result);
+    }
+  }
+
   return (
     <>
       <DialogContent style={{ overflow: "hidden", height: "50vh" }}>
         <Box sx={{ flexGrow: 1, bgcolor: 'background.paper', display: 'flex' }} >
-          <Box style={{ overflow: "hidden", height: "100px" }}>
+          <Box style={{ overflow: "hidden" }}>
             <Tabs
               value={tabIndex}
               onChange={handleTabChange}
@@ -196,6 +221,26 @@ export default function ObjectEditor(props: IObjectEditorProps) {
                 return (<Tab key={uuidv4()} label={v.name} value={i + 1} />)
               })}
             </Tabs>
+            <IconButton onClick={handleAddClick}>
+              <AddRoundedIcon />
+            </IconButton>
+            <Menu
+              open={addEventMenuIsOpen}
+              anchorEl={addEventMenuAnchorEl}
+              onClose={handleAddClose}
+            >
+              <Paper>
+                <MenuList>
+                  {Object.values(EVENTS).filter((eventName) => !(eventName in editedObject.events)).map((eventName) => {
+                    return (
+                      <MenuItem key={uuidv4()} onClick={(e) => addEvent(eventName)}>
+                        <ListItemText>{capitalize(eventName)}</ListItemText>
+                      </MenuItem>
+                    )
+                  })}
+                </MenuList>
+              </Paper>
+            </Menu>
           </Box>
           <Box style={{ height: "50vh", overflowY: "auto" }}>
             <TabPanel value={tabIndex} index={0}>
