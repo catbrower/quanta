@@ -1,4 +1,4 @@
-import { Box, Button, DialogActions, DialogContent, Divider, IconButton, ListItemText, Menu, MenuItem, MenuList, Paper, Select, Stack, Tab, Tabs, TextField, styled } from "@mui/material";
+import { Box, Button, DialogActions, DialogContent, Divider, Icon, IconButton, ListItemText, Menu, MenuItem, MenuList, Paper, Select, Stack, Tab, Tabs, TextField, styled } from "@mui/material";
 import { useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import { capitalize, deepCopyJSON } from "../../../Common";
@@ -9,6 +9,7 @@ import { useAppDispatch } from "../../../redux/Hooks";
 import { IWindow } from "../../GUITypes";
 import EventEditor from "./EventEditor";
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
+import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
 import React from "react";
 
 const modalWidth = 500;
@@ -206,10 +207,28 @@ export default function ObjectEditor(props: IObjectEditorProps) {
     }
   }
 
+  // TODO if currently selected event is removed, select properties
+  const removeEvent = (eventName: string) => {
+    let result = { ...editedObject };
+    result.events = Object.fromEntries(Object.entries(editedObject.events).filter(([key, value]) => { return key !== eventName }))
+    setEditedObject(result);
+  }
+
   return (
     <>
       <DialogContent style={{ overflow: "hidden", height: "50vh" }}>
         <Box sx={{ flexGrow: 1, bgcolor: 'background.paper', display: 'flex' }} >
+          <Box>
+            <Stack direction={'column'} pt={"3.5em"}>
+              {Object.entries(editedObject.events).map(([k, v], i) => {
+                return (
+                  <IconButton onClick={() => { removeEvent(k) }}>
+                    <ClearRoundedIcon fontSize="small" />
+                  </IconButton>
+                )
+              })}
+            </Stack>
+          </Box>
           <Box style={{ overflow: "hidden" }}>
             <Tabs
               value={tabIndex}
@@ -218,7 +237,9 @@ export default function ObjectEditor(props: IObjectEditorProps) {
             >
               <Tab label="Properties" value={0} />
               {Object.entries(editedObject.events).map(([k, v], i) => {
-                return (<Tab key={uuidv4()} label={v.name} value={i + 1} />)
+                return (
+                  <Tab key={uuidv4()} label={v.name} value={i + 1} />
+                )
               })}
             </Tabs>
             <IconButton onClick={handleAddClick}>

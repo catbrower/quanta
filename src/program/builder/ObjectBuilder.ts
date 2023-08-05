@@ -82,6 +82,10 @@ function buildMaterial(objectSpec: IProgramObject) {
 
 export default function buildObject(objectSpec: IProgramObject): string {
   const eventCode = Object.fromEntries(Object.entries(objectSpec.events).map(([key, value]) => [key, buildEvent(value)]));
+  let meshEventsString = '';
+  if (Object.entries(eventCode).length > 0) {
+    meshEventsString = Object.entries(eventCode).map(([k, v]) => { return `${k}: ${v}` }).reduce((acc, cur) => { return `${acc}, ${cur}` })
+  }
 
   let x: THREE.Mesh;
   let result = `
@@ -91,7 +95,7 @@ export default function buildObject(objectSpec: IProgramObject): string {
       var geometry = ${buildGeometry(objectSpec.geometry)};
       var mesh = ${buildMesh(objectSpec.mesh)};
 
-      mesh.events = { ${Object.entries(eventCode).map(([k, v]) => { return `${k}: ${v}` }).reduce((acc, cur) => { return `${acc}, ${cur}` })} };
+      mesh.events = { ${meshEventsString} };
       ${EVENTS.CREATE in objectSpec.events ? `(${eventCode[EVENTS.CREATE]}).apply(mesh);` : ''}
       
       return mesh;
@@ -99,6 +103,3 @@ export default function buildObject(objectSpec: IProgramObject): string {
 
   return format(result);
 }
-
-// 
-// 
