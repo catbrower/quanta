@@ -1,4 +1,4 @@
-import THREE from "three";
+import THREE, { Euler } from "three";
 import { EVENT_STEPS } from "../../Constants";
 import { IProgramEvent } from "../ProgramInterfaces";
 import { newColor, newEuler } from "./CodeBuilder";
@@ -7,7 +7,7 @@ import { newColor, newEuler } from "./CodeBuilder";
 export function buildEvent(event: IProgramEvent) {
   let lines = [];
   let x: THREE.Mesh;
-  // x.mat
+  // x.position.set
   lines.push(`function() {`)
   for (const step of event.steps) {
     switch (step.type) {
@@ -18,7 +18,10 @@ export function buildEvent(event: IProgramEvent) {
         lines.push(`this.setRotationFromEuler(${newEuler(step.content)});`);
         break;
       case EVENT_STEPS.SET_SCALE:
-        lines.push(`this.scale.set(${Object.values(step.content).join(', ')})`)
+        lines.push(`this.scale.set(${Object.values(step.content).join(', ')});`)
+        break;
+      case EVENT_STEPS.SET_TRANSLATE:
+        lines.push(`this.position.setFromEuler(${newEuler(step.content)});`)
         break;
     }
   }
