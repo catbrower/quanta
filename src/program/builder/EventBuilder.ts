@@ -17,6 +17,9 @@ export function buildEvent(event: IProgramEvent) {
       case EVENT_STEPS.SET_ROTATION:
         lines.push(`this.setRotationFromEuler(${newEuler(step.content)});`);
         break;
+      case EVENT_STEPS.SET_SCALE:
+        lines.push(`this.scale.set(${Object.values(step.content).join(', ')})`)
+        break;
     }
   }
   lines.push('}')

@@ -13,6 +13,7 @@ import { useAppDispatch, useAppSelector } from "../redux/Hooks";
 import { setCompiledProgram } from "../redux/CodeSlice";
 import buildProgram from "../program/builder/ProgramBuilder";
 import { openPreviewWindow } from "../redux/GUISlice";
+import NewMenu from "./menus/NewMenu";
 
 export default function AppBarTop() {
   const dispatch = useAppDispatch();
@@ -33,6 +34,7 @@ export default function AppBarTop() {
     <AppBar position="fixed" sx={{ bottom: "auto", top: 0 }}>
       <Toolbar>
         <FileMenu />
+        <NewMenu />
         <RunMenu />
 
         <IconButton onClick={() => buildAndPlay()}>
