@@ -7,7 +7,7 @@ import { newColor, newEuler } from "./CodeBuilder";
 export function buildEvent(event: IProgramEvent) {
   let lines = [];
   let x: THREE.Mesh;
-  // x.position.set
+
   lines.push(`function() {`)
   for (const step of event.steps) {
     switch (step.type) {
@@ -22,6 +22,9 @@ export function buildEvent(event: IProgramEvent) {
         break;
       case EVENT_STEPS.SET_TRANSLATE:
         lines.push(`this.position.setFromEuler(${newEuler(step.content)});`)
+        break;
+      case EVENT_STEPS.SET_POINT_SIZE:
+        lines.push(`this.material.size = ${step.content};`);
         break;
     }
   }

@@ -38,3 +38,8 @@ export const MATERIAL_TYPES = {
   BASIC: "basic",
   SHADER: "shader"
 }
+
+// Defines conditional context menu opens based on what you rclicked on
+export const CONTEXT_MENU_CONTENT_TYPES = {
+  PROGRAM_EDITOR_OBJECT: 'programEditorObject'
+}

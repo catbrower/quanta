@@ -1,31 +1,27 @@
-import { Typography } from '@mui/material';
-import { useEffect } from 'react';
+import { Box, Typography } from '@mui/material';
+import { useDispatch } from 'react-redux';
 import './App.css';
 import GUI from './gui/GUI';
-import { useAppDispatch, useAppSelector } from './redux/Hooks';
+import ContextMenu from './gui/context menu/ContextMenu';
+import { closeContextMenu, openContextMenu } from './redux/ContextMenuSlice';
 
 export default function App() {
-  // private universe: Universe | null = null;
-  const dispatch = useAppDispatch();
-  const universeParams = useAppSelector(state => state.code);
-  const windows = useAppSelector(state => state.gui.windows);
-
-  function createUniverse() {
-    // const universe = new Universe(universeParams);
-    // universe.begin();
-  }
-
-  // TODO the createUniverse call to some run button
-  useEffect(() => {
-    createUniverse();
-  })
-
+  const dispatch = useDispatch()
   return (
-    <>
+    <Box width={'100vw'} height={'100vh'}
+      onContextMenu={(e) => {
+        e.preventDefault();
+        dispatch(openContextMenu({ x: e.clientX, y: e.clientY }));
+      }}
+      onClick={() => {
+        dispatch(closeContextMenu())
+      }}
+    >
       <GUI />
       <Typography id="bgText" variant='h1' align="center">
         Quanta
       </Typography>
-    </>
+      <ContextMenu />
+    </Box>
   )
 }
