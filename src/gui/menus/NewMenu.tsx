@@ -1,4 +1,4 @@
-import { Button, ListItemIcon, ListItemText, Menu, MenuItem, MenuList, Paper } from "@mui/material";
+import { Box, Button, ListItemIcon, ListItemText, Menu, MenuItem, MenuList, Paper } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../redux/Hooks";
 import React from "react";
 import { addObject } from "../../redux/CodeSlice";
@@ -48,13 +48,13 @@ export default function NewMenu() {
         onClose={handleClose}
         MenuListProps={{ 'aria-labelledby': 'basic-button' }}
       >
-        <Paper sx={{ width: 320, maxWidth: '100%' }}>
+        <Box sx={{ width: 320, maxWidth: '100%' }}>
           <MenuList>
             <MenuItem onClick={createNewObject}>
               <ListItemText>Object</ListItemText>
             </MenuItem>
           </MenuList>
-        </Paper>
+        </Box>
       </Menu>
     </>
   )

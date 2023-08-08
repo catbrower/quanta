@@ -1,4 +1,4 @@
-import { Button, ListItemIcon, ListItemText, Menu, MenuItem, MenuList, Paper } from "@mui/material"
+import { Box, Button, ListItemIcon, ListItemText, Menu, MenuItem, MenuList, Paper } from "@mui/material"
 import HardwareIcon from '@mui/icons-material/HardwareRounded';
 import React from "react";
 import { useAppDispatch, useAppSelector } from "../../redux/Hooks";
@@ -41,7 +41,7 @@ export default function RunMenu() {
         onClose={handleClose}
         MenuListProps={{ 'aria-labelledby': 'basic-button' }}
       >
-        <Paper sx={{ width: 320, maxWidth: '100%' }}>
+        <Box sx={{ width: 320, maxWidth: '100%' }}>
           <MenuList>
             <MenuItem onClick={() => buildProgramWrapper()}>
               <ListItemIcon>
@@ -50,7 +50,7 @@ export default function RunMenu() {
               <ListItemText>Build</ListItemText>
             </MenuItem>
           </MenuList>
-        </Paper>
+        </Box>
       </Menu>
     </>
   )

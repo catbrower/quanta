@@ -2,7 +2,7 @@ import Cloud from "@mui/icons-material/Cloud";
 import ContentCopy from "@mui/icons-material/ContentCopy";
 import ContentCut from "@mui/icons-material/ContentCut";
 import ContentPaste from "@mui/icons-material/ContentPaste";
-import { Button, Divider, ListItemIcon, ListItemText, Menu, MenuItem, MenuList, Paper, Typography } from "@mui/material";
+import { Box, Button, Divider, ListItemIcon, ListItemText, Menu, MenuItem, MenuList, Paper, Typography } from "@mui/material";
 import React from "react";
 
 export default function FileMenu() {
@@ -34,7 +34,7 @@ export default function FileMenu() {
         onClose={handleClose}
         MenuListProps={{ 'aria-labelledby': 'basic-button' }}
       >
-        <Paper sx={{ width: 320, maxWidth: '100%' }}>
+        <Box sx={{ width: 320, maxWidth: '100%' }}>
           <MenuList>
             <MenuItem>
               <ListItemIcon>
@@ -73,7 +73,7 @@ export default function FileMenu() {
               <ListItemText>Preferences</ListItemText>
             </MenuItem>
           </MenuList>
-        </Paper>
+        </Box>
       </Menu>
     </>
   )
