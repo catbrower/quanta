@@ -27,7 +27,7 @@ export default function ProgramEditor() {
               key={JSON.stringify({ id: object.id, type: 'editor', })}
               label={object.name}
               onDoubleClick={() => dispatch(openObjectWindow(object))}
-              onContextMenu={() => dispatch(setContextMenuArgs({ payload: "x", type: CONTEXT_MENU_CONTENT_TYPES.PROGRAM_EDITOR_OBJECT }))}
+              onContextMenu={() => dispatch(setContextMenuArgs({ payload: object.id, type: CONTEXT_MENU_CONTENT_TYPES.PROGRAM_EDITOR_OBJECT }))}
             />
           ))}
         </TreeItem>

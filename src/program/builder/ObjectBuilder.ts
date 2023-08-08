@@ -5,6 +5,7 @@ import { buildShaderName, format, innerJSON } from "../../Common";
 import { EVENTS, MATERIAL_TYPES, MESH_TYPE_DEFAULT, MESH_TYPE_INSTANCED, MESH_TYPE_POINTS } from "../../Constants";
 import { IProgramGeometry, IProgramMesh, IProgramObject } from "../ProgramInterfaces";
 import { buildEvent } from "./EventBuilder";
+import { v4 as uuidv4 } from 'uuid';
 
 function buildMesh(meshSpec: IProgramMesh): string {
   const meshType = meshSpec.type;
@@ -78,6 +79,18 @@ function buildMaterial(objectSpec: IProgramObject) {
 
 
   return format(result);
+}
+
+export function getDefaultObject() {
+  return {
+    name: "New Object",
+    id: uuidv4(),
+    mesh: { type: MESH_TYPE_DEFAULT, args: {} },
+    geometry: { type: "box", args: { scale: { type: "float", value: "5" } } },
+    material: { type: MATERIAL_TYPES.BASIC },
+    properties: { x: { type: "float", value: "0.2" } },
+    events: {}
+  }
 }
 
 export default function buildObject(objectSpec: IProgramObject): string {

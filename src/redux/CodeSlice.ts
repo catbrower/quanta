@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { IProgram, IProgramObject } from "../program/ProgramInterfaces";
 import { EVENTS, EVENT_STEPS, MATERIAL_TYPES, MESH_TYPE_DEFAULT } from "../Constants";
 import { v4 as uuidv4 } from 'uuid';
+import { getDefaultObject } from "../program/builder/ObjectBuilder";
 
 // TODO need a way to reference aspects of mesh / geomeyry or set them based on props
 const testCube: IProgramObject = {
@@ -54,10 +55,12 @@ export const codeSlice = createSlice({
   initialState,
   reducers: {
     setMetaParams: (state, action) => { },
-    addObject: (state, action) => {
-      state.program.objects.push(action.payload)
+    addObject: (state) => {
+      state.program.objects.push(getDefaultObject())
     },
-    removeObject: (state, action) => { },
+    removeObject: (state, action) => {
+      state.program.objects = state.program.objects.filter((obj: IProgramObject) => obj.id !== action.payload);
+    },
     updateObject: (state, action) => {
       console.log(action.payload)
       for (let i = 0; i < state.program.objects.length; i++) {

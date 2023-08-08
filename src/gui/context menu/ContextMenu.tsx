@@ -1,15 +1,16 @@
-import { Box, Container, Divider, ListItemText, Menu, MenuItem, MenuList } from "@mui/material";
+import { Box, Divider, ListItemText, Menu, MenuItem, MenuList } from "@mui/material";
 import { createRef, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { CONTEXT_MENU_CONTENT_TYPES } from "../../Constants";
-import { useAppSelector } from "../../redux/Hooks";
+import { addObject, removeObject } from "../../redux/CodeSlice";
 import { setAnchor } from "../../redux/ContextMenuSlice";
+import { useAppSelector } from "../../redux/Hooks";
 
 // TODO there seems to be a bug that on first click, an error is thrown
 export default function ContextMenu() {
   const dispatch = useDispatch();
   const anchorRef = createRef<Element>();
-  const contextMenuState = useAppSelector(state => state.contextMenu)
+  const contextMenuState = useAppSelector(state => state.contextMenu);
 
   useEffect(() => {
     if (anchorRef.current !== null) {
@@ -20,9 +21,13 @@ export default function ContextMenu() {
   const getMenuOptions = () => {
     switch (contextMenuState.type) {
       case CONTEXT_MENU_CONTENT_TYPES.PROGRAM_EDITOR_OBJECT:
+        const objectId = contextMenuState.payload;
         return (
           <Box>
-            <MenuItem>
+            <MenuItem onClick={() => { dispatch(addObject()) }}>
+              <ListItemText>New</ListItemText>
+            </MenuItem>
+            <MenuItem onClick={() => { dispatch(removeObject(objectId)) }}>
               <ListItemText>Delete</ListItemText>
             </MenuItem>
             <Divider />
@@ -43,7 +48,7 @@ export default function ContextMenu() {
           <MenuList>
             {getMenuOptions()}
             <MenuItem>
-              <ListItemText>New</ListItemText>
+              <ListItemText>About</ListItemText>
             </MenuItem>
           </MenuList>
         </Box>

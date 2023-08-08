@@ -18,15 +18,7 @@ export default function NewMenu() {
   };
 
   const createNewObject = () => {
-    dispatch(addObject({
-      name: "New Object",
-      id: uuidv4(),
-      mesh: { type: MESH_TYPE_DEFAULT, args: {} },
-      geometry: { type: "box", args: { scale: { type: "float", value: "5" } } },
-      material: { type: MATERIAL_TYPES.BASIC },
-      properties: { x: { type: "float", value: "0.2" } },
-      events: {}
-    }))
+    dispatch(addObject())
   }
 
   return (
