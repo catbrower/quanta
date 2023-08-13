@@ -6,6 +6,7 @@ import { capitalize, uniformColor, uniformEuler } from "../../../Common";
 import { EVENT_STEPS } from "../../../Constants";
 import { IProgramEvent } from "../../../program/ProgramInterfaces";
 import EditableStruct from "./EditableStruct";
+import { DragSource } from "../../DragSource";
 
 interface IEventEditorProps {
   objectId: string,
@@ -75,6 +76,7 @@ export default function EventEditor(props: IEventEditorProps) {
       case (EVENT_STEPS.SET_TRANSLATE):
       case (EVENT_STEPS.SET_ROTATION):
         eventSteps.push(
+          // <DragSource type="heyimaguy">
           <EditableStruct
             key={`${props.objectId}.${props.event.name}.${i}`}
             name={`step.${i}`}
@@ -82,6 +84,7 @@ export default function EventEditor(props: IEventEditorProps) {
             onUpdate={(e: any) => { setEventStep(i, e.target.value) }}
             onDelete={(e: any) => deleteEventStep(e, i)}
             data={eventStep} />
+          // </DragSource>
         )
         break;
       case (EVENT_STEPS.SET_POINT_SIZE):

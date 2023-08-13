@@ -8,6 +8,8 @@ for dnd functionality see, https://github.com/atlassian/react-beautiful-dnd or h
 [ ] Save programs to disk
 [ ] Load programs from disk
 [ ] Drag n drop
+[ ] Control structures
+[ ] Object Inheritence
 [ ] About page
 [ ] Tutorials
 [ ] Documentation

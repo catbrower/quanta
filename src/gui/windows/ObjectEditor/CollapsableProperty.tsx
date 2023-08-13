@@ -1,13 +1,19 @@
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Accordion, AccordionDetails, AccordionSummary, IconButton, Stack, Typography } from "@mui/material";
+import { Box, Collapse, CssBaseline, IconButton, Stack, Typography } from "@mui/material";
+import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { getJSONProperty } from '../../../Common';
 import { addCollapseablePropertyState, openCollapseableProperty } from '../../../redux/GUISlice';
 import { useAppSelector } from '../../../redux/Hooks';
+import { DragSource } from '../../DragSource';
 
 const HEADER_HEIGHT = "3em";
-const RIGHT_MARGIN = "2.5em";
+const RIGHT_MARGIN = "0.5em";
+const HEADER_BUTTON_SIZE = "1.5em";
+
+// const header_button_style = 
 
 interface ICollapseableState {
   id: string,
@@ -33,28 +39,56 @@ export default function CollapsableProperty(props: IProps) {
     dispatch(openCollapseableProperty({ id: props.id, isOpen: !isOpen, focus: null }));
   }
 
+  const headerRef = useRef<HTMLElement>(null);
+  const [headerProps, setHeaderProps] = useState({ width: 0, height: 0, top: 0, left: 0 });
+
+  useEffect(() => {
+    if (headerRef.current !== null) {
+      let newProps = {
+        width: headerRef.current.clientWidth,
+        height: headerRef.current.clientHeight,
+        left: 0,
+        top: 0
+      };
+
+      if (JSON.stringify(newProps) !== JSON.stringify(headerProps)) {
+        setHeaderProps(newProps);
+      }
+    }
+  })
+
   return (
     <>
-      <Stack direction="row" mb={0} style={{ position: "relative", border: "solid 1px black", zIndex: "1", height: HEADER_HEIGHT, width: RIGHT_MARGIN, overflow: "show" }}>
-        <IconButton onClick={props.onDelete}>
-          <ClearRoundedIcon />
-        </IconButton>
-      </Stack>
+      <Box>
+        <DragSource style={{ position: "absolute", height: HEADER_HEIGHT, width: `${headerProps.width}px`, zIndex: "0" }} type="justsomethings">
+          <Typography className="unselectable" style={{ paddingLeft: "5em", transform: "translateY(50%)" }}>{props.name}</Typography>
+        </DragSource>
 
-      <Accordion style={{ marginRight: RIGHT_MARGIN, marginTop: "0px", marginBottom: "0px", top: `-${HEADER_HEIGHT}` }} expanded={isOpen} onChange={() => { handleChange() }}>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel1a-content"
-          id="panel1a-header"
-          style={{ marginLeft: RIGHT_MARGIN, height: HEADER_HEIGHT, backgroundColor: "aliceblue" }}
-        >
-          <Typography className="unselectable" lineHeight={0} style={{ transform: "translateY(50%)" }}>{props.name}</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
+        <Box ref={headerRef}>
+          <Stack direction="row" width="100%" display="flex" style={{ position: "relative", height: HEADER_HEIGHT, background: "none", pointerEvents: "none" }}>
+            <CssBaseline />
+            <IconButton>
+              <DragIndicatorIcon />
+            </IconButton>
+
+            <IconButton style={{ pointerEvents: "all" }} onClick={props.onDelete}>
+              <ClearRoundedIcon />
+            </IconButton>
+
+            <Box flexGrow={1}></Box>
+
+            <IconButton style={{ pointerEvents: "all" }} onClick={handleChange}>
+              <ExpandMoreIcon />
+            </IconButton>
+          </Stack>
+        </Box>
+      </Box>
+
+      <Collapse in={isOpen}>
+        <Box p={"1em"}>
           {props.children}
-        </AccordionDetails>
-      </Accordion>
-
+        </Box>
+      </Collapse>
     </>
   )
 }
