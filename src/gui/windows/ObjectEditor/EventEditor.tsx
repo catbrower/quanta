@@ -1,12 +1,13 @@
 import AddIcon from "@mui/icons-material/Add";
-import { IconButton, ListItemText, Menu, MenuItem, MenuList, Paper, Stack } from "@mui/material";
-import React from "react";
+import { Box, IconButton, ListItemText, Menu, MenuItem, MenuList, Paper, Stack } from "@mui/material";
+import React, { FC, ReactNode } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { capitalize, uniformColor, uniformEuler } from "../../../Common";
-import { EVENT_STEPS } from "../../../Constants";
-import { IProgramEvent } from "../../../program/ProgramInterfaces";
+import { DND_TYPES, EVENT_STEPS } from "../../../Constants";
+import { IProgramEvent, IProgramEventStep } from "../../../program/ProgramInterfaces";
 import EditableStruct from "./EditableStruct";
-import { DragSource } from "../../DragSource";
+import { Droppable, Draggable, DraggableProvided, DraggableStateSnapshot, DroppableProvided, DroppableStateSnapshot } from "react-beautiful-dnd";
+
 
 interface IEventEditorProps {
   objectId: string,
@@ -66,7 +67,7 @@ export default function EventEditor(props: IEventEditorProps) {
     props.onUpdate(result);
   }
 
-  let eventSteps = [];
+  let eventSteps: ReactNode[] = [];
   // for (const eventStep of props.event.steps) {
   for (let i = 0; i < props.event.steps.length; i++) {
     const eventStep = props.event.steps[i];
@@ -76,7 +77,6 @@ export default function EventEditor(props: IEventEditorProps) {
       case (EVENT_STEPS.SET_TRANSLATE):
       case (EVENT_STEPS.SET_ROTATION):
         eventSteps.push(
-          // <DragSource type="heyimaguy">
           <EditableStruct
             key={`${props.objectId}.${props.event.name}.${i}`}
             name={`step.${i}`}
@@ -84,7 +84,6 @@ export default function EventEditor(props: IEventEditorProps) {
             onUpdate={(e: any) => { setEventStep(i, e.target.value) }}
             onDelete={(e: any) => deleteEventStep(e, i)}
             data={eventStep} />
-          // </DragSource>
         )
         break;
       case (EVENT_STEPS.SET_POINT_SIZE):
@@ -95,31 +94,62 @@ export default function EventEditor(props: IEventEditorProps) {
   }
 
   return (
-    <Stack direction="column" py={1}>
-      {eventSteps}
-      <Stack direction="row" alignItems="center" justifyContent="center">
-        <IconButton onClick={handleAddClick}>
-          <AddIcon />
-        </IconButton>
+    <Box>
+      <Stack direction="column" spacing={0.5} py={1}>
 
-        <Menu
-          open={addMenuIsOpen}
-          anchorEl={addMenuAnchorEl}
-          onClose={handleAddClose}
-        >
-          <Paper>
-            <MenuList>
-              {Object.values(EVENT_STEPS).filter((propName) => !(propName in props.event)).map((propName) => {
-                return (
-                  <MenuItem key={uuidv4()} onClick={(e) => addEventStep(propName)}>
-                    <ListItemText>{capitalize(propName)}</ListItemText>
-                  </MenuItem>
-                )
-              })}
-            </MenuList>
-          </Paper>
-        </Menu>
+        <Droppable droppableId="eventEditor">
+          {(provided: DroppableProvided, snapshot: DroppableStateSnapshot) => (
+            <div
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+
+            >
+              {props.event.steps.map((item: IProgramEventStep, index: number) => (
+                <Draggable key={item.id} draggableId={item.id} index={index}>
+                  {(providedDraggable: any, snapshotDraggable: DraggableStateSnapshot) => (
+                    <div>
+                      <div
+                        ref={providedDraggable.innerRef}
+                        {...providedDraggable.draggableProps}
+                        {...providedDraggable.dragHandleProps}
+                      >
+                        stuff
+                      </div>
+                      {providedDraggable.placeholder}
+                    </div>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+            </div>
+          )}
+          {/* {eventSteps} */}
+        </Droppable>
+
+        < Stack direction="row" alignItems="center" justifyContent="center" pt={5}>
+          <IconButton onClick={handleAddClick}>
+            <AddIcon />
+          </IconButton>
+
+          <Menu
+            open={addMenuIsOpen}
+            anchorEl={addMenuAnchorEl}
+            onClose={handleAddClose}
+          >
+            <Paper>
+              <MenuList>
+                {Object.values(EVENT_STEPS).filter((propName) => !(propName in props.event)).map((propName) => {
+                  return (
+                    <MenuItem key={uuidv4()} onClick={() => addEventStep(propName)}>
+                      <ListItemText>{capitalize(propName)}</ListItemText>
+                    </MenuItem>
+                  )
+                })}
+              </MenuList>
+            </Paper>
+          </Menu>
+        </Stack >
       </Stack>
-    </Stack>
+    </Box>
   )
 }

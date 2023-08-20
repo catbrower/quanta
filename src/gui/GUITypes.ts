@@ -2,7 +2,8 @@ export interface IWindow {
   id: string,
   name: string,
   state: string,
-  type: string
+  type: string,
+  boundingClientRect?: DOMRect
 }
 
 export interface IEditorWindow<T> extends IWindow {

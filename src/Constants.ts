@@ -43,3 +43,7 @@ export const MATERIAL_TYPES = {
 export const CONTEXT_MENU_CONTENT_TYPES = {
   PROGRAM_EDITOR_OBJECT: 'programEditorObject'
 }
+
+export const DND_TYPES = {
+  EVENT_EDITOR_STEP: "eventEditorStep"
+}

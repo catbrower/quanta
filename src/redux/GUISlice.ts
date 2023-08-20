@@ -22,6 +22,10 @@ const initialState: GUIState = {
   collapseableProperties: {}
 }
 
+function windowExists(windowId: string, state: GUIState): boolean {
+  return state.windows.filter(window => window.id !== state.previewWindowId).length === 0;
+}
+
 export const guiSlice = createSlice({
   name: "guiSlice",
   initialState,
@@ -29,9 +33,9 @@ export const guiSlice = createSlice({
     openMenu: (state) => { state.isMenuOpen = true },
     closeMenu: (state) => { state.isMenuOpen = false },
     openObjectWindow: (state, action) => {
-      const canPush = state.windows.filter(window => window.id !== action.payload).length === 0;
+      // const canPush = state.windows.filter(window => window.id !== action.payload).length === 0;
 
-      if (canPush) {
+      if (windowExists(action.payload, state)) {
         state.windows.push({
           id: uuidv4(),
           name: action.payload.name,
@@ -46,15 +50,29 @@ export const guiSlice = createSlice({
       state.windows = state.windows.filter(window => window.id !== action.payload)
     },
     openPreviewWindow: (state) => {
-      const canPush = state.windows.filter(window => window.id !== state.previewWindowId).length === 0;
+      // const canPush = state.windows.filter(window => window.id !== state.previewWindowId).length === 0;
 
-      if (canPush) {
+      if (windowExists(state.previewWindowId, state)) {
         state.windows.push({
           id: state.previewWindowId,
           name: "Preview Window",
           type: "preview",
           state: "maximized"
         });
+      }
+    },
+    setWindowBoundingRect: (state, action) => {
+      const windowId = action.payload.windowId;
+      const boundingRect = action.payload.boundingRect;
+
+      // need to get the index of the window and change it that way :/
+      if (windowExists(windowId, state)) {
+        let window = { ...state.windows.filter(window => window.id !== state.previewWindowId)[0] }
+        window.boundingClientRect = boundingRect;
+        state = {
+          ...state,
+          windows: 
+        }
       }
     },
     addCollapseablePropertyState: (state, action: PayloadAction<IAddCollapseablePropertyAction>) => {

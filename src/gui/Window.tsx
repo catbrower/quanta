@@ -3,7 +3,7 @@ import FullscreenIcon from "@mui/icons-material/FullscreenRounded";
 import MinimizeIcon from "@mui/icons-material/MinimizeRounded";
 import { Box, Dialog, DialogTitle, Grow, IconButton, Paper, Typography } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
-import React from "react";
+import React, { useRef } from "react";
 import Draggable from "react-draggable";
 import { IProgramObject } from "../program/ProgramInterfaces";
 import { closeObjectWindow } from "../redux/GUISlice";
@@ -40,8 +40,13 @@ function PaperComponent(props: any) {
 export default function Window(props: IWindow) {
   const dispatch = useAppDispatch();
   const window = props;
+  const wrapperRef = useRef<HTMLElement>(null);
 
   function handleClose(event: any, reason: any) {
+    console.log(wrapperRef.current);
+    console.log(wrapperRef.current?.getBoundingClientRect())
+    return;
+
     // event.preventDefault();
     if (reason && reason == "backdropClick") {
       return;
@@ -75,14 +80,17 @@ export default function Window(props: IWindow) {
         disableEnforceFocus={true}
         className="dialog"
       >
-        <DialogTitle style={{ cursor: 'move', height: "2em", display: "flex", padding: "10px 0px 25px 15px" }} id="draggable-dialog-title" className="dialogHeader">
-          {window.name}
-          <Box style={{ flex: "1" }} />
-          <IconButton onClick={() => { handleClose(null, "closeBtn") }}><CloseIcon fontSize="small" /></IconButton>
-          <IconButton><FullscreenIcon fontSize="small" /></IconButton>
-          <IconButton><MinimizeIcon fontSize="small" /></IconButton>
-        </DialogTitle>
-        {getDialogContent()}
+        <Box ref={wrapperRef} style={{ border: "solid 1px green" }}>
+          <DialogTitle style={{ cursor: 'move', height: "2em", display: "flex", padding: "10px 0px 25px 15px" }} id="draggable-dialog-title" className="dialogHeader">
+            {window.name}
+            <Box style={{ flex: "1" }} />
+            <IconButton onClick={() => { handleClose(null, "closeBtn") }}><CloseIcon fontSize="small" /></IconButton>
+            <IconButton><FullscreenIcon fontSize="small" /></IconButton>
+            <IconButton><MinimizeIcon fontSize="small" /></IconButton>
+          </DialogTitle>
+
+          {getDialogContent()}
+        </Box>
       </Dialog>
     </>
   );

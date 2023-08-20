@@ -8,6 +8,7 @@ import { getJSONProperty } from '../../../Common';
 import { addCollapseablePropertyState, openCollapseableProperty } from '../../../redux/GUISlice';
 import { useAppSelector } from '../../../redux/Hooks';
 import { DragSource } from '../../DragSource';
+import { DND_TYPES } from '../../../Constants';
 
 const HEADER_HEIGHT = "3em";
 const RIGHT_MARGIN = "0.5em";
@@ -60,24 +61,23 @@ export default function CollapsableProperty(props: IProps) {
   return (
     <>
       <Box>
-        <DragSource style={{ position: "absolute", height: HEADER_HEIGHT, width: `${headerProps.width}px`, zIndex: "0" }} type="justsomethings">
+        <DragSource style={{ position: "absolute", height: HEADER_HEIGHT, width: `${headerProps.width}px`, zIndex: "1" }} type={DND_TYPES.EVENT_EDITOR_STEP}>
           <Typography className="unselectable" style={{ paddingLeft: "5em", transform: "translateY(50%)" }}>{props.name}</Typography>
         </DragSource>
 
         <Box ref={headerRef}>
-          <Stack direction="row" width="100%" display="flex" style={{ position: "relative", height: HEADER_HEIGHT, background: "none", pointerEvents: "none" }}>
-            <CssBaseline />
+          <Stack direction="row" width="100%" display="flex" style={{ backgroundColor: "#EFEFEF", position: "relative", height: HEADER_HEIGHT, pointerEvents: "none" }}>
             <IconButton>
               <DragIndicatorIcon />
             </IconButton>
 
-            <IconButton style={{ pointerEvents: "all" }} onClick={props.onDelete}>
+            <IconButton style={{ pointerEvents: "all", zIndex: 2 }} onClick={props.onDelete}>
               <ClearRoundedIcon />
             </IconButton>
 
             <Box flexGrow={1}></Box>
 
-            <IconButton style={{ pointerEvents: "all" }} onClick={handleChange}>
+            <IconButton style={{ pointerEvents: "all", zIndex: 2 }} onClick={handleChange}>
               <ExpandMoreIcon />
             </IconButton>
           </Stack>
